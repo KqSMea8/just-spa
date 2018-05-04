@@ -357,7 +357,7 @@ function removeTemplate(serverPath) {
                         templateInfo[key] = value;
                         // 如果输入肯定，则创建组件
                         if (templateInfo[key] === 'Y' || templateInfo[key] === 'y' || /yes/i.test(templateInfo[key])) {
-                            logger('Template will be delete...', 'red')
+                            logger('Template will be deleted...', 'red')
                             templateAction.removeTemplate(templateInfo.name, serverPath, templatesJson);
                             readLine.close();
                         } else if (!templateInfo[key]) {

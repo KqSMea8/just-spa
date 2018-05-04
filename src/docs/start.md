@@ -15,21 +15,21 @@ npm i just-spa -g
 just init
 ```
 
-&emsp;&emsp;输入生成组件的相关信息，填写名称、物料库等，即可快速生成组件。
-
-&emsp;&emsp;创建组件后执行
+&emsp;&emsp;输入生成组件的相关信息，填写名称、物料库等，即可快速生成组件。创建组件完成后执行
 
 ```
 just watch
 ```
 
-&emsp;&emsp;just watch会开启组件实时watch调试, 然后在相同目录中开启另一个终端执行
+&emsp;&emsp;just watch会开启组件实时watch同步调试, 然后在相同目录中开启另一个终端执行
 
 ```
 just start
 ```
 
-&emsp;&emsp;just start会启动调试服务器，此时就可以使用浏览器打开http://localhost:8000 看到调试组件的列表并查看just系统的详细文档。
+&emsp;&emsp;just start会启动调试服务器，此时just会自动拉起浏览器打开http://localhost:8000 ，就可以看到调试组件的列表并查看just系统的详细文档。如下：
+
+&emsp;&emsp;![](/src/docs/img/preview.png)
 
 
 #### 3、just帮助命令
@@ -38,15 +38,25 @@ just start
 
 ```
 just init: 创建一个组件或项目。根据物料库快速生成一个组件或项目。
+
 just template: 根据自定义物料库目录创建一个新的物料库。
+
 just rmtemplate: 删除一个自定义物料库。
+
 just list: 查看存在的所有物料库列表。
+
 just i/install: 安装组件的第三方依赖，同 npm/tnpm install。
+
 just start/run -port: 启动调试服务器。一般只需要运行一次。-p或-port表示指定端口开启服务。
+
 just clear/clean: 清除缓存。清除build构建的缓存目录。
+
 just dev/watch: 在当前目录下创建组件调试环境。
+
 just build: 编译打包组件为单个输出的ES5文件并编译CSS文件。例如：just build ComponentName
+
 just help: 查看帮助。查看just所有命令。
+
 just -v/version: 显示当前安装的just版本。
 ```
 
