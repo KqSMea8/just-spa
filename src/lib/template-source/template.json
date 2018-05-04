@@ -1,0 +1,44 @@
+{
+    "1": {
+        "name": "react-template",
+        "label": "react组件",
+        "owner": "system",
+        "stack": "react",
+        "description": "react组件模板。(纯react基础组件)"
+    },
+    "2": {
+        "name": "react-redux-template",
+        "label": "react-redux组件",
+        "owner": "system",
+        "stack": "react",
+        "description": "react-redux组件模板。(无redux-thunk支持)."
+    },
+    "3": {
+        "name": "react-redux-thunk-template",
+        "label": "react-redux-thunk组件",
+        "owner": "system",
+        "stack": "react",
+        "description": "react-redux-thunk组件模板。(已添加redux-thunk、redux-promise支持)."
+    },
+    "4": {
+        "name": "spaui-template",
+        "label": "SPA-UI组件",
+        "owner": "system",
+        "stack": "react",
+        "description": "SPAUI组件模板。(纯react UI组件)"
+    },
+    "5": {
+        "name": "vue-template",
+        "label": "vue 2组件",
+        "owner": "system",
+        "stack": "vue",
+        "description": "Vue组件模板。(纯Vue UI组件)"
+    },
+    "6": {
+        "name": "jquery-template",
+        "label": "jquery或原生组件",
+        "owner": "system",
+        "stack": "jquery",
+        "description": "jquery或原生组件。"
+    }
+}

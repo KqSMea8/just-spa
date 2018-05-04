@@ -1,0 +1,394 @@
+﻿
+const fs = require('fs');
+const path = require('path');
+const fse = require('fs-extra');
+const childProcess = require('child_process');
+const logger = require('./src/lib/logger');
+const asyncFilesAndWatch = require('./src/asyncFilesAndWatch');
+const { createComponent, createTemplate, removeTemplate, listTemplates } = require('./src/createComponentLine');
+
+const args = process.argv.splice(1);
+
+const currentPath = process.cwd();
+const serverPath = path.dirname(path.resolve(args[0], '../'));
+
+const command = args[1] || '';
+const commandParams = args.slice(2) || [];
+
+const axon = require('axon');
+const socketPub = axon.socket('push');
+
+const socketUrl = 'tcp://127.0.0.1:6677';
+const devRootHost = 'http://localhost';
+
+const npm = 'tnpm';  // npm的安装命令
+
+let cdDisk = '';
+
+// 如果匹配到windows环境的盘符，则需要转盘符
+if (/(\w:)/ig.test(serverPath)) {
+    cdDisk = serverPath.match(/(\w:)/gi)[0] + ' && ';
+}
+/**
+ * 初始化命令集合
+ * 
+ */
+function _initCommandSet(serverPath, command, commandParams) {
+    const commandSets = ['init', 'update', 'help'];
+
+    // 命令行处理
+    switch (command) {
+        case 'i':
+        case 'install':
+            _installDependencies(commandParams);
+            break;
+        case 'init':
+            createComponent();         // 根据物料创建组件
+            break;
+        case 'template':
+            createTemplate(serverPath); // 创建物料模板
+            break;
+        case 'rmtemplate':
+            removeTemplate(serverPath); // 删除物料模板
+            break;
+        case 'list':
+            listTemplates(); // 删除物料模板
+            break;
+        case 'clear':
+        case 'clean':
+            _clearCacheBuildDir([       //  // 如果命令为空，则输出help
+                serverPath + '/.build'
+            ]);
+            break;
+        case 'run':
+        case 'start':
+            _initStart(commandParams);
+            break;
+        case '':
+        case 'help':
+            // 如果命令为help，则输出help
+            _consoleHelp();
+            break;
+        case 'watch':
+        case 'dev':
+            // watch、dev均可开启调试模式
+            _initFileWatch(serverPath);
+            break;
+        case 'build':
+            // 编译打包组件为单个可输出文件
+            _buildEs5Component(commandParams);
+            break;
+        case '-v':
+        case 'version':
+            _showVersion();
+            break;
+        default:
+            // 如果命令为空，且没有该命令，则提示没有该命令
+            logger(`抱歉，没有找到"${command}"命令。您可以尝试just help来查看所有命令.`, 'red');
+            _consoleHelp();
+            break;
+    }
+}
+
+/**
+ * 编译打包组件为单个可输出文件
+ * 
+ * @param {any} commandParams 
+ */
+function _buildEs5Component(commandParams) {
+    // 使用一个子进程进入服务器目录并启动组件服务
+    if (!commandParams[0]) {
+        logger('请输入要打包的组件名称，输入例如：just build ComponentName', 'red');
+        return;
+    }
+
+    let componentDir = path.join(currentPath, commandParams[0]);
+
+    if (!componentDir) {
+        logger('输入的组件名称不正确，任务即将跳过', 'magenta');
+        return;
+    }
+
+    logger(`running: 开始build组件...`, 'cyan');
+    childProcess.exec(`cd "${serverPath}" && ${cdDisk} node "./command/build-es5" --src "${serverPath}" --dist "${componentDir}" --name "${commandParams[0]}"`, (error, stdout, stderr) => {
+        if (error) {
+            logger(`childProcess.exec error: ${error}`, 'magenta');
+            return;
+        }
+        if (stderr) {
+            logger(`warning: ${stderr}`, 'magenta');
+        }
+        logger(`stdout: ${stdout}`, 'cyan');
+        logger(`Es5组件构建任务完成.`, 'green');
+    });
+}
+
+/**
+ * 显示版本
+ * 
+ */
+function _showVersion() {
+    fse.readJson(`${serverPath}/package.json`).then(packageObj => {
+        logger(`version: ${packageObj.version}`, 'cyan');
+    });
+}
+
+/**
+ * 清楚build缓存目录，强制直接删除
+ * 
+ */
+function _clearCacheBuildDir(dirs) {
+    for (let dir of dirs) {
+        fse.removeSync(dir);
+    }
+}
+/**
+ * 安装依赖
+ * 
+ */
+function _installDependencies(commandParams) {
+
+    let params = commandParams.length ? (commandParams || []).join(' ') : _readDirDependencies(currentPath).join(' ');
+
+    // 使用一个子进程进入服务器目录并启动组件服务
+    logger(`running: cd "${serverPath}" && ${cdDisk} ${npm} i ${params}`, 'cyan')
+    childProcess.exec(`cd "${serverPath}" && ${cdDisk} ${npm} i ${params}`, (error, stdout, stderr) => {
+        if (error) {
+            logger(`childProcess.exec error: ${error}`, 'magenta');
+            return;
+        }
+        if (stderr) {
+            logger(`warning: ${stderr}`, 'magenta');
+        }
+        logger(`stdout: ${stdout}`, 'cyan');
+        logger(`组件依赖安装成功.`, 'cyan');
+    });
+}
+
+/**
+ * 启动服务器命
+ * 
+ */
+function _initStart(commandParams = []) {
+
+    const port = _getPortFromParams(commandParams);
+    const devRootUrl = `${devRootHost}:${port}`;
+
+
+    logger(`starting dev server...`, 'magenta');
+
+    // 使用一个子进程进入服务器目录并启动组件服务
+    logger(`Serverd in ${serverPath}/.build`, 'cyan');
+
+    fse.pathExists(serverPath + '/.build', (err, exists) => {
+        if (!exists) {
+            logger('未运行调试服务，请先选择组件调试目录运行"just watch"再尝试.', 'red');
+            return;
+        }
+
+        // 输出运行命令信息
+        logger(`cd "${serverPath}" && ${cdDisk} node "server.js" --devpath "${currentPath}" ${commandParams.join(' ')}`, 'cyan');
+        childProcess.exec(`cd "${serverPath}" && ${cdDisk} node "server.js" --devpath "${currentPath}" ${commandParams.join(' ')}`, (error, stdout, stderr) => {
+            logger(`${stdout}`, 'cyan');
+        }).on('exit', function (code) {
+            logger(`restarting dev server...`, 'magenta');
+            logger(`dev server stoped...code:${code} success.`, 'cyan');
+
+            _initStart(commandParams);
+        });
+
+        logger(`dev server started.`, 'magenta');
+        setTimeout(() => {
+            logger(`Listening at ${devRootUrl}/ 请尝试访问 ${devRootUrl}/component.html?c=[组件名] 进行调试`, 'green');
+            childProcess.exec(`start ${devRootUrl}`);  // 打开浏览器操作可以使用opn的npm包优化
+        }, 400);
+
+    })
+}
+
+/**
+ * 停止服务器命令
+ * 
+ */
+function _stopServer() {
+    // 使用一个子进程进入服务器目录并启动组件服务
+    process.exit(-1);
+    logger(`Server stoped.`, 'cyan');
+}
+
+/**
+ * 输出帮助信息
+ * 
+ */
+function _consoleHelp() {
+    logger(`
+您可以使用下面命令:
+    just init: 创建一个组件或项目。根据物料库快速生成一个组件或项目。
+    just template: 根据自定义物料库目录创建一个新的物料库。
+    just rmtemplate: 删除一个自定义物料库。
+    just list: 查看存在的所有物料库列表。
+    just i/install: 安装组件的第三方依赖，同 npm/tnpm install。
+    just start/run -port: 启动调试服务器。一般只需要运行一次。-p或-port表示指定端口开启服务。
+    just clear/clean: 清除缓存。清除build构建的缓存目录。
+    just dev/watch: 在当前目录下创建组件调试环境。
+    just build: 编译打包组件为单个输出的ES5文件并编译CSS文件。例如：just build ComponentName
+    just help: 查看帮助。查看just所有命令。
+    just -v/version: 显示当前安装的just版本。`, 'magenta');
+}
+
+/**
+ * 初始化文件目录读取和文件编辑变化监听
+ * 
+ */
+function _initFileWatch(serverPath) {
+
+    const currentPath = process.cwd();
+    const componentDirs = _readDirSync(currentPath);
+
+    for (let componentDir of componentDirs) {
+        asyncFilesAndWatch(serverPath, componentDir);
+    }
+
+    // 如果组件不为空，则需要写入组件信息
+    if (componentDirs.length) {
+        _writeComponentInfo(componentDirs, serverPath);
+    }
+
+    // 通知dev server进行重启等操作
+    socketPub.connect(socketUrl);
+    socketPub.send('watch');
+}
+
+
+/**
+ * 自动读取组件中的dependencies
+ * 
+ */
+function _readDirDependencies(serverPath) {
+
+    const currentPath = process.cwd();
+    const componentDirs = _readDirSync(currentPath);
+    const dependencies = [];
+
+    // 如果组件不为空，则需要进入读取组件的dependencies
+    if (componentDirs.length) {
+        for (let componentDir of componentDirs) {
+            let packageJson = {};
+
+            if(fse.pathExistsSync(componentDir + '/package.json')) {
+                packageJson = fse.readJsonSync(componentDir + '/package.json');
+            }
+
+            for (let key in (packageJson.dependencies || {})) {
+                if(dependencies.indexOf(key) < 0) {
+                    dependencies.push(key);
+                }
+            }
+        }
+    }
+    return dependencies;
+}
+
+/**
+ * 读取一个目录，返回这个目录下的一级子目录
+ * 
+ * @param {any} rootDir 
+ * @returns 
+ */
+function _readDirSync(rootDir) {
+    const paths = fs.readdirSync(rootDir);
+
+    // 如果组件根目录还有下面这些文件，则允许创建组件调试
+    const excludeFiles = ['package.json', 'Gulpfile.js', 'webpack.config.js', 'Gruntfile.js'];
+
+    let componentDirs = [];
+    let canCreate = true;
+
+    paths.forEach(function (item, index) {
+        var info = fs.statSync(rootDir + '/' + item);
+        if (info.isDirectory()) {
+            // 如果是目录
+            componentDirs.push(path.resolve(rootDir, item));
+        } else {
+            // 如果是文件，且文件有package.json，则不使用该目录，组件目录中不能含有package.json
+            if (excludeFiles.indexOf(item) > -1) {
+                logger(`初始化组件目录失败，组件根目录不能包含${item}文件，组件需以文件夹方式存在于组件目录下.`, 'red');
+                canCreate = false;
+            }
+        }
+    });
+    componentDirs = canCreate ? componentDirs : [];
+
+    return componentDirs;
+}
+
+/**
+ * 根据目录下的组件生成一份组件信息的配置
+ * 
+ * @param {any} componentDirs 组件目录列表
+ * @param {any} serverPath 服务器根目录
+ */
+function _writeComponentInfo(componentDirs, serverPath) {
+
+    let componentInfos = { components: [], templates: {} };
+    // 物料模板选项映射表
+    const templatesJson = fse.readJsonSync(__dirname + '/src/lib/template-source/template.json') || {};
+    for (let componentDir of componentDirs) {
+
+        let componentName,
+            componentInfo; // 读取组件的package.json，获取组件信息，如果没有则放入组件名称
+
+        // 处理mac和windows系统差异性
+        if (_isWinPlatform()) {
+            componentName = componentDir.split("\\");
+        } else {
+            componentName = componentDir.split('/');
+        }
+
+        // 如果存在package.json则获取组件名
+        let existPackageJSON = fse.pathExistsSync(path.join(componentDir, 'package.json'));
+
+        if (existPackageJSON) {
+            componentName = componentName[componentName.length - 1];
+            componentInfo = fse.readJsonSync(path.join(componentDir, 'package.json'));
+
+            componentInfos.components.push(Object.assign({
+                name: componentName
+            }, componentInfo));
+        }
+    }
+
+    componentInfos.templates = templatesJson;
+
+    componentInfos = JSON.stringify(componentInfos);
+
+    // 根据当前调试根目录生成所有组件的列表
+    fse.outputFile(path.join(serverPath + '/.build', 'component-info') + '.js', `var componentInfo = JSON.parse(\`${componentInfos}\`)`, (err) => {
+        if (err) throw err;
+        logger(`component list info has been created successfully.`, 'cyan');
+    });
+}
+
+/**
+ * 获取运行的端口，默认8000
+ * 
+ */
+function _getPortFromParams(commandParams) {
+    if (commandParams && ['-p', '-port'].includes(commandParams[0]) && Number(commandParams[1])) {
+        return Number(commandParams[1]);
+    }
+    return 8000;
+}
+
+/**
+ * 判断是否为windows平台
+ * 
+ * @returns 
+ */
+function _isWinPlatform () {
+    return process.platform.indexOf('win') > -1;
+}
+
+module.exports = function () {
+    _initCommandSet(serverPath, command, commandParams);
+};

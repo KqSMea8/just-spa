@@ -1,0 +1,184 @@
+
+.section-main{
+    height: auto;
+}
+
+.section-main .preview{
+    min-height: 768px;
+    overflow: hidden;
+}
+
+.section-header .memu-list {
+    top: 0;
+}
+
+.section-main .left-nav{
+    float: left;
+    width: 255px;
+    font-size: 14px;
+    margin-top: 49px;
+}
+
+.section-main .component-info {
+    position: relative;
+    list-style-type: none;
+    padding: 10px;
+    margin: 0 5px;
+    width: 100%;
+    border: solid 1px #630D12;
+}
+
+.section-main .component-debugger-panel {
+    margin: 20px 5px;
+    width: 100%;
+}
+
+.section-main .component-debugger-panel textarea {
+    width: 100%;
+    margin-bottom: 5px;
+}
+
+.section-main .component-debugger-panel input {
+    width: 100%;
+    margin-bottom: 5px;
+}
+
+.section-main .component-info:hover {
+    box-shadow: 0 0 10px #630D12;
+}
+
+.section-main .component-info li {
+    overflow: hidden;
+    text-overflow:ellipsis;
+    white-space: nowrap;
+}
+
+.section-main .component-info .component-logo {
+    position: absolute;
+    width: 50px;
+    height: 45px;
+    bottom: 0;
+    right: 0;
+    border-top-left-radius: 50%;
+}
+
+.section-main .component-info img {
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+.section-main .component-info .component-name{
+    font-weight: bold;
+    margin-left: 10px;
+}
+
+.section-main .component-info img:hover {
+    cursor: pointer;
+}
+
+/*  */
+
+.section-main .right-content{
+    float: right;
+    left: 200px;
+    font-size: 20px;
+}
+
+.section-main .right-content .menus{
+    float: right;
+    margin: 10px 5px;
+    height: 28px;
+}
+
+.section-main .right-content .menus:hover{
+    cursor: pointer;
+}
+
+.section-main .preview-container{
+    width: 800px;
+    min-height: 768px;
+}
+
+.section-main .preview-container{
+    border: 1px solid #ccc;
+    padding: 20px;
+}
+
+
+.section-main .left-nav .control-label {
+    margin-top: 10px;
+}
+
+.section-main .right-content .unit-test button{
+    margin: 10px 0;
+}
+
+.section-main .right-content .unit-test.success textarea{
+    color: green;
+}
+
+.section-main .right-content .unit-test.fail textarea{
+    color: red;
+}
+
+
+.section-main .right-content .nav-tabs {
+    font-size: 14px;
+    margin-top: 30px;
+}
+
+.section-main .right-content .nav-tabs li{
+    border-radius: 0;
+}
+
+.section-main .right-content .tab-content {
+    padding: 15px;
+    border: 1px solid #ccc;
+    border-top: none;
+}
+
+.section-main .right-content .script-input{
+    font-size: 14px;
+    display: inline-block;
+    color: #999;
+    margin-left: 20px;
+    width: 65%;
+}
+
+.section-main .right-content .test-file-name{
+    padding-left: 5px;
+    margin-left: 5px;
+    display: inline-block;
+    width: 50%;
+    border: 1px solid #eee;
+}
+
+.section-main .right-content .fa {
+    margin-left: 15px;
+    font-size: 18px;
+}
+
+.section-main .right-content .fa span{
+    display: inline-block;
+    font-size: 14px;
+    line-height: 18px;
+    height: 18px;
+    vertical-align: top;
+    margin-left: 5px;
+}
+
+.section-main .right-content .fa-check{
+    color: green;
+}
+
+.section-main .right-content .fa-times-circle {
+    color: red;
+}
+
+.section-main .show-readme{
+    position: relative;
+    float: right;
+    text-align: right;
+    margin: 20px 0;
+    min-width: 1080px;
+}

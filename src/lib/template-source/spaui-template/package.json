@@ -1,0 +1,17 @@
+
+{
+    "name": "",
+    "version": "0.1.0",
+    "template": "react-template",
+    "preview-image": "",
+    "main": "lib/index.js",
+    "scripts": {
+        "test": "",
+        "start": ""
+    },
+    "author": "",
+    "description": "",
+    "license": "ISC",
+    "dependencies": {
+    }
+}

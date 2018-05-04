@@ -1,0 +1,86 @@
+
+
+.section-main .types-list{
+    margin: 20px 10px;
+}
+
+.section-main .types-list span{
+    margin: 5px;
+    font-size: 14px;
+    padding: 5px 10px;
+}
+
+.section-main .types-list span:hover, .section-main .types-list span.active {
+    background-color: #630D12;
+    cursor: pointer;
+}
+
+.section-main .component-info {
+    position: relative;
+    float: left;
+    margin: 17px;
+    width: 30%;
+    border: solid 1px #630D12;
+    list-style-type: none;
+    padding: 10px;
+}
+
+.section-main .component-logo {
+    position: absolute;
+    width: 50px;
+    height: 45px;
+    bottom: 0;
+    right: 0;
+    border-top-left-radius: 50%;
+}
+
+.section-main .empty-list {
+    padding-left: 15px;
+}
+
+.section-main .component-info:hover {
+    box-shadow: 0 0 10px #630D12;
+}
+
+.section-main .component-info li {
+    overflow: hidden;
+    text-overflow:ellipsis;
+    white-space: nowrap;
+}
+
+.section-main .component-info li .preview{
+    display: inline-block;
+    width: 100%;
+    height: 200px;
+}
+
+.section-main .component-info img {
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+.section-main .component-info .component-name{
+    font-weight: bold;
+    margin-left: 10px;
+}
+
+.section-main .component-info img:hover {
+    cursor: pointer;
+}
+
+.mark-editor #editor-column{
+    display: none;
+}
+
+.mark-editor #preview-column {
+    width: 100%;
+}
+
+.mark-editor #container{
+    height: auto;
+    min-height: 400px;
+    background-color: #F6F6F6;
+}
+.mark-editor #bar{
+    display: none;
+}
