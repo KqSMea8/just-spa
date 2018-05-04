@@ -57,4 +57,4 @@ just help: 查看帮助。查看just所有命令。
 just -v/version: 显示当前安装的just版本。
 ```
 
-&emsp;&emsp;具体功能用法可以查看 [详细文档](/#docs)。
+&emsp;&emsp;具体功能用法可以查看 [详细文档](https://github.com/ouvens/just-spa/blob/master/src/docs/docs.md)。
