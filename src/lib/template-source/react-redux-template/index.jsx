@@ -22,14 +22,6 @@ class ${_Component} extends PureComponent {
         this.state = {};
     }
 
-    componentWillMount() {
-
-    }
-
-    componentDidMount() {
-
-    }
-
     render() {
         const className = '${_component}';
 
@@ -40,22 +32,6 @@ class ${_Component} extends PureComponent {
             <button onClick={dispatchAsyncChange.bind(this)}>Async change</button>
             <button onClick={dispatchPromiseChange.bind(this)}>Promise change</button>
         </div>
-    }
-
-    componentWillReceiveProps(nextProps, props) {
-
-    }
-
-    componentWillUpdate() {
-
-    }
-
-    componentDidUpdate() {
-
-    }
-
-    componentDidCatch() {
-
     }
 }
 

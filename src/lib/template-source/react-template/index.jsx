@@ -13,25 +13,12 @@ class ${_Component} extends PureComponent {
         name: PropTypes.string
     }
 
-    // 必须要定义contextType，否则无法获取Provider的context
-    static contextTypes = {
-        store: React.PropTypes.object
-    }
-
     constructor(props) {
         super();
         this.state = {
             text: props.text,
             name: props.name
         };
-    }
-
-    componentWillMount() {
-
-    }
-
-    componentDidMount() {
-
     }
 
     render() {
@@ -44,22 +31,6 @@ class ${_Component} extends PureComponent {
             <button onClick={asyncChange.bind(this)}>Async change</button>
             <button onClick={promiseChange.bind(this)}>Promise change</button>
         </div>
-    }
-
-    componentWillReceiveProps(nextProps, props) {
-
-    }
-
-    componentWillUpdate() {
-
-    }
-
-    componentDidUpdate() {
-
-    }
-
-    componentDidCatch() {
-
     }
 }
 

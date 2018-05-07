@@ -69,6 +69,78 @@ portal-fe/
 }
 ```
 
+&emsp;&emsp;再如，上面templates物料库中的`src/index.jsx`内容为：
+
+```
+import React, { PureComponent } from 'react';
+import PropTypes from 'prop-types';
+
+import './src/index.less';
+
+class ${_Component} extends PureComponent {
+
+    static propTypes = {
+        text: PropTypes.string,
+        name: PropTypes.string
+    }
+
+    constructor(props) {
+        super();
+        this.state = {
+            text: props.text,
+            name: props.name
+        };
+    }
+
+    render() {
+        const className = '${_component}';
+
+        return <div className={className}>
+        <h2>纯react模板组件: ${_Component}</h2>
+            {this.state.text} {this.state.name}!
+        </div>
+    }
+}
+
+export default ${_Component};
+```
+
+&emsp;&emsp;如果调用物料库生成组件传入的组件名为`PageDetail`，则最终生成组件中`src/index.jsx`文件内容为:
+
+```
+import React, { PureComponent } from 'react';
+import PropTypes from 'prop-types';
+
+import './src/index.less';
+
+class PageDetail extends PureComponent {
+
+    static propTypes = {
+        text: PropTypes.string,
+        name: PropTypes.string
+    }
+
+    constructor(props) {
+        super();
+        this.state = {
+            text: props.text,
+            name: props.name
+        };
+    }
+
+    render() {
+        const className = 'page-detail';
+
+        return <div className={className}>
+        <h2>纯react模板组件: PageDetail</h2>
+            {this.state.text} {this.state.name}!
+        </div>
+    }
+}
+
+export default PageDetail;
+```
+
 
 #### 3、文件入口
 

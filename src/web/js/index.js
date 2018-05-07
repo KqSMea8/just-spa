@@ -71,6 +71,7 @@ class Index extends React.Component {
             case '':
             case 'index':
             default:
+                document.getElementById('markdownEditor').style.display = 'none'; // 隐藏文档阅读
                 // 显示首页文档
                 return this._renderIndex();
                 break;
@@ -148,6 +149,7 @@ class Index extends React.Component {
                 return component;
             }
         });
+
         return <div>
             {this._renderDocsMenu()}
             <Grid>
