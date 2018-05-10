@@ -1,5 +1,5 @@
 ﻿
-&emsp;&emsp;Just-spa是一套前端组件工程化工具，可以帮助开发者对物料库进行处理，快速进行组件的创建、开发、调试、打包构建。从而提高组件管理和开发效率，统一组件规范，分离组件功能并减少人员变动给项目维护带来的额外成本。
+&emsp;&emsp;Just-spa是一套前端组件工程化工具，可以帮助开发者对物料库进行调用处理，快速进行组件的创建、开发、调试、打包构建，可管理的组件支持React、Vue、Angular或jquer等主流技术栈。从而提高组件管理和开发效率、统一组件规范并分离组件功能、减少人员变动给项目维护带来的额外成本。
 
 #### 1、安装just-spa
 
@@ -29,14 +29,14 @@ just watch
 just start
 ```
 
-&emsp;&emsp;just start会启动调试服务器，此时just会自动拉起浏览器打开 http://localhost:8000 ，就可以看到调试组件的列表并查看just工具的详细文档。如下：
+&emsp;&emsp;just start会启动调试服务器，此时just会自动拉起浏览器打开 http://localhost:8000 ，即可看到调试组件的列表并查看just工具的详细文档。如下：
 
 &emsp;&emsp;![](/src/docs/img/preview.png)
 
 
 #### 3、just帮助命令
 
-&emsp;&emsp;此外你可以执行`just help`来查看just的其它命令和功能
+&emsp;&emsp;此外你可以执行`just help`来查看just的其它命令和功能。
 
 ```
 just init: 创建一个组件或项目。根据物料库快速生成一个组件或项目。
