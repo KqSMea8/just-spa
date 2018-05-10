@@ -14,6 +14,8 @@ just list: 查看存在的所有物料库列表。
 
 just i/install: 安装组件的第三方依赖，同 npm/tnpm install。
 
+just update: 更新组件的第三方依赖，同 npm/tnpm update。
+
 just start/run -port: 启动调试服务器。一般只需要运行一次。-p或-port表示指定端口开启服务。
 
 just clear/clean: 清除缓存。清除build构建的缓存目录。
@@ -77,7 +79,6 @@ just help: 查看帮助。查看just所有命令。
 
 just -v/version: 显示当前安装的just版本。
 ```
-
 
 #### 总结
 

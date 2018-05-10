@@ -2,7 +2,7 @@
 {
     "name": "",
     "version": "0.1.0",
-    "template": "react-template",
+    "template": "spaui-template",
     "preview-image": "",
     "main": "lib/index.js",
     "scripts": {

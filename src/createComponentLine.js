@@ -39,7 +39,7 @@ for (let key in JavascriptFrameMap) {
  * 创建组件
  * 
  */
-function createComponent() {
+function createComponent(callback) {
     const currentPath = process.cwd();
 
     const readLine = readline.createInterface({
@@ -115,7 +115,7 @@ function createComponent() {
                         // 如果输入肯定，则创建组件
                         if (componentInfo[key] === 'Y' || componentInfo[key] === 'y' || /yes/i.test(componentInfo[key])) {
                             logger('Component will be created...', 'magenta')
-                            templateAction.createComponent(componentInfo, currentPath);
+                            templateAction.createComponent(componentInfo, currentPath, callback);
                             readLine.close()
                         } else if (!componentInfo[key]) {
                             logger('You have input nothing, please retry.', 'cyan')

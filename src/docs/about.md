@@ -23,10 +23,11 @@
 #### 2、just体系功能列表
 
 &emsp;&emsp;**物料与组件**
-- 根据物料快速创建组件：just init
+- 根据物料快速创建组件：just init，完成后自动安装初始依赖
 - 上传或删除自定义物料：just template /just rm template
 - 组件调试修改实时同步编译，即调试HMR： just watch
 - 快速安装组件的第三方依赖：just install
+- 更新组件的第三方依赖：just update
 - 组件打包build：just build componentName
 - 主动清楚调试缓存：just clear
 - 组件辅助数据实时mock，调试左侧栏注入数据

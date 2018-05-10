@@ -7,27 +7,29 @@
 npm i just-spa -g
 ```
 
+&emsp;&emsp;如果您设置了tnpm等代理命令，请使用 `tnpm i just-spa -g` 来安装。
+
 #### 2、快速创建和调试一个组件
 
-&emsp;&emsp;选择一个本地目录，打开终端执行：
+&emsp;&emsp;选择一个本地工作目录，打开终端执行：
 
 ```
 just init
 ```
 
-&emsp;&emsp;输入生成组件的相关信息，填写名称、物料库等，即可快速生成组件。创建组件完成后执行
+&emsp;&emsp;输入生成组件的相关信息，填写名称、物料库等，即可快速生成组件。创建组件完成后执行：
 
 ```
 just watch
 ```
 
-&emsp;&emsp;just watch会开启组件实时watch同步调试, 然后在相同目录中开启另一个终端执行
+&emsp;&emsp;just watch会开启组件实时watch同步调试, 然后在相同目录中开启另一个终端执行：
 
 ```
 just start
 ```
 
-&emsp;&emsp;just start会启动调试服务器，此时just会自动拉起浏览器打开http://localhost:8000 ，就可以看到调试组件的列表并查看just系统的详细文档。如下：
+&emsp;&emsp;just start会启动调试服务器，此时just会自动拉起浏览器打开 http://localhost:8000 ，就可以看到调试组件的列表并查看just工具的详细文档。如下：
 
 &emsp;&emsp;![](/src/docs/img/preview.png)
 
@@ -46,6 +48,8 @@ just rmtemplate: 删除一个自定义物料库。
 just list: 查看存在的所有物料库列表。
 
 just i/install: 安装组件的第三方依赖，同 npm/tnpm install。
+
+just update: 更新组件的第三方依赖，同 npm/tnpm update。
 
 just start/run -port: 启动调试服务器。一般只需要运行一次。-p或-port表示指定端口开启服务。
 

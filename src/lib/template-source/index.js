@@ -84,9 +84,12 @@ function _writeComponent(componentInfo, componentPath) {
     _writePackageJson(componentPath + '/package.json', componentInfo);
 
     // 结束promise
-    Promise.all(filePromises).then(() => {
+    return Promise.all(filePromises).then(() => {
         return new Promise((resolve, reject) => {
             logger('Component created complete!', 'green');
+            resolve();
+        }, () => {
+            reject();
             process.exit(1);
         });
     });
@@ -170,7 +173,7 @@ function _writePackageJson(jsonPackagePath, componentInfo) {
  * @param  {[type]} currentPath [description] 当前路径
  * @return {[type]}               [description] 
  */
-function createComponent(componentInfo, currentPath) {
+function createComponent(componentInfo, currentPath, callback) {
 
     let componentPath = currentPath + '/' + componentInfo.name;
 
@@ -182,7 +185,7 @@ function createComponent(componentInfo, currentPath) {
             fse.mkdirsSync(componentPath);
             logger(componentPath + '  组件目录创建成功!', 'magenta');
         }
-        _writeComponent(componentInfo, componentPath);
+        _writeComponent(componentInfo, componentPath).then(callback.bind(this, componentInfo.name));
     });
 }
 

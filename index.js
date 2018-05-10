@@ -40,10 +40,16 @@ function _initCommandSet(serverPath, command, commandParams) {
     switch (command) {
         case 'i':
         case 'install':
-            _installDependencies(commandParams);
+            _installOrUpdateAllDependencies(commandParams, 'install');
+            break;
+        case 'update':
+            _installOrUpdateAllDependencies(commandParams, 'update');
             break;
         case 'init':
-            createComponent();         // 根据物料创建组件
+            createComponent((componentName) => {
+                logger('auto install dependencies', 'cyan');
+                _installDependencies(commandParams, componentName, 'install');
+            });         // 根据物料创建组件
             break;
         case 'template':
             createTemplate(serverPath); // 创建物料模板
@@ -52,11 +58,11 @@ function _initCommandSet(serverPath, command, commandParams) {
             removeTemplate(serverPath); // 删除物料模板
             break;
         case 'list':
-            listTemplates(); // 删除物料模板
+            listTemplates();            // 删除物料模板
             break;
         case 'clear':
         case 'clean':
-            _clearCacheBuildDir([       //  // 如果命令为空，则输出help
+            _clearCacheBuildDir([       // 如果命令为空，则输出help
                 serverPath + '/.build'
             ]);
             break;
@@ -142,17 +148,49 @@ function _clearCacheBuildDir(dirs) {
         fse.removeSync(dir);
     }
 }
+
 /**
- * 安装依赖
+ * 安装或更新当前组件依赖
  * 
+ * @param {any} commandParams 
+ * @param {any} command 
  */
-function _installDependencies(commandParams) {
+function _installDependencies(commandParams, componentName, command) {
+
+    let params = _readDependencies(componentName).join(' ');
+
+    // 如果当前组件没有第三方依赖则返回
+    if(!(/\w/ig.test(params))) {
+        return ;
+    }
+    // 使用一个子进程进入服务器目录并启动组件服务
+    logger(`running: cd "${serverPath}" && ${cdDisk} ${npm} ${command} ${params}`, 'cyan')
+    childProcess.exec(`cd "${serverPath}" && ${cdDisk} ${npm} ${command} ${params}`, (error, stdout, stderr) => {
+        if (error) {
+            logger(`childProcess.exec error: ${error}`, 'magenta');
+            return;
+        }
+        if (stderr) {
+            logger(`warning: ${stderr}`, 'magenta');
+        }
+        logger(`stdout: ${stdout}`, 'cyan');
+        logger(`组件依赖安装成功.`, 'cyan');
+    });
+}
+
+/**
+ * 安装或更新所有依赖
+ * 
+ * @param {any} commandParams 
+ * @param {any} command 
+ */
+function _installOrUpdateAllDependencies(commandParams, command) {
 
     let params = commandParams.length ? (commandParams || []).join(' ') : _readDirDependencies(currentPath).join(' ');
 
     // 使用一个子进程进入服务器目录并启动组件服务
-    logger(`running: cd "${serverPath}" && ${cdDisk} ${npm} i ${params}`, 'cyan')
-    childProcess.exec(`cd "${serverPath}" && ${cdDisk} ${npm} i ${params}`, (error, stdout, stderr) => {
+    logger(`running: cd "${serverPath}" && ${cdDisk} ${npm} ${command} ${params}`, 'cyan')
+    childProcess.exec(`cd "${serverPath}" && ${cdDisk} ${npm} ${command} ${params}`, (error, stdout, stderr) => {
         if (error) {
             logger(`childProcess.exec error: ${error}`, 'magenta');
             return;
@@ -173,7 +211,6 @@ function _initStart(commandParams = []) {
 
     const port = _getPortFromParams(commandParams);
     const devRootUrl = `${devRootHost}:${port}`;
-
 
     logger(`starting dev server...`, 'magenta');
 
@@ -228,6 +265,7 @@ function _consoleHelp() {
     just rmtemplate: 删除一个自定义物料库。
     just list: 查看存在的所有物料库列表。
     just i/install: 安装组件的第三方依赖，同 npm/tnpm install。
+    just update: 更新组件的第三方依赖，同 npm/tnpm update。
     just start/run -port: 启动调试服务器。一般只需要运行一次。-p或-port表示指定端口开启服务。
     just clear/clean: 清除缓存。清除build构建的缓存目录。
     just dev/watch: 在当前目录下创建组件调试环境。
@@ -259,12 +297,36 @@ function _initFileWatch(serverPath) {
     socketPub.send('watch');
 }
 
-
 /**
- * 自动读取组件中的dependencies
+ * 自动读取单个组件中的dependencies
  * 
  */
-function _readDirDependencies(serverPath) {
+function _readDependencies(componentName) {
+
+    const componentDir = path.join(process.cwd(), componentName);
+    const dependencies = [];
+
+    // 如果组件不为空，则需要进入读取组件的dependencies
+    let packageJson = {};
+
+    if(fse.pathExistsSync(componentDir + '/package.json')) {
+        packageJson = fse.readJsonSync(componentDir + '/package.json');
+    }
+
+    for (let key in (packageJson.dependencies || {})) {
+        if(dependencies.indexOf(key) < 0) {
+            dependencies.push(key);
+        }
+    }
+
+    return dependencies;
+}
+
+/**
+ * 自动读取组件中的所有dependencies
+ * 
+ */
+function _readDirDependencies() {
 
     const currentPath = process.cwd();
     const componentDirs = _readDirSync(currentPath);
