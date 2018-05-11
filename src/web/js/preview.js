@@ -50,6 +50,8 @@ class Preview extends React.Component {
         let { api, apis, storeKey, actionType, mockDataPath, jsonData, unitTestResult, scriptResult, testFile, scriptFile, showReadme } = this.state;
         apis = apis.join("\n");
 
+        let isRedux = this._isRedux();
+
         return (
             <div class="preview">
                 <div>
@@ -66,7 +68,8 @@ class Preview extends React.Component {
                                 </li>) : null
                             }
                         </ul>
-                        <div className="component-debugger-panel">
+
+                        { isRedux ? <div className="component-debugger-panel">
                             <Form>
                                 <FormGroup controlId="formControlsTextarea">
                                     <div><ControlLabel>线上接口地址</ControlLabel></div>
@@ -97,12 +100,12 @@ class Preview extends React.Component {
                                         this._changeHandle(e, 'mockDataPath')
                                     }} placeholder="例如: E:\mock\data.json" rows="3" />
                                     <Button type="button" bsStyle="primary" onClick={this._dispatchApi.bind(this)}>请求接口dispatch</Button>
-
                                 </FormGroup>
                             </Form>
                             <div><ControlLabel>已添加接口数据</ControlLabel></div>
                             <FormControl componentClass="textarea" value={apis} placeholder="" rows="6" />
-                        </div>
+                        </div> : null }
+
                     </section>
                     <section class="right-content">
                         <div>
@@ -332,34 +335,26 @@ class Preview extends React.Component {
         let { actionType, storeKey, mockDataPath } = this.state;
 
         // 如果是redux组件则需要判断actionType并进行动态dispatch
-        if (this._isRedux()) {
-            if (!mockDataPath || !actionType) {
-                Dialog.alert({
-                    content: 'mockDataPath或actionType不能为空。'
-                });
-                return;
-            }
-            // 读取固定的api
-            axios.get('/api', {
-                params: {
-                    mockUri: mockDataPath
-                }
-            }).then(res => {
 
-                // 如果是redux组件，则使用dispatch的参数，否则使用react组件的参数
-                if (this._isRedux()) {
-                    previewContainer.window.dispatchData(actionType, res.data, storeKey);
-                } else {
-                    previewContainer.window.dispatchData(res.data, storeKey);
-                }
-            }).catch(err => {
-                console.log(err);
-            });
-        } else {
+        if (!mockDataPath || !actionType) {
             Dialog.alert({
-                content: '非redux组件无需使用动态dispatch功能'
+                content: 'mockDataPath或actionType不能为空。'
             });
+            return;
         }
+        // 读取固定的api
+        axios.get('/api', {
+            params: {
+                mockUri: mockDataPath
+            }
+        }).then(res => {
+
+            // 如果是redux组件，则使用dispatch的参数，否则使用react组件的参数
+
+            previewContainer.window.dispatchData(actionType, res.data, storeKey);
+        }).catch(err => {
+            console.log(err);
+        });
     }
 
 
@@ -374,34 +369,28 @@ class Preview extends React.Component {
         let { actionType, storeKey, jsonData } = this.state;
 
         // 如果是redux组件则需要判断actionType并进行动态dispatch
-        if (this._isRedux()) {
-            if (!jsonData) {
-                Dialog.alert({
-                    content: 'jsonData不能为空。'
-                });
-                return;
-            }
-
-            try {
-                // 如果有storeKey可以支持jsonData为其它类型
-                previewContainer.window.dispatchData(actionType || '', JSON.parse(jsonData), storeKey);
-            } catch (e) {
-                if (storeKey) {
-                    previewContainer.window.dispatchData(actionType || '', {
-                        [storeKey]: jsonData
-                    });
-                } else {
-                    Dialog.alert({
-                        content: '输入的json格式有误'
-                    });
-                }
-            }
-
-        } else {
+        if (!jsonData) {
             Dialog.alert({
-                content: '非redux组件无需使用动态dispatch功能'
+                content: 'jsonData不能为空。'
             });
+            return;
         }
+
+        try {
+            // 如果有storeKey可以支持jsonData为其它类型
+            previewContainer.window.dispatchData(actionType || '', JSON.parse(jsonData), storeKey);
+        } catch (e) {
+            if (storeKey) {
+                previewContainer.window.dispatchData(actionType || '', {
+                    [storeKey]: jsonData
+                });
+            } else {
+                Dialog.alert({
+                    content: '输入的json格式有误'
+                });
+            }
+        }
+
     }
 
     /**

@@ -349,7 +349,6 @@ function removeTemplate(serverPath) {
                 return new Promise(_requestSureCancel);
                 /**
                  * 如果确认时输入处理函数
-                 * 
                  */
                 function _requestSureCancel() {
                     logger(templateInfo[key].input || '', 'red');

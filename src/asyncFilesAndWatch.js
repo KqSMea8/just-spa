@@ -52,7 +52,7 @@ function asyncFilesAndWatch(serverPath, componentDir) {
             pollInterval: 100
         },
         ignorePermissionErrors: false,
-        atomic: true // or a custom 'atomicity delay', in milliseconds (default 100)
+        atomic: true    // or a custom 'atomicity delay', in milliseconds (default 100)
     }).on('change', (function (filePath, stats) {
         logger(filePath + ' saved.', 'cyan');
 
