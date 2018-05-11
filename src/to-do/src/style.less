@@ -1,0 +1,100 @@
+html {
+    overflow-y: scroll;
+}
+
+body {
+    padding-bottom: 10px;
+}
+
+.required>label:before {
+    content: "* ";
+    color: red;
+}
+
+label.required:before {
+    content: "* ";
+    color: red;
+}
+
+label.disabled {
+    color: gray;
+}
+
+.table>tbody+tbody {
+    border-top: 1px solid #ddd;
+}
+
+.extra-small {
+    display: inline-block;
+    transform: scale(0.75, 1);
+    margin: 0 -5px;
+}
+
+.Tree .panel-body {
+    height: 200px;
+    overflow-y: auto;
+}
+
+.account-info-container {
+    display: inline-block;
+    white-space: nowrap;
+}
+
+.account-info-container img {
+    height: 18px;
+    width: 18px;
+    border-radius: 18px;
+    margin-right: 5px;
+}
+
+.account-info-container+.watch-list {
+    margin-top: 6px;
+    border-top: 1px solid #ccc;
+    padding-top: 6px;
+}
+
+.watch-list-btn-edit {
+    font-size: 13px;
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+.progress-info {
+    min-width: 65px;
+    margin-left: -4px;
+    margin-right: -4px;
+    .progress {
+        margin-bottom: 2px;
+        height: 9px;
+    }
+    .progress-bar-gray {
+        background-color: #ccc;
+        background-image: linear-gradient(to bottom, #ddd 0px, #aaa 100%);
+    }
+}
+
+.chart-with-table {
+    .btn-group {
+        margin-bottom: 4px;
+        i {
+            margin-right: 2px;
+        }
+    }
+    th,
+    td {
+        padding: 2px !important;
+    }
+    tr th:first-child {
+        padding: 2px 4px !important;
+    }
+}
+
+.campaign-actions,
+.adgroup-actions {
+    .simple-action {
+        display: block;
+    }
+}
+
+@import "./less/creatives.less";
+@import "./less/bootstrap-daterangepicker.less";

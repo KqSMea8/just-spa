@@ -17,122 +17,139 @@ const gulp = require('gulp'),
     spriter = require('gulp-css-spriter'),
     base64 = require('gulp-css-base64'),
     webpack = require('webpack'),
-    webpackConfig = require('./webpack.config.dev.js'),
-    webpackDevConfig = require('./webpack.config.dev.js'),
-    connect = require('gulp-connect');
+    webpackConfig = require('./webpack.config.js'),
+    connect = require('gulp-connect'),
+    proxy = require('http-proxy-middleware');
 
-const BUILD_CONFIG = webpackDevConfig.plugins[1].options.BUILD_CONFIG;
+const tar = require('gulp-tar');
+const gzip = require('gulp-gzip');
 
-// const BUILD_CONFIG = webpackConfig.BUILD_CONFIG;
-
-const WEBPACK_FUNC = webpackDevConfig.plugins[1].options.WEBPACK_FUNC;
-
+const BUILD_CONFIG = webpackConfig.plugins[1].options.BUILD_CONFIG;
 
 const host = {
-    path: BUILD_CONFIG.dist_dir + '/',
+    path: BUILD_CONFIG.dev_server_root + '/',
     port: 3000,
     html: 'index.html'
 };
 
-//mac chrome: "Google chrome", 
+// mac chrome: "Google chrome",
 const browser = os.platform() === 'linux' ? 'Google chrome' : (
-  os.platform() === 'darwin' ? 'Google chrome' : (
-  os.platform() === 'win32' ? 'chrome' : 'firefox'));
-const pkg = require('./package.json');
+    os.platform() === 'darwin' ? 'Google chrome' : (
+        os.platform() === 'win32' ? 'chrome' : 'firefox'));
 
 //将图片拷贝到目标目录
 gulp.task('copy:images', function (done) {
-    gulp.src([BUILD_CONFIG.src_dir + '/images/**/*']).pipe(gulp.dest(BUILD_CONFIG.dist_dir + '/images')).on('end', done);
+    gulp.src([BUILD_CONFIG.src_dir + '/**/*.png']).pipe(gulp.dest(BUILD_CONFIG.dev_dir + '/img')).on('end', done);
 });
 
 //压缩合并css, css中既有自己写的.less, 也有引入第三方库的.css
 gulp.task('lessmin', function (done) {
-    gulp.src([BUILD_CONFIG.src_dir + '/css/main.less', BUILD_CONFIG.src_dir + '/css/*.css'])
+    gulp.src([BUILD_CONFIG.src_dir + '/**.less'])
         .pipe(less())
         //这里可以加css sprite 让每一个css合并为一个雪碧图
-        //.pipe(spriter({}))
-        .pipe(concat('style.min.css'))
-        .pipe(gulp.dest(BUILD_CONFIG.dist_dir + '/css/'))
+        .pipe(spriter({
+            spriteSheet: BUILD_CONFIG.dev_dir + '/img/sprite.png',
+            pathToSpriteSheetFromCSS: './img/sprite.png',
+            spritesmithOptions: {
+                padding: 10
+            }
+        }))
+        .pipe(gulp.dest(BUILD_CONFIG.dev_dir + '/css/'))
         .on('end', done);
 });
 
 //将js加上10位md5,并修改html中的引用路径，该动作依赖build-js
 gulp.task('md5:js', ['build-js'], function (done) {
-    gulp.src(BUILD_CONFIG.dist_dir + '/js/**/*.js')
-        .pipe(md5(10, BUILD_CONFIG.dist_dir + BUILD_CONFIG.html_dir + '/*.html'))
-        .pipe(gulp.dest(BUILD_CONFIG.dist_dir + '/js'))
+    gulp.src(BUILD_CONFIG.dev_dir + '/**/*.js')
+        .pipe(md5(10, BUILD_CONFIG.build_dir + BUILD_CONFIG.html_dir + '/*.html'))
+        .pipe(gulp.dest(BUILD_CONFIG.build_dir + '/www/'))
         .on('end', done);
 });
 
 //将css加上10位md5，并修改html中的引用路径，该动作依赖sprite
 gulp.task('md5:css', ['sprite'], function (done) {
-    gulp.src(BUILD_CONFIG.dist_dir + '/css/**/*.css')
-    .pipe(md5(10, BUILD_CONFIG.dist_dir + BUILD_CONFIG.html_dir + '/*.html'))
-    .pipe(gulp.dest(BUILD_CONFIG.dist_dir + '/css'))
-    .on('end', done);
+    gulp.src(BUILD_CONFIG.dev_dir + '/**/*.css')
+        .pipe(md5(10, BUILD_CONFIG.build_dir + BUILD_CONFIG.html_dir + '/*.html'))
+        .pipe(gulp.dest(BUILD_CONFIG.build_dir + '/www/'))
+        .on('end', done);
 });
 
 //用于在html文件中直接include文件
 gulp.task('fileinclude', function (done) {
-    console.log(BUILD_CONFIG.dist_dir + BUILD_CONFIG.html_dir)
-    gulp.src([BUILD_CONFIG.src_dir + BUILD_CONFIG.html_dir + '/*.html'])
+    gulp.src([BUILD_CONFIG.src_dir + '/html' + '/*.html'])
         .pipe(swig({
             data: {
-                my: 'testss',
-                title: 'ouvenzhang',
-                scripts: WEBPACK_FUNC.getImportsScriptList()
+                name: 'swig template'
             }
         }))
-        .pipe(gulp.dest(BUILD_CONFIG.dist_dir + BUILD_CONFIG.html_dir))
+        .pipe(gulp.dest(BUILD_CONFIG.dev_dir + '/'))
         .on('end', done);
-        // .pipe(connect.reload())
+});
+
+//用于在html文件中直接include文件, 主要处理buildhtml文件
+gulp.task('fileinclude-build', function (done) {
+    gulp.src([BUILD_CONFIG.src_dir + '/html' + '/*.html'])
+        .pipe(swig({
+            data: {
+                name: 'swig template'
+            }
+        }))
+        .pipe(gulp.dest(BUILD_CONFIG.build_dir + '/www/'))
+        .on('end', done);
 });
 
 //雪碧图操作，应该先拷贝图片并压缩合并css
 gulp.task('sprite', ['copy:images', 'lessmin'], function (done) {
-    var timestamp = +new Date();
-    gulp.src(BUILD_CONFIG.dist_dir + '/css/style.min.css')
+    gulp.src(BUILD_CONFIG.dev_dir + '/css/style.min.css')
         .pipe(spriter({
-            spriteSheet: BUILD_CONFIG.dist_dir + '/images/spritesheet' + timestamp + '.png',
-            pathToSpriteSheetFromCSS: '../images/spritesheet' + timestamp + '.png',
+            spriteSheet: BUILD_CONFIG.dev_dir + '/img/sprite.png',
+            pathToSpriteSheetFromCSS: './img/sprite.png',
             spritesmithOptions: {
                 padding: 10
             }
         }))
         .pipe(base64())
         .pipe(cssmin())
-        .pipe(gulp.dest(BUILD_CONFIG.dist_dir + '/css'))
+        .pipe(gulp.dest(BUILD_CONFIG.dev_dir + '/www/css'))
         .on('end', done);
 });
 
 // 删除构建发布目录缓存
 gulp.task('clean', function (done) {
-    gulp.src([BUILD_CONFIG.dist_dir])
-        .pipe(clean())
-        .on('end', done);
+    gulp.src([BUILD_CONFIG.dev_dir, BUILD_CONFIG.build_dir])
+        .pipe(clean({ force: true }));
 });
 
 // 进行watch编译
 gulp.task('watch', function (done) {
-    gulp.watch(BUILD_CONFIG.src_dir + '/**/*', ['lessmin', 'dev-js', 'fileinclude'])
+    gulp.watch(BUILD_CONFIG.src_dir + '/**/*', ['lessmin', 'build-js', 'fileinclude'])
         .on('end', done);
 });
 
 // 启动调试静态server
-gulp.task('connect', function () {
+gulp.task('connect', function() {
     connect.server({
-        root: host.path,
+        root: [host.path],
         port: host.port,
-        livereload: true/* ,
-        middleware: function (connect, opt) {
-            var Proxy = require('gulp-connect-proxy');
-            var opt = {
-                root: '/',
-                route: 'http://localhost:8086/js'
-            }
-            var proxy = new Proxy(opt);
-            return [proxy]; */
-        //   }
+        livereload: true,
+        middleware: function(connect, opt) {
+            return [
+                proxy('/www/assets',  {
+                    target: 'http://localhost:9000/assets/',
+                    pathRewrite: {
+                        '^/www/assets/': '/',     // rewrite path
+                    },
+                    changeOrigin: true
+                }),
+                proxy('/contract/',  {
+                    target: 'http://localhost:9000',
+                    // pathRewrite: {
+                    //     '^/contract/': '/',     // rewrite path
+                    // },
+                    changeOrigin: true
+                })
+            ]
+        }
     });
 });
 
@@ -149,33 +166,48 @@ gulp.task('open', function (done) {
 
 var buildCompiler = webpack(Object.create(webpackConfig));
 
-var devCompiler = webpack(Object.create(webpackDevConfig));
-
 //引用webpack对js进行dist操作
-gulp.task("build-js", ['fileinclude'], function(callback) {
+gulp.task('build-js', ['fileinclude-build'], function(callback) {
     buildCompiler.run(function(err, stats) {
-        if(err) throw new gutil.PluginError("webpack:build-js", err);
-        gutil.log("[webpack:build-js]", stats.toString({
+        if (err) throw new gutil.PluginError('webpack:build-js', err);
+        gutil.log('[webpack:build-js]', stats.toString({
             colors: true
         }));
         callback();
     });
 });
 
-//引用webpack对js进行dev操作
-gulp.task("dev-js", ['fileinclude'], function(callback) {
-    devCompiler.run(function(err, stats) {
-        if(err) throw new gutil.PluginError("webpack:dev-js", err);
-        gutil.log("[webpack:dev-js]", stats.toString({
-            colors: true
-        }));
-        callback();
-    });
+//拷贝打包的font
+gulp.task('copy-fonts', function (callback) {
+    gulp.src([BUILD_CONFIG.dev_dir + 'fonts/**'])
+        .pipe(gulp.dest(BUILD_CONFIG.build_dir + 'www/fonts/'))
+        .on('end', callback);
 });
+
+function copyFont() {
+    gulp.src([BUILD_CONFIG.dev_dir + 'fonts/**'])
+        .pipe(gulp.dest(BUILD_CONFIG.build_dir + 'www/fonts/'))
+        .on('end', pkg);
+
+    /**
+     * 将静态资源打包成发布包
+     *
+     */
+    function pkg() {
+        gulp.src(BUILD_CONFIG.pkg_src_dir + '**')
+            .pipe(tar('gdt_contract_ad-fe.tar', {mode: null}))
+            .pipe(gzip())
+            .pipe(gulp.dest(BUILD_CONFIG.pkg_build_dir));
+    }
+}
 
 //发布
-gulp.task('dist', ['connect', 'fileinclude', 'md5:css', 'md5:js', 'open']);
+gulp.task('dist', ['fileinclude', 'md5:css', 'md5:js']);
+
+gulp.task('release', ['copy:images', 'fileinclude',  'lessmin', 'build-js', 'fileinclude-build', 'md5:css', 'md5:js']);
+
+gulp.task('pkg', [], copyFont);  // 打包静态文件成发布包
 
 //开发，不默认打开open浏览器
-gulp.task('dev', ['connect', 'copy:images', 'fileinclude', 'lessmin', 'dev-js', 'open', 'watch']);
-gulp.task('default', ['connect', 'copy:images', 'fileinclude', 'lessmin', 'dev-js','open', 'watch']);
+gulp.task('dev', ['connect', 'copy:images', 'fileinclude', 'lessmin', 'build-js', /* 'open', */ 'watch']);
+gulp.task('default', ['connect', 'copy:images', 'fileinclude', 'lessmin', 'build-js', /* 'open', */ 'watch']);

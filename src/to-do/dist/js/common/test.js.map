@@ -1,1 +1,0 @@
-{"version":3,"sources":["webpack:///./src/js/common/test.js?3d59"],"names":["a","b"],"mappings":";;;;;;;;;;;kBAAe;AACXA,OAAG,CADQ;AAEXC,OAAG;AAFQ,C","file":"common/test.js","sourcesContent":["export default {\r\n    a: 1,\r\n    b: 3\r\n}\n\n\n// WEBPACK FOOTER //\n// ./src/js/common/test.js"],"sourceRoot":""}
