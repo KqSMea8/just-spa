@@ -1,11 +1,7 @@
 {
     "extends": [
-        "@tencent/eslint-config-spa"
     ],
     "parserOptions": {
-        "ecmaFeatures": {
-            "jsx": true
-        }
     },
     "parser": "babel-eslint",
     "plugins": [

@@ -9,5 +9,5 @@ const index = (state = {}, action) => {
 };
 
 export default {
-    index: index
+    index
 }
