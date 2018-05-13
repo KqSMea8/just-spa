@@ -7,29 +7,40 @@ import Pages from './pages';
 
 import '../style';
 
+// 声明container中的路由
+const containerRoute = {
+    'welcome': Pages.Welcome,
+    'test': Pages.Test
+}
+
 class IndexPage extends React.Component {
+
     static propTypes = {
-        store: PropTypes.object.isRequired
+
     };
 
-    static childContextTypes = {
-    };
+    // 接收全局的store
+    static contextTypes = {
+        store: PropTypes.object.isRequired
+    }
 
     constructor(props) {
         super(props);
     }
+
     getChildContext() {
         return {
-            
+            store: this.context.store
         };
     }
+
     render() {
         return (
             <div>
                 <ul>
-                    <li><a href="./index.html?route=welcome">欢迎</a></li>
-                    <li><a href="./index.html?route=test">测试</a></li>
-                    <li><a href="./index.html?route=404">404</a></li>
+                    <li><a href="./index.html#welcome">欢迎</a></li>
+                    <li><a href="./index.html#test">测试</a></li>
+                    <li><a href="./index.html#404">404</a></li>
                 </ul>
                 <Router path='/www/'>
                     <Switch>
@@ -42,7 +53,7 @@ class IndexPage extends React.Component {
     }
 
     /**
-     * 根据地质路由渲染组件
+     * 根据hash路由渲染组件
      * 
      * @param {any} router 
      * @returns 
@@ -50,19 +61,9 @@ class IndexPage extends React.Component {
      */
     _renderComponent(router) {
         let Component;
-        let routerName = getUrlParams('route', router.location.search);
-        
-        switch(routerName) {
-            case 'welcome':
-                Component = Pages.Welcome;
-                break;
-            case 'test':
-                Component = Pages.Test;
-                break;
-            default:
-                Component = Pages.NoMatch;
-                break;
-        }
+        let routerName = router.location.hash.replace('#', '');
+
+        Component = containerRoute[routerName] || Pages.NoMatch
         
         return Component ? <Component {...router}/> : null;
     }

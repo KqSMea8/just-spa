@@ -4,3 +4,6 @@ node_modules
 server/modules
 components/**
 .build/**
+**/dev
+**/pkg
+**/build

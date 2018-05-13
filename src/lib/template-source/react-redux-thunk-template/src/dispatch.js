@@ -63,5 +63,4 @@ export const dispatchPromiseChange = function (actionType) {
     }
 
     store.dispatch(actionCreator('change'));
-
 }

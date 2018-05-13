@@ -1,7 +1,9 @@
 const path = require('path');
+const fs = require('fs');
 const webpack = require('webpack');
 
 const uglifyJsPlugin = webpack.optimize.UglifyJsPlugin;
+const proxyDevServer = '127.0.0.1';
 
 // 构建目录配置
 const BUILD_CONFIG = {
@@ -12,7 +14,7 @@ const BUILD_CONFIG = {
     pkg_build_dir: './pkg',   // 打包输出目录
     src_dir: './src',             // 构建源目录,不要带目录'/'符号
     html_dir: 'www/',         // html目录名称，src和page相同
-    js_dir: 'src/entry',           // 构建js目录,不要带目录'/'符号
+    entry_js_dir: 'src/entry',           // 构建js目录,不要带目录'/'符号
     html_domain: '',
     css_domain: '',
     js_domian: ''
@@ -20,11 +22,16 @@ const BUILD_CONFIG = {
 
 // 获取页面的每个入口文件，用于配置中的entry
 function getEntry() {
-    let files = {};
-
-    files = {
-        'index': './src/entry/index'
-    }
+    const jsDir = BUILD_CONFIG.entry_js_dir;
+    const dirs = fs.readdirSync(path.resolve(process.cwd(), jsDir));
+    let matchs = [], files = {};
+    dirs.forEach(function (item) {
+        matchs = item.match(/(.+)\.jsx?$/);
+        // 如果_getImportsScriptList获取到的文件已经含有，则跳过不覆盖解析
+        if (matchs && !files[matchs[1]]) {
+            files[matchs[1]] = path.resolve(jsDir, item);
+        }
+    });
     return files;
 }
 
@@ -63,13 +70,17 @@ module.exports = {
             use: ['style-loader', 'css-loader', 'less-loader']
         }, {
             test: /\.(png|jpg|gif|md)$/,
-            use: ['file-loader?limit=10000&name=[md5:hash:base64:10].[ext]']
+            use: [{
+                loader: 'file-loader',
+                options: {
+                    name: '[name].[md5:hash:8].[ext]',
+                    outputPath: '../img/',    // where the fonts will go
+                    publicPath: './img/'       // override the default path
+                }
+            }]
         }, {
             test: /\.svg(\?v=\d+\.\d+\.\d+)?$/,
             use: ['url-loader?limit=10000&mimetype=image/svg+xml']
-        }, {
-            test: /\.svg(\?v=\d+\.\d+\.\d+)?$/,
-            use: ['url-loader?limit=1000000']
         }, {
             test: /\.(eot|svg|ttf|woff|woff2)\??.*$/,
             use: [{
@@ -80,7 +91,7 @@ module.exports = {
                     publicPath: './fonts/'       // override the default path
                 }
             }]
-        }],
+        }]
     },
     plugins: [
         new webpack.optimize.CommonsChunkPlugin({
@@ -88,7 +99,8 @@ module.exports = {
             minChunks: Infinity
         }),
         new webpack.LoaderOptionsPlugin({
-            BUILD_CONFIG: BUILD_CONFIG
+            BUILD_CONFIG: BUILD_CONFIG,
+            proxyDevServer
         }),
         // new uglifyJsPlugin({
         //     compress: {

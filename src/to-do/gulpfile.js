@@ -7,9 +7,7 @@ const gulp = require('gulp'),
     os = require('os'),
     gutil = require('gulp-util'),
     less = require('gulp-less'),
-    concat = require('gulp-concat'),
     gulpOpen = require('gulp-open'),
-    uglify = require('gulp-uglify'),
     cssmin = require('gulp-cssmin'),
     md5 = require('gulp-md5-plus'),
     swig = require('gulp-swig'),
@@ -25,6 +23,7 @@ const tar = require('gulp-tar');
 const gzip = require('gulp-gzip');
 
 const BUILD_CONFIG = webpackConfig.plugins[1].options.BUILD_CONFIG;
+const proxyDevServer = webpackConfig.plugins[1].options.proxyDevServer;
 
 const host = {
     path: BUILD_CONFIG.dev_server_root + '/',
@@ -115,7 +114,7 @@ gulp.task('sprite', ['copy:images', 'lessmin'], function (done) {
 });
 
 // 删除构建发布目录缓存
-gulp.task('clean', function (done) {
+gulp.task('clean', function () {
     gulp.src([BUILD_CONFIG.dev_dir, BUILD_CONFIG.build_dir])
         .pipe(clean({ force: true }));
 });
@@ -135,17 +134,21 @@ gulp.task('connect', function() {
         middleware: function(connect, opt) {
             return [
                 proxy('/www/assets',  {
-                    target: 'http://localhost:9000/assets/',
+                    target: `http://${proxyDevServer}/assets/`,
                     pathRewrite: {
                         '^/www/assets/': '/',     // rewrite path
                     },
                     changeOrigin: true
                 }),
                 proxy('/contract/',  {
-                    target: 'http://localhost:9000',
-                    // pathRewrite: {
-                    //     '^/contract/': '/',     // rewrite path
-                    // },
+                    target: `http://${proxyDevServer}`,
+                    changeOrigin: true
+                }),
+                proxy('/www/contract/',  {
+                    target: `http://${proxyDevServer}`,
+                    pathRewrite: {
+                        '^/www/contract/': '/contract/',     // rewrite path
+                    },
                     changeOrigin: true
                 })
             ]
@@ -159,7 +162,7 @@ gulp.task('open', function (done) {
         .pipe(gulpOpen({
             app: browser,
             // uri为启动静态服务器的登录目录
-            uri: 'http://localhost:3000'
+            uri: 'http://localhost:3000/www/index.html#welcome'
         }))
         .on('end', done);
 });
@@ -177,27 +180,40 @@ gulp.task('build-js', ['fileinclude-build'], function(callback) {
     });
 });
 
-//拷贝打包的font
-gulp.task('copy-fonts', function (callback) {
-    gulp.src([BUILD_CONFIG.dev_dir + 'fonts/**'])
-        .pipe(gulp.dest(BUILD_CONFIG.build_dir + 'www/fonts/'))
-        .on('end', callback);
+
+//同步mock数据
+gulp.task('mock', function (done) {
+    gulp.src([BUILD_CONFIG.src_dir + '/mock' + '/*.*'])
+        .pipe(gulp.dest(BUILD_CONFIG.dev_dir + '/mock/'))
+        .on('end', done);
 });
 
-function copyFont() {
+//拷贝打包的font和图片资源
+function copyStatics() {
+    let taskFinished = 0;
+    // 拷贝字体资源
     gulp.src([BUILD_CONFIG.dev_dir + 'fonts/**'])
         .pipe(gulp.dest(BUILD_CONFIG.build_dir + 'www/fonts/'))
         .on('end', pkg);
-
+    
+    // 拷贝图片资源
+    gulp.src([BUILD_CONFIG.dev_dir + 'img/**'])
+        .pipe(gulp.dest(BUILD_CONFIG.build_dir + 'www/img/'))
+        .on('end', pkg);
     /**
      * 将静态资源打包成发布包
      *
      */
     function pkg() {
-        gulp.src(BUILD_CONFIG.pkg_src_dir + '**')
-            .pipe(tar('gdt_contract_ad-fe.tar', {mode: null}))
-            .pipe(gzip())
-            .pipe(gulp.dest(BUILD_CONFIG.pkg_build_dir));
+        // 标识是否完成资源拷贝
+        if (taskFinished >= 1) {
+            gulp.src(BUILD_CONFIG.pkg_src_dir + '**')
+                .pipe(tar('gdt_contract_ad-fe.tar', {mode: null}))
+                .pipe(gzip())
+                .pipe(gulp.dest(BUILD_CONFIG.pkg_build_dir));
+        } else {
+            taskFinished++;
+        }
     }
 }
 
@@ -206,8 +222,8 @@ gulp.task('dist', ['fileinclude', 'md5:css', 'md5:js']);
 
 gulp.task('release', ['copy:images', 'fileinclude',  'lessmin', 'build-js', 'fileinclude-build', 'md5:css', 'md5:js']);
 
-gulp.task('pkg', [], copyFont);  // 打包静态文件成发布包
+gulp.task('pkg', [], copyStatics);  // 打包静态文件成发布包
 
 //开发，不默认打开open浏览器
-gulp.task('dev', ['connect', 'copy:images', 'fileinclude', 'lessmin', 'build-js', /* 'open', */ 'watch']);
-gulp.task('default', ['connect', 'copy:images', 'fileinclude', 'lessmin', 'build-js', /* 'open', */ 'watch']);
+gulp.task('dev', ['connect', 'copy:images', 'fileinclude', 'lessmin', 'build-js', 'mock', 'open', 'watch']);
+gulp.task('default', ['connect', 'copy:images', 'fileinclude', 'lessmin', 'build-js', 'mock', 'open', 'watch']);

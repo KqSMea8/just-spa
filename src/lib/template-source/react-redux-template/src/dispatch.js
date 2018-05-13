@@ -29,7 +29,6 @@ export const dispatchAsyncChange = function () {
             }
         });
     });
-
 }
 
 // 异步promise实例
