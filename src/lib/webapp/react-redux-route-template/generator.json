@@ -1,0 +1,24 @@
+{
+    "statics": [
+        ".babelrc",
+        ".editorconfig",
+        ".eslintrc",
+        ".npmrc",
+        "package.json",
+        "README.md",
+        "webpack.config.js",
+        "style.less",
+        "README.md",
+        "README.md"
+    ],
+    "templates": [
+        "src/reducer.js",
+        "src/dispatch.js",
+        "index.jsx",
+        "src/index.less"
+    ],
+    "templateData": {
+        "_Component": "name",
+        "_component": "lineThroughName"
+    }
+}

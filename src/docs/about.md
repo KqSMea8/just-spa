@@ -29,6 +29,7 @@
 - 组件调试修改实时同步编译，支持调试HMR： just watch
 - 快速安装组件的第三方依赖：just install
 - 更新组件的第三方依赖：just update
+- 快速生成一个项目：just webapp
 - 组件打包build：just build componentName
 - 主动清除调试服务器缓存：just clear
 - 组件辅助数据实时mock，调试左侧栏注入数据

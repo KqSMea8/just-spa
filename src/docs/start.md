@@ -39,13 +39,15 @@ just start
 &emsp;&emsp;此外你可以执行`just help`来查看just的其它命令和功能。
 
 ```
-just init: 创建一个组件或项目。根据物料库快速生成一个组件或项目。
+just init: 创建一个组件或项目。根据组件物料库快速生成一个组件或项目。
 
-just template: 根据自定义物料库目录创建一个新的物料库。
+just template: 根据自定义组件物料库目录创建一个新的组件物料库。
 
-just rmtemplate: 删除一个自定义物料库。
+just rmtemplate: 删除一个自定义组件物料库。
 
-just list: 查看存在的所有物料库列表。
+just list: 查看存在的所有组件物料库列表。
+
+just webapp: 调用项目物料库快速生成一个项目工程。
 
 just i/install: 安装组件的第三方依赖，同 npm/tnpm install。
 

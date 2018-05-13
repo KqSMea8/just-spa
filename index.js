@@ -5,7 +5,7 @@ const fse = require('fs-extra');
 const childProcess = require('child_process');
 const logger = require('./src/lib/logger');
 const asyncFilesAndWatch = require('./src/asyncFilesAndWatch');
-const { createComponent, createTemplate, removeTemplate, listTemplates } = require('./src/createComponentLine');
+const { createComponent, createWebapp, createTemplate, removeTemplate, listTemplates } = require('./src/createComponentLine');
 
 const args = process.argv.splice(1);
 
@@ -46,13 +46,18 @@ function _initCommandSet(serverPath, command, commandParams) {
             _installOrUpdateAllDependencies(commandParams, 'update');
             break;
         case 'init':
-            createComponent((componentName) => {
+            createComponent(() => {
                 logger('auto install dependencies', 'cyan');
-                _installDependencies(commandParams, componentName, 'install');
             });         // 根据物料创建组件
             break;
         case 'template':
             createTemplate(serverPath); // 创建物料模板
+            break;
+        case 'webapp':
+            createWebapp((webappName) => {
+                logger(`项目初始化完成，执行：cd ${webappName} & npm i 安装项目依赖`, 'cyan');
+                // _installDependencies(commandParams, componentName, 'install');
+            }); // 根据项目组件物料库创建项目
             break;
         case 'rmtemplate':
             removeTemplate(serverPath); // 删除物料模板
@@ -260,10 +265,11 @@ function _stopServer() {
 function _consoleHelp() {
     logger(`
 您可以使用下面命令:
-    just init: 创建一个组件或项目。根据物料库快速生成一个组件或项目。
-    just template: 根据自定义物料库目录创建一个新的物料库。
-    just rmtemplate: 删除一个自定义物料库。
-    just list: 查看存在的所有物料库列表。
+    just init: 创建一个组件或项目。根据组件物料库快速生成一个组件或项目。
+    just template: 根据自定义组件物料库目录创建一个新的组件物料库。
+    just rmtemplate: 删除一个自定义组件物料库。
+    just list: 查看存在的所有组件物料库列表。
+    just webapp: 选择项目物料库快速生成一个项目工程。
     just i/install: 安装组件的第三方依赖，同 npm/tnpm install。
     just update: 更新组件的第三方依赖，同 npm/tnpm update。
     just start/run -port: 启动调试服务器。一般只需要运行一次。-p或-port表示指定端口开启服务。

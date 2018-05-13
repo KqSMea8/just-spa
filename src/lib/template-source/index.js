@@ -28,7 +28,7 @@ function _writeComponent(componentInfo, componentPath) {
     if(fse.pathExistsSync(generatorJsonPath)) {
         generatorJson = fse.readJsonSync(generatorJsonPath);
     } else {
-        logger(`未找到物料配置文件：generator.json`, 'red');
+        logger(`未找到组件物料配置文件：generator.json`, 'red');
         return;
     }
 
@@ -76,7 +76,7 @@ function _writeComponent(componentInfo, componentPath) {
                     });
                 });
             }, (filePath) => {
-                logger(`${filePath}物料文件不存在，请确认是否被系统ignore配置忽略`, 'magenta');
+                logger(`${filePath}组件物料文件不存在，请确认是否被系统ignore配置忽略`, 'magenta');
             })
         );
     }
@@ -126,7 +126,7 @@ function _writePackageJson(jsonPackagePath, componentInfo) {
     const templatePackageJsonPath = __dirname + `/${componentInfo.template}/package.json`;
 
     if(fse.pathExistsSync(templatePackageJsonPath)) {
-        // 如果物料库中存在package.json，需带上物料中默认信息
+        // 如果组件物料库中存在package.json，需带上组件物料中默认信息
         let packageJson = fse.readJsonSync(templatePackageJsonPath);
         packageJsonTemplate = Object.assign({}, packageJson, {
             'name': componentInfo.name,
@@ -190,11 +190,11 @@ function createComponent(componentInfo, currentPath, callback) {
 }
 
 /**
- * 上传创建自定义物料库
+ * 上传创建自定义组件物料库
  * 
- * @param {any} templateInfo 物料信息
+ * @param {any} templateInfo 组件物料信息
  * @param {any} serverPath 调试服务器目录
- * @param {any} templatesJson 物料库所有物料信息
+ * @param {any} templatesJson 组件物料库所有组件物料信息
  */
 function createTemplate(templateInfo, serverPath, templatesJson) {
 
@@ -221,53 +221,53 @@ function createTemplate(templateInfo, serverPath, templatesJson) {
 
     newTemplatesJson[newTemplateKey] =  newTemplateInfo;
 
-    // 监测物料库名称重复
+    // 监测组件物料库名称重复
     for (let key in templatesJson) {
         if(templatesJson[key].name === newTemplateInfo.name) {
-            logger('物料库名称已存在', 'red');
+            logger('组件物料库名称已存在', 'red');
             return;
         }
     }
 
-    // 检查写入物料库配置文件
+    // 检查写入组件物料库配置文件
     if (!fse.pathExistsSync(templatesJsonPath)) {
-        logger('物料库配置文件不存在，创建自定义物料库失败', 'red');
+        logger('组件物料库配置文件不存在，创建自定义组件物料库失败', 'red');
         return ;
     }
 
-    // 检查输入的物料目录是否为空，且含有generator.json
+    // 检查输入的组件物料目录是否为空，且含有generator.json
     if(!fse.pathExistsSync(templateInfo.directory) || !fse.pathExistsSync(path.join(templateInfo.directory, 'generator.json'))) {
-        logger('物料库目录不存在或没有找到generator.json', 'red');
+        logger('组件物料库目录不存在或没有找到generator.json', 'red');
         return ;
     }
 
     try {
-        // 更新物料库配置文件
+        // 更新组件物料库配置文件
         fse.outputJsonSync(templatesJsonPath, newTemplatesJson, {
             spaces: 4
         });
-        logger('物料库配置文件写入成功', 'green');
+        logger('组件物料库配置文件写入成功', 'green');
     
-        // 上传物料库文件
+        // 上传组件物料库文件
         fse.copySync(templateInfo.directory, templateSourcePath);
     
         // 写入模板入口文件，默认添加技术栈，否则使用空白模板
         fse.copySync(path.join(templatesPath, `template/${newTemplateInfo.stack || 'custom'}-template.js`), templateEntryPath);
 
-        logger('自定义物料库创建成功，使用just list查看可使用的物料库', 'green');
+        logger('自定义组件物料库创建成功，使用just list查看可使用的组件物料库', 'green');
 
     } catch(e) {
-        logger('物料库配置文件不存在，创建自定义物料库失败', 'red');
+        logger('组件物料库配置文件不存在，创建自定义组件物料库失败', 'red');
     }
 }
 
 
 /**
- * 删除自定义上传的物料库
+ * 删除自定义上传的组件物料库
  * 
- * @param {any} templateName 物料名称
+ * @param {any} templateName 组件物料名称
  * @param {any} serverPath 调试服务器目录
- * @param {any} templatesJson 物料库所有物料信息
+ * @param {any} templatesJson 组件物料库所有组件物料信息
  */
 function removeTemplate(templateName, serverPath, templatesJson) {
 
@@ -282,40 +282,40 @@ function removeTemplate(templateName, serverPath, templatesJson) {
     let templateSourcePath = path.join(templatesPath, `template-source/${templateName}`);
     let templateEntryPath = path.join(templatesPath, `template/${templateName}.js`);
 
-    // 模板配置中找到对应物料名称并删除
+    // 模板配置中找到对应组件物料名称并删除
     for (let key in newTemplatesJson) {
         if(newTemplatesJson[key].name === templateName || newTemplatesJson[key].name === `${templateName}-template`) {
 
-            // 判断是否自定义物料库，自定义物料库的owner为all
+            // 判断是否自定义组件物料库，自定义组件物料库的owner为all
             if(newTemplatesJson[key].owner === 'all') {
                 delete newTemplatesJson[key];
-                // 更新物料库配置文件
+                // 更新组件物料库配置文件
                 fse.outputJsonSync(templatesJsonPath, newTemplatesJson, {
                     spaces: 4
                 });
-                logger('物料库配置文件删除完成', 'cyan');
+                logger('组件物料库配置文件删除完成', 'cyan');
             } else {
-                logger(`${templateName}不是自定义物料库，没有权限删除!`, 'red');
+                logger(`${templateName}不是自定义组件物料库，没有权限删除!`, 'red');
                 return ;
             }
         }
     }
 
-    // 站到物料库配置文件
+    // 站到组件物料库配置文件
     if (fse.pathExistsSync(templateSourcePath)) {
         fse.remove(templateSourcePath, () => {
-            logger('找到物料库配置文件，删除完成', 'red');
+            logger('找到组件物料库配置文件，删除完成', 'red');
         });
     } else {
-        logger('未找到物料库配置文件，可能已被删除', 'cyan');
+        logger('未找到组件物料库配置文件，可能已被删除', 'cyan');
     }
 
     if (fse.pathExistsSync(templateEntryPath)) {
         fse.remove(templateEntryPath, () => {
-            logger('找到物料库入口文件，删除完成', 'red');
+            logger('找到组件物料库入口文件，删除完成', 'red');
         });
     } else {
-        logger('未找到物料库入口文件，可能已被删除', 'cyan');
+        logger('未找到组件物料库入口文件，可能已被删除', 'cyan');
     }
 }
 

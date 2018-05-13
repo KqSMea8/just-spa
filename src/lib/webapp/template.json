@@ -1,0 +1,9 @@
+{
+    "1": {
+        "name": "react-redux-route-template",
+        "label": "react-redux-route项目",
+        "owner": "system",
+        "stack": "react",
+        "description": "react项目模板。(集成redux、thunk、promise、route等)"
+    }
+}

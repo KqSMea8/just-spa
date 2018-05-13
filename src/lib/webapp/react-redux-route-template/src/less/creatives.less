@@ -1,0 +1,214 @@
+
+@import "./font-awesome-4.7.0/less/font-awesome";
+
+.qqshopping-editor label {
+    padding-right: 0;
+  }
+  .qqshopping-editor label i {
+    font-weight: normal;
+    color: #999;
+  }
+  .qqshopping-editor .checkbox-inline {
+    padding-left: 0;
+    margin-right: 10px;
+  }
+  .qqshopping-editor .checkbox-inline input[type="radio"],
+  .qqshopping-editor .checkbox-inline input[type="checkbox"] {
+    margin: 0;
+    vertical-align: middle;
+  }
+  .qqshopping-editor .help-block {
+    display: inline-block;
+    margin-left: 10px;
+  }
+  .qqshopping-preview {
+    width: 284px;
+    padding: 0;
+    background-color: #fafafa;
+    font-size: 12px;
+  }
+  .qqshopping-preview h3 {
+    font-size: 12px;
+    height: 20px;
+    line-height: 20px;
+    font-weight: bold;
+  }
+  .qqshopping-preview ul {
+    margin: 0;
+    padding: 0;
+  }
+  .qqshopping-preview li {
+    padding: 15px;
+    list-style: none;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    position: relative;
+    margin-bottom: -1px;
+  }
+  .qqshopping-preview .img-texts li.active {
+    border: 1px solid #74afe2;
+    z-index: 20;
+  }
+  .qqshopping-preview .img-texts li:hover {
+    cursor: pointer;
+  }
+  .qqshopping-preview .img-texts li:hover .del-box {
+    display: block;
+  }
+  .qqshopping-preview .img-texts li:last-child {
+    border-bottom: 1px solid #ccc;
+  }
+  .qqshopping-preview .img-texts li.active:last-child {
+    border-bottom: 1px solid #74afe2;
+  }
+  .qqshopping-preview .img-box {
+    position: relative;
+  }
+  .qqshopping-preview .img-box img {
+    width: 252px;
+    height: 140px;
+  }
+  .qqshopping-preview .img-box .title {
+    height: 24px;
+    line-height: 24px;
+    color: #fff;
+    text-indent: 5px;
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    z-index: 10;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .qqshopping-preview .img-box .title-bg {
+    height: 24px;
+    line-height: 24px;
+    background-color: #000;
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 5;
+    opacity: .7;
+    filter: alpha(opacity=70);
+  }
+  .qqshopping-preview .del-box {
+    height: 30px;
+    background-color: #000;
+    opacity: .7;
+    filter: alpha(opacity=70);
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: none;
+  }
+  .qqshopping-preview .del-box .glyphicon {
+    width: 18px;
+    height: 18px;
+    display: inline-block;
+    font-size: 18px;
+    color: white;
+    position: absolute;
+    right: 5px;
+    top: 6px;
+  }
+  .qqshopping-preview .media {
+    margin: 0;
+  }
+  .qqshopping-preview .media img {
+    width: 55px;
+    height: 55px;
+  }
+  .qqshopping-preview .media .media-body {
+    height: 55px;
+    line-height: 18px;
+    overflow: hidden;
+  }
+  .qqshopping-preview .media-add {
+    height: 85px;
+    line-height: 85px;
+    border: 1px dashed #ccc;
+    background-color: #f8f8f8;
+    border-top: 0;
+    font-size: 40px;
+    text-align: center;
+    font-weight: normal;
+    color: #b6b6b6;
+    font-family: tahoma;
+    cursor: pointer;
+  }
+  .qqshopping-preview .img-text li {
+    padding: 0 15px;
+  }
+  .qqshopping-preview .img-text h3 {
+    height: 20px;
+    line-height: 20px;
+    font-weight: normal;
+    margin: 5px 0 0 0;
+    overflow: hidden;
+  }
+  .qqshopping-preview .img-text img {
+    width: 252px;
+    height: 140px;
+    margin: 5px 0;
+  }
+  .qqshopping-preview .img-text .more {
+    height: 34px;
+    line-height: 34px;
+  }
+  .qqshopping-preview .img-text .more .glyphicon {
+    width: 8px;
+    height: 15px;
+    display: inline-block;
+    position: absolute;
+    right: 8px;
+    top: 9px;
+  }
+  .qqshopping-preview .img-text .btn-box {
+    height: 34px;
+    line-height: 34px;
+    text-align: center;
+  }
+  .brandcard-editor label {
+    padding-right: 0;
+  }
+  .brandcard-preview.table {
+    padding-top: 10px;
+    padding-bottom: 10px;
+    text-align: center;
+    border-collapse: separate;
+    border-spacing: 10px;
+  }
+  .brandcard-preview.table > tbody > tr > td {
+    line-height: 1.42857143;
+    vertical-align: top;
+    background-color: #eee;
+    border: 1px solid rgba(86, 61, 124, 0.2);
+    vertical-align: middle;
+  }
+  label.required:before {
+    content: "* ";
+    color: red;
+  }
+  .required > label:before {
+    content: "* ";
+    color: red;
+  }
+  .small-alert {
+    margin-bottom: 0px;
+    padding: 5px;
+    float: left;
+  }
+  .small-alert button {
+    display: none;
+  }
+  .thumbnail .no-border {
+    border-style: none;
+  }
+  .thumbnail-no-border .thumbnail {
+    border-style: none;
+  }
+  
