@@ -79,7 +79,7 @@ function createWebapp(callback) {
                 if (result) {
                     return true;
                 }
-                return 'Webapp name must be not empty.';
+                return 'Webapp name must be lowerCase or not empty.';
             }
         },
         {
@@ -91,7 +91,7 @@ function createWebapp(callback) {
                 if (templatesJson[value]) {
                     return true;
                 }
-                return 'Selete a Webapp.';
+                return 'Selete a Webapp Template.';
             },
             filter: function (value) {
                 return webappTemplatesJson[value].name;
@@ -100,7 +100,7 @@ function createWebapp(callback) {
         {
             type: 'comfirm',
             name: 'end',
-            message: 'Sure to creat this Webapp (y/n/yes/no)? ',
+            message: 'Sure to create this Webapp (y/n/yes/no)? ',
             validate: function (value) {
                 if (value) {
                     return true;
@@ -113,7 +113,7 @@ function createWebapp(callback) {
         if (/^(y)(es)?$/ig.test(inputs.end)) {
             webappAction.createWebapp(inputs, currentPath, callback);
         } else {
-            logger('Canceled to Create Template.', 'red');
+            logger('Canceled to Create Webapp.', 'red');
         }
     });
 }
@@ -158,7 +158,7 @@ function createComponent(callback) {
         {
             type: 'input',
             name: 'version',
-            message: 'Input the version of component (default empty)? ',
+            message: 'Input the version of component (default 1.0.0)? ',
             default: '1.0.0'
         },
         {
@@ -230,7 +230,7 @@ function createTemplate(serverPath) {
         {
             type: 'input',
             name: 'label',
-            message: 'Input a label of Template (default empty)? ',
+            message: 'Input a label of Template? ',
             validate: function (value) {
                 if (value) {
                     return true;
@@ -241,7 +241,7 @@ function createTemplate(serverPath) {
         {
             type: 'input',
             name: 'description',
-            message: 'Input the description of component (default empty)? ',
+            message: 'Input the description of component? ',
             validate: function (value) {
                 if (value) {
                     return true;
@@ -317,7 +317,7 @@ function removeTemplate(serverPath) {
         if (/^(y)(es)?$/ig.test(inputs.end)) {
             templateAction.removeTemplate(templatesJson[inputs.name].name, serverPath, templatesJson);
         } else {
-            logger('Canceled to Create Template.', 'red');
+            logger('Canceled to remove Template.', 'red');
         }
     });
 }
