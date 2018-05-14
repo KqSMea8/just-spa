@@ -15,7 +15,7 @@ body {
 
 import { connect } from 'react-redux';
 
-import _Component from './index.jsx';
+import ${_Component} from './index.jsx';
 
 
 const props = {
@@ -35,13 +35,11 @@ const mapDispatchToProps = (state, ownProps) => {
 const Component = connect(
   mapStateToProps,
   mapDispatchToProps
-)(_Component)
+)(${_Component})
 
 export default <Component {...props}/>;
 
 ```
 
-- props参数说明
-
-&emsp;&emsp;text: greeting 问好方式
-&emsp;&emsp;name: 问好对象
+#### 详细文档
+---

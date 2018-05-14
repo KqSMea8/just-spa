@@ -38,26 +38,26 @@ let templateTip = '',
 
 for (let key in templatesJson) {
     componentChoice.push({
-        name: templatesJson[key].label,
+        name: `${key}.${templatesJson[key].label}`,
         value: key,
-        short: templatesJson[key].label
+        short: `${key}.${templatesJson[key].label}`
     });
     templateTip += `\n${key}. [${templatesJson[key].name}] : ${templatesJson[key].description}`;
 }
 
 for (let key in webappTemplatesJson) {
     webappChoice.push({
-        name: webappTemplatesJson[key].label,
+        name: `${key}.${webappTemplatesJson[key].label}`,
         value: key,
-        short: webappTemplatesJson[key].label
+        short: `${key}.${webappTemplatesJson[key].label}`
     });
 }
 
 for (let key in JavascriptFrameMap) {
     JavascriptFrameChoice.push({
-        name: JavascriptFrameMap[key],
+        name: `${key}.${JavascriptFrameMap[key]}`,
         value: key,
-        short: JavascriptFrameMap[key]
+        short: `${key}.${JavascriptFrameMap[key]}`
     });
 }
 

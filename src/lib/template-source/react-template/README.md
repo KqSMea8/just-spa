@@ -13,14 +13,12 @@ body {
 
 ```javascript
 
-import _Component from './index.jsx';
+import ${_Component} from './index.jsx';
 import initProps from './data/index';
 
-export default <_Component {...initProps}/>
+export default <${_Component} {...initProps}/>
 
 ```
 
-- props参数说明
-
-&emsp;&emsp;text: greeting 问好方式
-&emsp;&emsp;name: 问好对象
+#### 详细文档
+---

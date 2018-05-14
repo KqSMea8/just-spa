@@ -7,6 +7,7 @@ const fse = require('fs-extra');
 const path = require('path');
 const logger = require('./lib/logger');
 const chokidar = require('chokidar');
+const jsdoc2md = require('jsdoc-to-markdown');
 
 const serverBuildPath = '.build';  // 临时存放文件目录
 
@@ -58,6 +59,13 @@ function asyncFilesAndWatch(serverPath, componentDir) {
 
         // 目前使用全部拷贝的方式，重新拷贝组件。理想情况是只拷贝修改的文件，待优化
         fse.copy(this.componentDir, path.join(this.serverPath, serverBuildPath, this.componentName), () => {
+            
+            // 如果修改的是入口文档，支持组件入口文件
+            if (filePath.indexOf('index.js') > -1 || filePath.indexOf('src') > -1) {
+                jsdoc2md.render({ files: filePath }).then((output) => {
+                    _UpdateReadmeContent(this.componentDir, this.componentName, output);
+                })
+            } 
             // 获取readme中的内容并处理写入到服务器端文件
             _processReadmeContent(_parseReadmeContent(this.componentDir, this.componentName), this.serverPath, this.componentName);
         });
@@ -92,8 +100,64 @@ function _createTemlateFile(serverPath, componentDir, componentName) {
             logger(`${componentName} component files has been created successfully.`, 'cyan');
         });
     }
-    
+}
 
+/**
+ * 自动跟新readme的文档
+ * 
+ * @param {any} componentDir  组件目录
+ * @param {any} componentName  组件名称
+ * @param {any} jsdoc 自动生成的文档内容
+ */
+function _UpdateReadmeContent(componentDir, componentName, jsdoc) {
+
+    // 如果获取到的文件名不为空则复制文件到服务器目录下，懒惰匹配
+    // 如果获取到的文件名不为空则复制文件到服务器目录下，懒惰匹配
+    const htmlReg = /```html((\t|\n|\s|.)+?)```/;
+    const cssReg = /```css((\t|\n|\s|.)+?)```/;
+    const jsReg = /```javascript((\t|\n|\s|.)+?)```/;
+
+    let contentJson = {
+        js: '',
+        html: '',
+        css: ''
+    };
+
+    if (componentName) {
+
+        let data = fs.readFileSync(path.join(componentDir + '/', 'readme.md'), 'utf-8');
+        // 分别匹配readme中的html、js、css，如果匹配到则添加到返回列表中
+        let htmlContentArr = data.match(htmlReg);
+        let cssContentArr = data.match(cssReg);
+        let jsContentArr = data.match(jsReg);
+
+        if (htmlContentArr && htmlContentArr.length) {
+            contentJson.html = htmlContentArr[1];
+        }
+
+        if (cssContentArr && cssContentArr.length) {
+            contentJson.css = cssContentArr[1];
+        }
+
+        if (jsContentArr && jsContentArr.length) {
+            contentJson.js = jsContentArr[1];
+        }
+
+        let newDocs =`
+\`\`\`html${contentJson.html}\`\`\`
+
+\`\`\`css${contentJson.css}\`\`\`
+
+\`\`\`javascript${contentJson.js}\`\`\`
+
+#### 详细文档
+---
+
+${jsdoc}
+
+`;
+        fse.outputFileSync(path.join(componentDir + '/', 'readme.md'), newDocs, 'utf-8');
+    }
 }
 
 /**

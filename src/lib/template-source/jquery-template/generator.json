@@ -1,6 +1,5 @@
 {
     "statics": [
-        "README.md",
         ".editorconfig",
         ".eslintrc",
         ".gitignore",
@@ -10,6 +9,7 @@
         "src/loading.gif"
     ],
     "templates": [
+        "README.md",
         "index.js",
         "test/test.js",
         "src/index.less",

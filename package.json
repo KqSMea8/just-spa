@@ -37,6 +37,7 @@
     "gulp-babel": "^7.0.1",
     "gulp-less": "^4.0.0",
     "inquirer": "^5.2.0",
+    "jsdoc-to-markdown": "^4.0.1",
     "karma": "^2.0.0",
     "less": "^3.0.0",
     "less-loader": "^4.0.5",

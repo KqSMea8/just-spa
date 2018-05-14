@@ -1,6 +1,5 @@
 {
     "statics": [
-        "README.md",
         "data/index.js",
         "data/asyncData.json",
         "test/test.js",
@@ -8,6 +7,7 @@
         "test/add.js"
     ],
     "templates": [
+        "README.md",
         "src/reducer.js",
         "src/dispatch.js",
         "index.jsx",
