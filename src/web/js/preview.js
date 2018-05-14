@@ -131,8 +131,9 @@ class Preview extends React.Component {
                                         }} placeholder="要测试的文件脚本，默认为test.js" />
                                     </span>
                                     {unitTestResult.success === true ? <i class="fa fa-check"><span>{testFile || 'test.js'}测试通过</span></i> : null}
+                                    {unitTestResult.success === 'loading' ? <i className="loading"></i> : null}
                                     {unitTestResult.success === false ? <i class="fa fa-times-circle"><span>失败</span></i> : null}
-                                    <FormControl componentClass="textarea" value={unitTestResult.result} placeholder="单元测试结果" rows="10" disabled />
+                                    <FormControl componentClass="textarea" value={unitTestResult.result} placeholder="单元测试结果" rows="15" disabled />
                                 </div>
                             </Tab>
 
@@ -146,8 +147,9 @@ class Preview extends React.Component {
                                     }} placeholder="输入要运行的文件脚本" />
                                 </span>
                                 {scriptResult.success === true ? <i class="fa fa-check"><span>{scriptFile}运行成功</span></i> : null}
+                                {scriptResult.success === 'loading' ? <i className="loading"></i> : null}
                                 {scriptResult.success === false ? <i class="fa fa-times-circle"><span>执行失败</span></i> : null}
-                                <FormControl componentClass="textarea" value={scriptResult.result} placeholder="脚本运行结果" rows="10" disabled />
+                                <FormControl componentClass="textarea" value={scriptResult.result} placeholder="脚本运行结果" rows="15" disabled />
                             </div>
                             </Tab>
                         </Tabs>
@@ -211,7 +213,7 @@ class Preview extends React.Component {
 
         this.setState({
             unitTestResult: {
-                success: ''
+                success: 'loading'
             }
         });
 
@@ -241,8 +243,8 @@ class Preview extends React.Component {
         let { scriptFile } = this.state;
 
         this.setState({
-            unitTestResult: {
-                success: ''
+            scriptResult: {
+                success: 'loading'
             }
         });
 
