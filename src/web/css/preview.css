@@ -145,11 +145,11 @@
     width: 65%;
 }
 
-.section-main .right-content .test-file-name{
+.section-main .right-content .test-file-name, .section-main .right-content .script-file-command{
     padding-left: 5px;
     margin-left: 5px;
     display: inline-block;
-    width: 50%;
+    width: 40%;
     border: 1px solid #eee;
 }
 

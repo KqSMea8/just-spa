@@ -25,7 +25,8 @@ class Preview extends React.Component {
             storeKey: '',
             jsonData: '',
             apis: [],
-            testFile: 'test',
+            testFile: 'test/test.js',
+            scriptCommand: 'mocha',
             scriptFile: '',
             unitTestResult: {},
             scriptResult: {},
@@ -47,7 +48,7 @@ class Preview extends React.Component {
 
     render() {
 
-        let { api, apis, storeKey, actionType, mockDataPath, jsonData, unitTestResult, scriptResult, testFile, scriptFile, showReadme } = this.state;
+        let { api, apis, storeKey, actionType, mockDataPath, jsonData, unitTestResult, scriptResult, testFile, scriptFile, scriptCommand, showReadme } = this.state;
         apis = apis.join("\n");
 
         let isRedux = this._isRedux();
@@ -126,7 +127,7 @@ class Preview extends React.Component {
                                 <div className={'unit-test ' + (unitTestResult.success === true ? 'success' : '') + (unitTestResult.success === false ? 'fail' : '')}>
                                     <Button type="button" bsStyle="success" onClick={this._triggerUnitTest.bind(this)}>单元测试</Button>
                                     <span className="script-input">
-                                        /.build/{componentName}/test/<FormControl className="test-file-name" type="text" value={testFile} onChange={(e) => {
+                                        /.build/{componentName}/test/<FormControl title={testFile} className="test-file-name" type="text" value={testFile} onChange={(e) => {
                                             this._changeHandle(e, 'testFile')
                                         }} placeholder="要测试的文件脚本，默认为test.js" />
                                     </span>
@@ -142,10 +143,14 @@ class Preview extends React.Component {
                                 <Button type="button" bsStyle="success" onClick={this._triggerScriptExcute.bind(this)}>运行脚本</Button>
 
                                 <span className="script-input">
-                                    /.build/{componentName}/<FormControl className="test-file-name" type="text" value={scriptFile} onChange={(e) => {
+                                    <FormControl title={scriptCommand} className="script-file-command" type="text" value={scriptCommand} onChange={(e) => {
+                                        this._changeHandle(e, 'scriptCommand')
+                                    }} placeholder="输入要运行的运行命令" />  /.build/{componentName}/
+                                    <FormControl title={scriptFile} className="test-file-name" type="text" value={scriptFile} onChange={(e) => {
                                         this._changeHandle(e, 'scriptFile')
                                     }} placeholder="输入要运行的文件脚本" />
                                 </span>
+
                                 {scriptResult.success === true ? <i class="fa fa-check"><span>{scriptFile}运行成功</span></i> : null}
                                 {scriptResult.success === 'loading' ? <i className="loading"></i> : null}
                                 {scriptResult.success === false ? <i class="fa fa-times-circle"><span>执行失败</span></i> : null}
@@ -240,7 +245,7 @@ class Preview extends React.Component {
      * @memberof Preview
      */
     _triggerScriptExcute() {
-        let { scriptFile } = this.state;
+        let { scriptFile, scriptCommand } = this.state;
 
         this.setState({
             scriptResult: {
@@ -252,7 +257,8 @@ class Preview extends React.Component {
         axios.get('/script', {
             params: {
                 componentName: componentName,
-                scriptFile: scriptFile || 'test/test.js'
+                scriptFile: scriptFile || 'test/test.js',
+                scriptCommand: scriptCommand || 'mocha'
             }
         }).then(res => {
             this.setState({
