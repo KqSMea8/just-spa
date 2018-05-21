@@ -15,6 +15,7 @@ body {
 
 import ${_Component} from './index.jsx';
 import initProps from './data/index';
+import './src/index.less';
 
 export default <${_Component} {...initProps}/>
 

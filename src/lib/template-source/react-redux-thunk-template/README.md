@@ -14,9 +14,9 @@ body {
 ```javascript
 
 import { connect } from 'react-redux';
-
 import ${_Component} from './index.jsx';
 
+import './src/index.less';
 
 const props = {
     name: 'world'

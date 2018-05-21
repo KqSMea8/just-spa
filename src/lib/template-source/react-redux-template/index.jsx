@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 
 import { dispatchChange, dispatchAsyncChange, dispatchPromiseChange } from './src/dispatch';
 
-import './src/index.less';
+// import './src/index.less';
 
 class ${_Component} extends PureComponent {
 

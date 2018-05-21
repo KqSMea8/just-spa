@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 
 import { change, asyncChange, promiseChange } from './src/events';
 
-import './src/index.less';
+// import './src/index.less';
 
 class ${_Component} extends PureComponent {
 

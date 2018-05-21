@@ -1,13 +1,12 @@
 
 import React from 'react';
 import {assert, expect} from 'chai';
-import Enzyme from 'enzyme';
+import Enzyme, {shallow, render, mount} from 'enzyme';
 import Adapter from 'enzyme-adapter-react-15';
 
 import Component from '../index.jsx';
 import initProps from '../data/index';
 
-const { shallow } = Enzyme;
 Enzyme.configure({ adapter: new Adapter() });
 
 describe('<Component {...initProps}/>', () => {

@@ -2,12 +2,11 @@
     "statics": [
         "data/index.js",
         "data/asyncData.json",
-        "test/test.js",
-        "test/component.js",
         "test/add.js"
     ],
     "templates": [
         "README.md",
+        "test/test.js",
         "src/events.js",
         "index.jsx",
         "src/index.less"
