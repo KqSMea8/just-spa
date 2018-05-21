@@ -18,6 +18,11 @@ import ${_Component} from './index.jsx';
 
 import './src/index.less';
 
+//注入 mock请求返回数据
+Mock.mock('/.build/${_Component}/data/asyncData.json', {
+    "text": "hello first and hi Mock Data "
+});
+
 const props = {
     name: 'world'
 };

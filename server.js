@@ -106,15 +106,15 @@ const webpackDevServer = new WebpackDevServer(webpack(config), {
 
             let componentName = req.query.componentName;
             let testFile = req.query.testFile || 'test.js';
-            let testComand = '';
+            let testCommand = '';
 
             if (_isWinPlatform()) {
-                testComand = `.\\node_modules\\.bin\\mocha --compilers js:babel-core/register --no-deprecation .\\.build\\${componentName}\\test\\${req.query.testFile}`;
+                testCommand = `.\\node_modules\\.bin\\mocha --compilers js:babel-core/register --no-deprecation .\\.build\\${componentName}\\test\\${req.query.testFile}`;
             } else {
-                testComand = `./node_modules/.bin/mocha --compilers js:babel-core/register --no-deprecation ./.build/${componentName}/test/${req.query.testFile}`;
+                testCommand = `./node_modules/.bin/mocha --compilers js:babel-core/register --no-deprecation ./.build/${componentName}/test/${req.query.testFile}`;
             }
 
-            childProcess.exec(testComand, (error, stdout, stderr) => {
+            childProcess.exec(testCommand, (error, stdout, stderr) => {
 
                 // 目前根据测试结果的标识判断是否测试通过
                 if (stdout.indexOf('Error') > -1) {
@@ -138,15 +138,15 @@ const webpackDevServer = new WebpackDevServer(webpack(config), {
 
             let componentName = req.query.componentName;
             let scriptFile = req.query.scriptFile || '';
-            let scriptComand = '';
+            let scriptCommand = req.query.scriptCommand || 'node';
 
             if (_isWinPlatform()) {
-                scriptComand = `node .\\.build\\${componentName}\\${req.query.scriptFile}`;
+                scriptCommand = `${scriptCommand} .\\.build\\${componentName}\\${req.query.scriptFile}`;
             } else {
-                scriptComand = `node ./.build/${componentName}/${req.query.scriptFile}`;
+                scriptCommand = `./node_modules/.bin/${scriptCommand} ./.build/${componentName}/${req.query.scriptFile}`;
             }
 
-            childProcess.exec(scriptComand, (error, stdout, stderr) => {
+            childProcess.exec(scriptCommand, (error, stdout, stderr) => {
                 // 目前根据测试结果的标识判断是否测试通过
                 if (stdout.indexOf('Error') > -1) {
                     res.json({ success: false, result: stdout });

@@ -1,6 +1,6 @@
 {
   "name": "just-spa",
-  "version": "1.0.60",
+  "version": "1.0.62",
   "description": "Just是一套前端工程化工具，用户对物料库进行处理，快速进行组价的创建、开发、调试、打包构建。从而提高组件开发效率，统一组件规范，分离组件功能并减少人员变动给项目维护带来的额外成本",
   "main": "index.js",
   "scripts": {
@@ -42,6 +42,7 @@
     "less-loader": "^4.0.5",
     "minimist": "^1.2.0",
     "mocha": "^5.1.0",
+    "mockjs": "^1.0.1-beta3",
     "react": "^15.6.2",
     "react-addons-css-transition-group": "^15.0.1",
     "react-bootstrap": "^0.32.1",
