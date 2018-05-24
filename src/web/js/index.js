@@ -206,13 +206,14 @@ class LeftMenu extends React.Component {
 
     render() {
         let { hashMenu } = this.props;
-        return <ul className="left-menu-list">
+        return (<ul className="left-menu-list">
             <li className={hashMenu === 'index' ? 'active' : ''}><a href="/#index"><i className="fa fa-window-maximize"></i>组件列表</a></li>
-            <li className={hashMenu === 'app' ? 'active' : ''}><a href="/#app"><i className="fa fa-th-large"></i>应用列表</a></li>
-            <li className={hashMenu === 'debug' ? 'active' : ''}><a href="/#debug"><i className="fa fa-wrench"></i>联调设置</a></li>
-            <li className={hashMenu === 'settings' ? 'active' : ''}><a href="/#settings"><i className="fa fa-cog fa-fw"></i>系统设置</a></li>
-        </ul>
+        </ul>)
     }
+    // 可选的目录
+    // <li className={hashMenu === 'app' ? 'active' : ''}><a href="/#app"><i className="fa fa-th-large"></i>应用列表</a></li>
+    // <li className={hashMenu === 'debug' ? 'active' : ''}><a href="/#debug"><i className="fa fa-wrench"></i>联调设置</a></li>
+    // <li className={hashMenu === 'settings' ? 'active' : ''}><a href="/#settings"><i className="fa fa-cog fa-fw"></i>系统设置</a></li>
 };
 
 ReactDOM.render(<Index />, document.getElementById('root'));

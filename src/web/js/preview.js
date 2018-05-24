@@ -27,7 +27,7 @@ class Preview extends React.Component {
             storeKey: '',
             jsonData: '',
             apis: [],
-            testFile: 'test/test.js',
+            testFile: 'test',
             scriptCommand: 'mocha',
             scriptFile: '',
             unitTestResult: {},
@@ -55,12 +55,11 @@ class Preview extends React.Component {
         localStorage.setItem(componentName + '_componnet_key', JSON.stringify(this.state));
     }
 
-
     render() {
 
         let { api, apis, storeKey, actionType, mockDataPath, jsonData, unitTestResult, scriptResult, testFile,
             scriptFile, scriptCommand, showReadme, activeKey, debugDomain, debugIp, mockData, mockRule, mockDataSet } = this.state;
-        apis = apis.join("\n");
+        apis = apis.join('\n');
 
         let isRedux = this._isRedux();
         return (
@@ -197,6 +196,19 @@ class Preview extends React.Component {
                                     </Form>
                                     <hr />
                                     <h4>设置联调Mock数据</h4>
+                                    <div>
+                                        <FormGroup controlId="formControlsSelect" validationState="warning" >
+                                            <ControlLabel>已保存配置（保存Mock规则可直接添加）</ControlLabel>
+                                            <FormControl componentClass="select" placeholder="select" onChange={this._changeMockHandler.bind(this)}>
+                                                <option value="">选择Mock规则</option>
+                                                {
+                                                    Object.keys(mockDataSet).map((key, index) => {
+                                                        return <option value={key}>[{index}]  {key}</option>
+                                                    })
+                                                }
+                                            </FormControl>
+                                        </FormGroup>
+                                    </div>
                                     <Form componentClass="fieldset">
                                         <FormGroup controlId="formValidationWarning4" validationState="warning" className="debug-domain" >
                                             <ControlLabel>接口地址</ControlLabel>
@@ -204,7 +216,7 @@ class Preview extends React.Component {
                                                 <InputGroup.Addon>api</InputGroup.Addon>
                                                 <FormControl title={mockRule} type="text" value={mockRule} onChange={(e) => {
                                                     this._changeHandle(e, 'mockRule')
-                                                }} placeholder="/api/v2/list" />
+                                                }} placeholder="例如：/api/v2/list" />
                                             </InputGroup>
                                         </FormGroup>
 
@@ -214,11 +226,11 @@ class Preview extends React.Component {
                                                 <InputGroup.Addon>json</InputGroup.Addon>
                                                 <FormControl componentClass="textarea" value={mockData} onChange={(e) => {
                                                     this._changeHandle(e, 'mockData')
-                                                }} placeholder="例如：{ret: 0, data: {}, msg: 'ok'}" rows="10"/>
+                                                }} placeholder="例如：{ret: 0, data: {}, msg: 'ok'}" rows="10" />
                                             </InputGroup>
                                         </FormGroup>
 
-                                        <Button type="button" bsStyle="success" onClick={this._saveMockRule.bind(this)}>保存Mock规则</Button>
+                                        <Button type="button" bsStyle="success" onClick={this._saveMockRule.bind(this)}>注入Mock规则</Button>
                                         <Button type="button" bsStyle="warning" onClick={this._editJson.bind(this)}>同步到Schema编辑</Button>
                                         <Button type="button" bsStyle="danger" onClick={this._removeMockRule.bind(this)}>移除Mock规则</Button>
                                     </Form>
@@ -232,13 +244,34 @@ class Preview extends React.Component {
         );
     }
 
+    /**
+     * 切换以保存的cgi
+     * 
+     * @memberof Preview
+     */
+    _changeMockHandler(e) {
+        let { mockDataSet } = this.state;
+        var value = e.target.value || e.srcElement && e.srcElement.value;
+        if (value && mockDataSet[value]) {
+            this.setState({
+                mockRule: value,
+                mockData: JSON.stringify(mockDataSet[value])
+            });
+        }
+    }
+
+    /**
+     * 编辑json
+     * 
+     * @memberof Preview
+     */
     _editJson() {
         const { mockData } = this.state;
         if (!jsonEditor) {
             jsonEditor = new JSONEditor(document.getElementById('jsonEditor'), {
                 schema: {
                     type: 'object',
-                    title: 'data',
+                    title: 'Mock Schema数据编辑',
                     properties: {
                     }
                 },
