@@ -18,8 +18,8 @@
 .section-main .component-info {
     position: relative;
     float: left;
-    margin: 17px;
-    width: 30%;
+    margin: 10px;
+    width: 264px;
     border: solid 1px #630D12;
     list-style-type: none;
     padding: 10px;
@@ -51,7 +51,9 @@
 .section-main .component-info li .preview{
     display: inline-block;
     width: 100%;
-    height: 200px;
+    height: 152px;
+    background-size: contain;
+    background-repeat: no-repeat;
 }
 
 .section-main .component-info img {

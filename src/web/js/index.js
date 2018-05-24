@@ -20,7 +20,7 @@ class Index extends React.Component {
         // hash改变时展示文档等
         window.onhashchange = (hash) => {
             let hashMenu = hash.newURL.split('#')[1] || '';
-            this.setState({'hashMenu': hashMenu})
+            this.setState({ 'hashMenu': hashMenu })
         }
     }
 
@@ -42,31 +42,31 @@ class Index extends React.Component {
             }
         });
 
-        switch(hashMenu) {
+        switch (hashMenu) {
             case 'start':
                 // 显示快速开始文档
                 this._renderDocs('/src/docs/start.md');
-                return this._renderDocsMenu('Getting Started');
+                return this._renderDocsMenu();
                 break;
             case 'docs':
                 // 显示详细使用文档
                 this._renderDocs('/src/docs/docs.md');
-                return this._renderDocsMenu('功能详细文档');
+                return this._renderDocsMenu();
                 break;
             case 'about':
                 // 显示关于文档
                 this._renderDocs('/src/docs/about.md');
-                return this._renderDocsMenu('just体系介绍');
+                return this._renderDocsMenu();
                 break;
             case 'template':
                 // 显示物料规范文档
                 this._renderDocs('/src/docs/template.md');
-                return this._renderDocsMenu('物料库规范');
+                return this._renderDocsMenu();
                 break;
             case 'question':
                 // 显示物料规范文档
                 this._renderDocs('/src/docs/question.md');
-                return this._renderDocsMenu('常见问题与解决方法');
+                return this._renderDocsMenu();
                 break;
             case '':
             case 'index':
@@ -75,7 +75,7 @@ class Index extends React.Component {
                 // 显示首页文档
                 return this._renderIndex();
                 break;
-                    
+
             window.hashMenu = hashMenu;
         }
     }
@@ -91,8 +91,7 @@ class Index extends React.Component {
         let { hashMenu } = this.state;
         return (
             <div className="menu-container">
-                <h3>{menuName}</h3>
-                <ul class="memu-list">
+                <ul class="top-menu-list">
                     <li><a className={hashMenu === 'index' || hashMenu === '' ? 'active' : ''} href="/#index">首页</a></li>
                     <li><a className={hashMenu === 'start' ? 'active' : ''} href="/#start">快速开始</a></li>
                     <li><a className={hashMenu === 'docs' ? 'active' : ''} href="/#docs">文档</a></li>
@@ -109,7 +108,7 @@ class Index extends React.Component {
      * @memberof Preview
      */
     _renderDocs(docsUrl) {
-                // 获取调试服务器组件目录下的readme
+        // 获取调试服务器组件目录下的readme
         axios.get(docsUrl, {
             params: {}
         }).then(res => {
@@ -151,6 +150,7 @@ class Index extends React.Component {
         });
 
         return <div>
+            <LeftMenu hashMenu={hashMenu}/>
             {this._renderDocsMenu()}
             <Grid>
                 <Row className="show-grid">
@@ -164,7 +164,7 @@ class Index extends React.Component {
                     componentList.length > 0 ? componentList.map((component, index) => {
                         let componentName = Utils.getComponentName(component.name);
                         let previewImage = component['preview-image'] ? `./.build/${componentName}/${component['preview-image']}` : defaultComponentBanner;
-                        let stylePreview = { 'backgroundImage': `url(${previewImage})`, backgroundSize: 'cover' };
+                        let stylePreview = { 'backgroundImage': `url(${previewImage})`};
                         return (<ul className="component-info" title={component.description || component.name}>
                             <li>
                                 <a target="_blank" className="preview" href={`/src/web/preview.html?c=${component.name}&stack=${component.stack || 'react'}`}
@@ -192,6 +192,26 @@ class Index extends React.Component {
         this.setState({
             selectedType: type
         });
+    }
+};
+
+class LeftMenu extends React.Component {
+
+    constructor(props) {
+        super(props);
+
+        this.state = {
+        }
+    }
+
+    render() {
+        let { hashMenu } = this.props;
+        return <ul className="left-menu-list">
+            <li className={hashMenu === 'index' ? 'active' : ''}><a href="/#index"><i className="fa fa-window-maximize"></i>组件列表</a></li>
+            <li className={hashMenu === 'app' ? 'active' : ''}><a href="/#app"><i className="fa fa-th-large"></i>应用列表</a></li>
+            <li className={hashMenu === 'debug' ? 'active' : ''}><a href="/#debug"><i className="fa fa-wrench"></i>联调设置</a></li>
+            <li className={hashMenu === 'settings' ? 'active' : ''}><a href="/#settings"><i className="fa fa-cog fa-fw"></i>系统设置</a></li>
+        </ul>
     }
 };
 

@@ -18,7 +18,7 @@ const childProcess = require('child_process');
 const argvs = minimist(process.argv.slice(2));
 
 const commandParams = process.argv.splice(2);
-const port = argvs.p || argvs.port || 8000;
+const port = argvs.p || argvs.port || 80;
 
 
 const express = require('express');

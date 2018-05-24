@@ -5,7 +5,7 @@ html {
 }
 body{
     padding-bottom: 200px;
-    min-width: 1080px;
+    min-width: 1366px;
     position: relative;
     min-height: 960px;
 }
@@ -22,42 +22,79 @@ header, section, main, footer{
     background-color: #4D0000;
 }
 
-.menu-container{
+.top-menu-container{
     position: relative;
     margin-top: 30px;
 }
 
-.memu-list {
+.top-menu-list {
     position: absolute;
-    top: -314px;
-    right: 10px;
+    top: 0;
+    right: 20px;
     height: 84px;
     line-height: 84px;
     font-size: 16px;
 }
 
-.memu-list li {
+.top-menu-list li {
     display: inline-block;
     cursor: pointer;
     margin-left: 10px;
 }
 
-.memu-list li a{
+.top-menu-list li a{
     display: inline-block;
     margin-left: 6px;
     color: #999;
     text-decoration: none;
 }
 
-.memu-list li a:hover, .memu-list li a.active{
+.top-menu-list li a:hover, .top-menu-list li a.active{
     color: #fff;
 }
 
+.left-menu-list {
+    position: absolute;
+    width: 150px;
+    color: #eee;
+    background-color: #202020;
+    bottom: 190px;
+    font-size: 16px;
+    top: 84px;
+}
+
+.left-menu-list{
+    padding-top: 30px;
+}
+
+.left-menu-list li .fa{
+    margin-right: 5px;
+}
+
+.left-menu-list li {
+    height: 45px;
+    line-height: 45px;
+    padding-left: 10px;
+    cursor: pointer;
+}
+
+.left-menu-list li:hover, .left-menu-list li.active {
+    background-color: #888;
+    border-left: 10px solid #4D0000;
+}
+
+.left-menu-list a {
+    width: 100%;
+    height: 45px;
+    line-height: 45px;
+    display: inline-block;
+    color: #eee;
+    text-decoration: none;
+}
+
 .section-header .nav {
-    position: relative;
-    width: 1080px;
-    min-width: 1080px;
-    margin: 0 auto;
+    min-width: 1366px;
+    padding-left: 15px;
     line-height: 60px;
 }
 
@@ -91,12 +128,16 @@ header, section, main, footer{
 }
 
 .section-main{
-    width: 1080px;
-    margin: 20px auto;
+    width: 1280px;
     min-height: 40px;
     height: auto;
-    /* overflow: hidden; */
 }
+
+
+.section-main .container{
+    margin: 20px auto 80px 200px;
+}
+
 
 .section-main .left-nav{
 
@@ -111,13 +152,12 @@ header, section, main, footer{
     bottom: 0;
     height: 200px;
     width: 100%;
-    min-width: 1080px;
+    min-width: 1366px;
     background-color: #4D0000;
 }
 
 .section-footer .footer-attach{
-    width: 1080px;
-    min-width: 1080px;
+    width: 1366px;
     padding: 30px;
     margin: 0 auto;
     color: #fff;

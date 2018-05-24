@@ -438,14 +438,14 @@ function _writeComponentInfo(componentDirs, serverPath) {
 }
 
 /**
- * 获取运行的端口，默认8000
+ * 获取运行的端口，默认80
  * 
  */
 function _getPortFromParams(commandParams) {
     if (commandParams && ['-p', '-port'].includes(commandParams[0]) && Number(commandParams[1])) {
         return Number(commandParams[1]);
     }
-    return 8000;
+    return 80;
 }
 
 /**
