@@ -54,9 +54,8 @@
 }
 
 .section-main .component-info li {
-    overflow: hidden;
-    text-overflow:ellipsis;
-    white-space: nowrap;
+    word-wrap: break-word;
+    word-break: break-all;
 }
 
 .section-main .component-info .component-logo {

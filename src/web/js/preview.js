@@ -67,15 +67,18 @@ class Preview extends React.Component {
                 <div>
                     <section className="left-nav" id="left-info">
                         <ul className="component-info" title={component.description || component.name}>
-                            <li>name： {component.name}</li>
-                            <li>author： {component.author || '未知'}</li>
-                            <li>description： {component.description || component.name}</li>
-                            <li>template： {component.template}</li>
-                            <li>version： {component.version || '1.0.0'}</li>
+                            <li><b>组件名称： {component.name}</b></li>
+                            <li>作者： {component.author || '未知'}</li>
+                            <li>描述： {component.description || component.name}</li>
+                            <li>模板： {component.template}</li>
+                            <li>版本： {component.version || '1.0.0'}</li>
                             {
                                 component.stack ? (<li className="component-logo">
                                     <img src={`./img/${component.stack}.png`} width="50" height="45" />
                                 </li>) : null
+                            }
+                            {
+                                component.git ? <li>仓库url： <a href={component.git || ''} target="_blank">{component.git || ''}</a></li> : null
                             }
                         </ul>
 
