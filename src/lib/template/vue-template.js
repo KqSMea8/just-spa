@@ -9,6 +9,36 @@ document.getElementById('template').outerHTML = template;
 
 render(Component);
 
+/**
+ * 用于从调试页面中注入mock规则
+ * 
+ * @param {any} mockDataSet 
+ */
+window.setMockData = function(mockDataSet, callback) {
+    if (Mock) {
+        for (let mockRule in mockDataSet) {
+            Mock.mock(mockRule, mockDataSet[mockRule]);
+        }
+        callback && callback()
+    }
+}
+
+/**
+ * 用于从调试页面中移除所有规则
+ * 
+ * @param {any} key 
+ * @param {any} callback 
+ */
+window.removeMockData = function(callback, key) {
+
+    if (Mock && key) {
+        delete Mock._mocked[key];
+    } else if(Mock) {
+        Mock._mocked = {};
+    }
+    callback && callback();
+}
+
 function render(Component) {
     Component();
 }
