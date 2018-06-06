@@ -18,7 +18,7 @@ const childProcess = require('child_process');
 const argvs = minimist(process.argv.slice(2));
 
 const commandParams = process.argv.splice(2);
-const port = argvs.p || argvs.port || 80;
+const port = argvs.p || argvs.port || 8000;
 
 
 const express = require('express');
@@ -36,7 +36,7 @@ function _isWinPlatform() {
 }
 
 const config = getConfig({
-    port: port || 80
+    port: port || 8000
 });
 // https://segmentfault.com/a/1190000006964335
 const webpackDevServer = new WebpackDevServer(webpack(config), {
