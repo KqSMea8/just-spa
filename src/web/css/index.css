@@ -56,6 +56,7 @@
     background-repeat: no-repeat;
 }
 
+
 .section-main .component-info img {
     width: 100%;
     margin-bottom: 10px;
@@ -64,6 +65,7 @@
 .section-main .component-info .component-name{
     font-weight: bold;
     margin-left: 10px;
+    margin-right: 5px;
 }
 
 .section-main .component-info img:hover {
@@ -85,4 +87,18 @@
 }
 .mark-editor #bar{
     display: none;
+}
+
+
+/* 搜索框内容过滤 */
+.section-main .search{
+    position: relative;
+    margin-bottom: 15px;
+}
+
+.section-main .search .fa-search{
+    position: absolute;
+    right: 22px;
+    top: 6px;
+    font-size: 20px;
 }

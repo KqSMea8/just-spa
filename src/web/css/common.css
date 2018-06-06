@@ -1,18 +1,22 @@
-
+* {
+    outline: none !important;
+}
 
 html {
     min-height: 100%;
 }
-body{
+
+body {
     padding-bottom: 200px;
     min-width: 1366px;
     position: relative;
     min-height: 960px;
 }
 
-header, section, main, footer{
-
-}
+header,
+section,
+main,
+footer {}
 
 .section-header {
     width: 100%;
@@ -22,7 +26,7 @@ header, section, main, footer{
     background-color: #4D0000;
 }
 
-.top-menu-container{
+.top-menu-container {
     position: relative;
     margin-top: 30px;
 }
@@ -42,14 +46,15 @@ header, section, main, footer{
     margin-left: 10px;
 }
 
-.top-menu-list li a{
+.top-menu-list li a {
     display: inline-block;
     margin-left: 6px;
     color: #999;
     text-decoration: none;
 }
 
-.top-menu-list li a:hover, .top-menu-list li a.active{
+.top-menu-list li a:hover,
+.top-menu-list li a.active {
     color: #fff;
 }
 
@@ -63,11 +68,11 @@ header, section, main, footer{
     top: 84px;
 }
 
-.left-menu-list{
+.left-menu-list {
     padding-top: 30px;
 }
 
-.left-menu-list li .fa{
+.left-menu-list li .fa {
     margin-right: 5px;
 }
 
@@ -78,7 +83,8 @@ header, section, main, footer{
     cursor: pointer;
 }
 
-.left-menu-list li:hover, .left-menu-list li.active {
+.left-menu-list li:hover,
+.left-menu-list li.active {
     background-color: #888;
     border-left: 10px solid #4D0000;
 }
@@ -98,7 +104,7 @@ header, section, main, footer{
     line-height: 60px;
 }
 
-.section-header .nav h4{
+.section-header .nav h4 {
     line-height: 40px;
     width: 50%;
     float: left;
@@ -106,14 +112,14 @@ header, section, main, footer{
 
 .section-header .nav h4 img {
     width: 150px;
-    height: 64px;   
+    height: 64px;
 }
 
-.section-header .nav h4 a{
+.section-header .nav h4 a {
     color: #eee;
 }
 
-.section-header .nav h4 a:hover{
+.section-header .nav h4 a:hover {
     text-decoration: none;
 }
 
@@ -122,30 +128,24 @@ header, section, main, footer{
     padding: 0;
 }
 
-.section-banner img{
+.section-banner img {
     width: 100%;
     height: 200px;
 }
 
-.section-main{
+.section-main {
     width: 1280px;
     min-height: 40px;
     height: auto;
 }
 
-
-.section-main .container{
+.section-main .container {
     margin: 20px auto 80px 200px;
 }
 
+.section-main .left-nav {}
 
-.section-main .left-nav{
-
-}
-
-.section-main .right-content{
-
-}
+.section-main .right-content {}
 
 .section-footer {
     position: absolute;
@@ -156,7 +156,7 @@ header, section, main, footer{
     background-color: #4D0000;
 }
 
-.section-footer .footer-attach{
+.section-footer .footer-attach {
     width: 1366px;
     padding: 30px;
     margin: 0 auto;

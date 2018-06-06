@@ -1,7 +1,7 @@
 
 'use strict';
 
-const { Grid, Row, Col, Button, Label, Image } = ReactBootstrap;
+const { Grid, Row, Col, Button, Label, Image, FormGroup, ControlLabel, FormControl } = ReactBootstrap;
 
 const defaultComponentBanner = './src/web/img/no-banner.jpg';
 
@@ -10,10 +10,11 @@ class Index extends React.Component {
     constructor(props) {
         super(props);
 
-        this.state = {
+        this.state = Object.assign({}, {
             selectedType: 'all',
-            hashMenu: window.location.hash.replace('#', '') || ''
-        }
+            hashMenu: window.location.hash.replace('#', '') || '',
+            searchWord: ''
+        }, this._getStateFromLocalstorage('componnet_all'))
     }
 
     componentDidMount() {
@@ -22,6 +23,10 @@ class Index extends React.Component {
             let hashMenu = hash.newURL.split('#')[1] || '';
             this.setState({ 'hashMenu': hashMenu })
         }
+    }
+
+    componentDidUpdate() {
+        localStorage.setItem('componnet_all', JSON.stringify(this.state));
     }
 
     render() {
@@ -76,7 +81,23 @@ class Index extends React.Component {
                 return this._renderIndex();
                 break;
 
-            window.hashMenu = hashMenu;
+                window.hashMenu = hashMenu;
+        }
+    }
+
+    /**
+     * 从localStorage中获取state
+     * 
+     * @param {any} key 
+     * @returns 
+     * @memberof Preview
+     */
+    _getStateFromLocalstorage(key) {
+        let localStorageString = localStorage.getItem(key);
+        try {
+            return JSON.parse(localStorageString);
+        } catch (e) {
+            return {};
         }
     }
 
@@ -134,7 +155,7 @@ class Index extends React.Component {
     _renderIndex() {
 
         let sourceTypes = {};
-        let { selectedType, hashMenu } = this.state;
+        let { selectedType, hashMenu, searchWord } = this.state;
 
         let typesList = [<Label bsStyle="info" className={selectedType === 'all' ? 'active' : ''} onClick={this._changeTypes.bind(this, 'all')}>全部</Label>];
 
@@ -150,7 +171,7 @@ class Index extends React.Component {
         });
 
         return <div>
-            <LeftMenu hashMenu={hashMenu}/>
+            <LeftMenu hashMenu={hashMenu} />
             {this._renderDocsMenu()}
             <Grid>
                 <Row className="show-grid">
@@ -160,22 +181,40 @@ class Index extends React.Component {
                         </div>
                     </Col>
                 </Row>
+                <Row className="show-grid">
+                    <Col xs={4} md={4} className="search">
+                            <FormGroup controlId="formValidationWarning2" inline>
+                                <Col xs={10}>
+                                    <FormControl type="text" value={searchWord} onChange={(e) => {
+                                        this._changeHandle(e, 'searchWord')
+                                    }} placeholder="输入组件名称或开发者名称进行过滤"/>
+                                    <i className="fa fa-search"></i>
+                                </Col>
+                            </FormGroup>
+                    </Col>
+                </Row>
                 {
                     componentList.length > 0 ? componentList.map((component, index) => {
                         let componentName = Utils.getComponentName(component.name);
                         let previewImage = component['preview-image'] ? `./.build/${componentName}/${component['preview-image']}` : defaultComponentBanner;
-                        let stylePreview = { 'backgroundImage': `url(${previewImage})`};
+                        let stylePreview = { 'backgroundImage': `url(${previewImage})` };
+
+                        if (searchWord && component.name.indexOf(searchWord) < 0 && (component.author || '未知').indexOf(searchWord) < 0) {
+                            return null;
+                        }
+
                         return (<ul className="component-info" title={component.description || component.name}>
                             <li>
                                 <a target="_blank" className="preview" href={`/src/web/preview.html?c=${component.name}&stack=${component.stack || 'react'}`}
                                     style={stylePreview}>
                                 </a>
                             </li>
-                            <li>name： <a className="component-name" target="_blank" href={`/src/web/preview.html?c=${component.name}&stack=${component.stack || 'react'}`}>{component.name}</a></li>
+                            <li>name： <a className="component-name" target="_blank" href={`/src/web/preview.html?c=${component.name}&stack=${component.stack || 'react'}`}>{component.name}</a>
+                                @{component.version || '1.0.0'}
+                            </li>
                             <li>author： {component.author || '未知'}</li>
                             <li>description： {component.description || component.name}</li>
                             <li>template： {component.template}</li>
-                            <li>version： {component.version || '1.0.0'}</li>
                             {
                                 component.stack ? (<li className="component-logo">
                                     <img src={`./src/web/img/${component.stack}.png`} width="50" height="45" />
@@ -186,6 +225,19 @@ class Index extends React.Component {
                 }
             </Grid>
         </div>
+    }
+
+    /**
+     * 修改表单输入的处理
+     * 
+     * @param {any} e 
+     * @param {string} name
+     * @memberof Preview
+     */
+    _changeHandle(e, name) {
+        this.setState({
+            [name]: e.target.value
+        });
     }
 
     _changeTypes(type) {

@@ -1,9 +1,8 @@
-
-.section-main{
+.section-main {
     height: auto;
 }
 
-.section-main .preview{
+.section-main .preview {
     min-height: 768px;
     overflow: hidden;
     margin-bottom: 100px;
@@ -13,12 +12,12 @@
     top: 0;
 }
 
-.section-main{
+.section-main {
     margin: 0 auto;
     padding-left: 10px;
 }
 
-.section-main .left-nav{
+.section-main .left-nav {
     float: left;
     width: 255px;
     font-size: 14px;
@@ -72,7 +71,7 @@
     margin-bottom: 10px;
 }
 
-.section-main .component-info .component-name{
+.section-main .component-info .component-name {
     font-weight: bold;
     margin-left: 10px;
 }
@@ -82,11 +81,12 @@
 }
 
 /*  */
-.section-main{
+
+.section-main {
     width: 1366px;
 }
 
-.section-main .right-content{
+.section-main .right-content {
     float: right;
     left: 200px;
     margin-top: 20px;
@@ -95,54 +95,67 @@
     font-size: 18px;
 }
 
-.section-main .right-content label{
+.section-main .right-content label {
     font-weight: normal;
 }
 
-.section-main .right-content .menus{
+.section-main .right-content .menus {
     float: right;
     margin: 10px 5px;
     height: 28px;
 }
 
-.section-main .right-content .menus:hover{
+.section-main .right-content .menus:hover {
     cursor: pointer;
 }
 
-.section-main .preview-container{
+.section-main .preview-container {
     width: 100%;
     min-height: 768px;
 }
 
-.section-main .preview-container{
+.section-main .preview-container {
     border: 1px solid #ccc;
     padding: 20px;
 }
-
 
 .section-main .left-nav .control-label {
     margin-top: 10px;
 }
 
-.section-main .right-content .unit-test button{
+.section-main .right-content .unit-test button {
     margin: 10px 0;
 }
 
-.section-main .right-content .unit-test.success textarea{
+.section-main .right-content .unit-test.success textarea {
     color: green;
 }
 
-.section-main .right-content .unit-test.fail textarea{
+.section-main .right-content .unit-test.fail textarea {
     color: red;
 }
-
 
 .section-main .right-content .nav-tabs {
     font-size: 14px;
     margin-top: 30px;
+    border: solid 1px #ccc;
 }
 
-.section-main .right-content .nav-tabs li{
+.section-main .right-content .nav-tabs li {
+    border-radius: 0;
+}
+
+.section-main .right-content .nav-tabs>li.active>a,
+.section-main .right-content .nav-tabs>li.active>a:focus,
+.section-main .right-content .nav-tabs>li>a:hover {
+    border: none;
+    border-bottom: 5px solid #630D12;
+    border-bottom-color: #630D12;
+    border-radius: 0;
+}
+
+.section-main .right-content .nav-tabs>li>a {
+    border: none;
     border-radius: 0;
 }
 
@@ -153,7 +166,7 @@
     min-height: 768px;
 }
 
-.section-main .right-content .script-input{
+.section-main .right-content .script-input {
     font-size: 14px;
     display: inline-block;
     color: #999;
@@ -161,7 +174,8 @@
     width: 65%;
 }
 
-.section-main .right-content .test-file-name, .section-main .right-content .script-file-command{
+.section-main .right-content .test-file-name,
+.section-main .right-content .script-file-command {
     padding-left: 5px;
     margin-left: 5px;
     display: inline-block;
@@ -175,7 +189,7 @@
     font-size: 18px;
 }
 
-.section-main .right-content .fa span{
+.section-main .right-content .fa span {
     display: inline-block;
     font-size: 14px;
     line-height: 18px;
@@ -184,7 +198,7 @@
     margin-left: 5px;
 }
 
-.section-main .right-content .fa-check{
+.section-main .right-content .fa-check {
     color: green;
 }
 
@@ -192,7 +206,7 @@
     color: red;
 }
 
-.section-main .show-readme{
+.section-main .show-readme {
     position: relative;
     float: right;
     text-align: right;
@@ -208,14 +222,82 @@
     background-size: cover;
 }
 
-.debug-ip, .debug-domain {
+.debug-ip,
+.debug-domain {
     margin-right: 20px;
 }
 
-.debug-ip .control-label, .debug-domain .control-label{
+.debug-ip .control-label,
+.debug-domain .control-label {
     margin-right: 20px;
 }
 
-.btn-danger,.btn-warning {
+.btn-danger,
+.btn-warning {
+    margin-left: 10px;
+}
+
+/* 开启关闭的开关样式 */
+
+.switch {
+    width: 80px;
+    height: 12px;
+    position: relative;
+    transition: background .3s;
+    display: inline-block;
+}
+
+.on {
+    color: #07c507;
+}
+
+.off {
+    color: #999;
+}
+
+.on .track {
+    background: #8bbd8e;
+}
+
+.off .track {
+    background: #bdc0bd;
+}
+
+.off .thumb {
+    border: 1px solid #999;
+    background: #ececec;
+}
+
+.on .thumb {
+    border: 1px solid #014d1a;
+    background: #027702;
+}
+
+.track {
+    border-radius: 15px;
+    box-shadow: inset 0 1px 3px 0 rgba(0, 0, 0, 0.50);
+    cursor: pointer;
+    height: 30px;
+    left: 50%;
+    position: relative;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 60%;
+}
+
+.thumb {
+    border-radius: 15px;
+    position: relative;
+    left: 0;
+    width: 30px;
+    height: 30px;
+    transition: left .3s;
+}
+
+.on .thumb {
+    left: 18px;
+}
+
+.label-warning {
     margin-left: 10px;
 }

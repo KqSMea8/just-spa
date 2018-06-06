@@ -20,25 +20,25 @@ class Preview extends React.Component {
         super(props);
 
         this.state = Object.assign({}, {
-            cgiCount: 1,
-            api: '',
-            mockDataPath: '',
-            actionType: '',
-            storeKey: '',
-            jsonData: '',
-            apis: [],
-            testFile: 'test',
-            scriptCommand: 'mocha',
-            scriptFile: '',
-            unitTestResult: {},
-            scriptResult: {},
-            showReadme: false,
-            debugDomain: '',
-            debugIp: '',
-            mockRule: '',
-            mockData: '',
-            mockDataSet: {},
-            activeKey: 'component'
+            api: '',  // api
+            mockDataPath: '',  // mock数据地址
+            actionType: '',    // redux 的actiontype
+            storeKey: '',      // redux触发数据挂载的key
+            jsonData: '',       // dispatch到store的数据
+            apis: [],           // api列表
+            testFile: 'test',   // 单元测试用例文件名
+            scriptCommand: 'mocha', // 单元测试命令
+            scriptFile: '',         // 自定义脚本文件名(包含路径)
+            unitTestResult: {},     // 单元测试运行结果
+            scriptResult: {},       // 自定义脚本运行结果
+            showReadme: false,      // 是否显示readme内容
+            debugDomain: '',        // 调试域名
+            debugIp: '',            // 调试ip
+            mockRule: '',           // mock规则
+            mockData: '',           // mock数据
+            mockDataSet: {},        // mock数据集
+            activeKey: 'component', // tab默认选中的key
+            mockSwitch: false       //是否启用mock
         }, this._getStateFromLocalstorage(componentName + '_componnet_key'))
     }
 
@@ -58,7 +58,8 @@ class Preview extends React.Component {
     render() {
 
         let { api, apis, storeKey, actionType, mockDataPath, jsonData, unitTestResult, scriptResult, testFile,
-            scriptFile, scriptCommand, showReadme, activeKey, debugDomain, debugIp, mockData, mockRule, mockDataSet } = this.state;
+            scriptFile, scriptCommand, showReadme, activeKey, debugDomain, debugIp, mockData, mockRule, mockDataSet,
+            mockSwitch } = this.state;
         apis = apis.join('\n');
 
         let isRedux = this._isRedux();
@@ -173,8 +174,15 @@ class Preview extends React.Component {
                                 </div>
                             </Tab>
                             <Tab eventKey={'mock'} title="Mock联调">
+                                联调切换：
+                                <div className={'switch ' + (mockSwitch ? 'on' : 'off')}>
+                                    <div className='track' onClick={this._removeMockRule.bind(this, mockSwitch)}>
+                                        <div className='thumb' />
+                                    </div>
+                                </div><span className={ mockSwitch ? 'on' : 'off'}>{mockSwitch ? '已开启' : '已停止'}</span>
+                                <hr />
                                 <div>
-                                    <h4>设置联调域名和IP</h4>
+                                    <h4>设置联调域名和IP<Label bsStyle="warning">针对应用生效</Label></h4>
                                     <Form componentClass="fieldset" inline>
                                         <FormGroup controlId="formValidationWarning4" validationState="warning" className="debug-domain" >
                                             <ControlLabel>联调域名</ControlLabel>
@@ -198,7 +206,7 @@ class Preview extends React.Component {
                                         <Button type="button" bsStyle="warning" onClick={this._setDomainAndIp.bind(this)}>保存设置</Button>
                                     </Form>
                                     <hr />
-                                    <h4>设置联调Mock数据</h4>
+                                    <h4>设置联调Mock数据<Label bsStyle="warning">针对组件生效</Label></h4>
                                     <div>
                                         <FormGroup controlId="formControlsSelect" validationState="warning" >
                                             <ControlLabel>已保存配置（保存Mock规则可直接添加）</ControlLabel>
@@ -233,9 +241,8 @@ class Preview extends React.Component {
                                             </InputGroup>
                                         </FormGroup>
 
-                                        <Button type="button" bsStyle="success" onClick={this._saveMockRule.bind(this)}>注入Mock规则</Button>
+                                        <Button type="button" bsStyle="success" onClick={this._saveMockRule.bind(this)}>保存Mock规则</Button>
                                         <Button type="button" bsStyle="warning" onClick={this._editJson.bind(this)}>同步到Schema编辑</Button>
-                                        <Button type="button" bsStyle="danger" onClick={this._removeMockRule.bind(this)}>移除Mock规则</Button>
                                     </Form>
                                 </div>
                                 <div id="jsonEditor"></div>
@@ -310,8 +317,9 @@ class Preview extends React.Component {
                     mockDataSet
                 });
                 previewContainer.window.setMockData(mockDataSet, () => {
+                    // mock数据联调启用
                     Dialog.alert({
-                        content: '已保存'
+                        content: 'Mock规则保存并已启用'
                     });
                 });
             } catch (e) {
@@ -329,14 +337,24 @@ class Preview extends React.Component {
      * 
      * @memberof Preview
      */
-    _removeMockRule() {
+    _removeMockRule(mockSwitch) {
         let { mockRule } = this.state;
 
-        previewContainer.window.removeMockData(() => {
-            Dialog.alert({
-                content: '已移除'
-            });
-        }, mockRule);
+        this.setState({
+            mockSwitch: !mockSwitch
+        });
+
+        // 如果原来已经开启联调，则需要停止移除规则；否则增加规则
+        if (mockSwitch) {
+            previewContainer.window.removeMockData(() => {
+                // mock数据联调停止
+                // Dialog.alert({
+                //     content: '已移除'
+                // });
+            }, mockRule);
+        } else {
+            this._saveMockRule();
+        }
     }
 
     /**
