@@ -13,5 +13,6 @@
     "description": "",
     "license": "ISC",
     "dependencies": {
+        "@tencent/spaui-utils": "0.2.29"
     }
 }
