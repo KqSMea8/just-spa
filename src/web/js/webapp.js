@@ -34,6 +34,7 @@ class Preview extends React.Component {
             showReadme: false,      // 是否显示readme内容
             debugDomain: '',        // 联调域名
             debugIp: '',            // 联调IP
+            canSetting: false,       // 是否可以修改应用设置
 
             initCommand: 'npm i',        // 应用初始化命令
             devCommand: 'npm run dev',            // 启动开发命令
@@ -51,7 +52,11 @@ class Preview extends React.Component {
             mockDataSet: {},        // mock数据集
             activeKey: 'webapp', // tab默认选中的key
             mockSwitch: false       //是否启用mock
-        }, this._getStateFromLocalstorage(webappName + '_componnet_key'))
+        }, this._getStateFromLocalstorage(webappName + '_componnet_key'));
+
+        if (this.state.scriptResult.success === 'loading' && this.state.processStatus) {
+            this._startProcessCount();
+        }
     }
 
     componentDidMount() {
@@ -71,7 +76,7 @@ class Preview extends React.Component {
 
         let { api, apis, storeKey, actionType, mockDataPath, jsonData, scriptResult, testFile,
             scriptFile, scriptCommand, showReadme, activeKey, initCommand, devCommand, testCommand, preReleaseCommand,
-            mockDataSet, mockRule, mockData, mockSwitch, debugDomain, debugIp, processStatus, processTime } = this.state;
+            mockDataSet, mockRule, mockData, mockSwitch, debugDomain, debugIp, processStatus, processTime, canSetting } = this.state;
         apis = apis.join('\n');
 
         let loadingStatus = scriptResult.success === 'loading' && processStatus ? `animate-loading ${processStatus}` : null;
@@ -98,7 +103,7 @@ class Preview extends React.Component {
 
                             return (
                                 <ul className="webapp-info" title={webapp.description || webapp.name}>
-                                    <li>应用名称： <a href={`/src/web/webapp.html?webapp=${webappName}`}><b>{webapp.name}</b></a></li>
+                                    <li>应用名称：<a href={`/src/web/webapp.html?webapp=${webappName}`}><b>{webapp.name}</b></a></li>
                                     <li>作者： {webapp.author || '未知'}</li>
                                     <li>描述： {webapp.description || webapp.name}</li>
                                     <li>模板： {webapp.template}</li>
@@ -200,73 +205,73 @@ class Preview extends React.Component {
                                 </div><span className={mockSwitch ? 'on' : 'off'}>{mockSwitch ? '已开启' : '已停止'}</span>
                                 <hr />
                                 <div>
-                                    <h4>设置联调域名和IP<Label bsStyle="warning">针对应用生效</Label></h4>
+                                    <h4>设置联调域名和IP</h4>
                                     <Form componentClass="fieldset" inline>
                                         <FormGroup controlId="formValidationWarning4" validationState="warning" className="dev-input" >
                                             <ControlLabel>联调域名</ControlLabel>
                                             <InputGroup>
-                                                <InputGroup.Addon>domain</InputGroup.Addon>
+                                                <InputGroup.Addon> </InputGroup.Addon>
                                                 <FormControl title={debugDomain} type="text" value={debugDomain} onChange={(e) => {
                                                     this._changeHandle(e, 'debugDomain')
-                                                }} placeholder="例如：www.domain.com" />
+                                                }} placeholder="例如：www.domain.com" disabled={!canSetting}/>
                                             </InputGroup>
                                         </FormGroup>
 
                                         <FormGroup controlId="formValidationError4" validationState="warning" className="dev-input">
                                             <ControlLabel title="例如线上或测试环境IP">联调指定IP</ControlLabel>
                                             <InputGroup>
-                                                <InputGroup.Addon>IP</InputGroup.Addon>
+                                                <InputGroup.Addon> </InputGroup.Addon>
                                                 <FormControl title={debugIp} type="text" value={debugIp} onChange={(e) => {
                                                     this._changeHandle(e, 'debugIp')
-                                                }} placeholder="127.0.0.1" />
+                                                }} placeholder="127.0.0.1" disabled={!canSetting}/>
                                             </InputGroup>
                                         </FormGroup>
-                                        <Button type="button" bsStyle="warning" onClick={this._setDomainAndIp.bind(this)}>保存设置</Button>
                                     </Form>
-                                    <hr />
-                                    <h4>命令配置<Label bsStyle="warning">针对应用生效</Label></h4>
+                                    <h4>命令配置</h4>
                                     <Form componentClass="fieldset" inline>
                                         <FormGroup controlId="formValidationWarning4" validationState="warning" className="dev-input" >
                                             <ControlLabel>初始化</ControlLabel>
                                             <InputGroup>
-                                                <InputGroup.Addon>init</InputGroup.Addon>
+                                                <InputGroup.Addon> </InputGroup.Addon>
                                                 <FormControl title={initCommand} type="text" value={initCommand} onChange={(e) => {
                                                     this._changeHandle(e, 'initCommand')
-                                                }} placeholder="npm i" />
+                                                }} placeholder="npm i" disabled={!canSetting}/>
                                             </InputGroup>
                                         </FormGroup>
 
                                         <FormGroup controlId="formValidationError4" validationState="warning" className="dev-input">
                                             <ControlLabel title="启动调试命令">启动调试</ControlLabel>
                                             <InputGroup>
-                                                <InputGroup.Addon>IP</InputGroup.Addon>
+                                                <InputGroup.Addon> </InputGroup.Addon>
                                                 <FormControl title={devCommand} type="text" value={devCommand} onChange={(e) => {
                                                     this._changeHandle(e, 'devCommand')
-                                                }} placeholder="npm run dev" />
+                                                }} placeholder="npm run dev" disabled={!canSetting}/>
                                             </InputGroup>
                                         </FormGroup>
 
                                         <FormGroup controlId="formValidationError4" validationState="warning" className="dev-input">
                                             <ControlLabel title="测试打包部署">测试部署</ControlLabel>
                                             <InputGroup>
-                                                <InputGroup.Addon>IP</InputGroup.Addon>
+                                                <InputGroup.Addon> </InputGroup.Addon>
                                                 <FormControl title={testCommand} type="text" value={testCommand} onChange={(e) => {
                                                     this._changeHandle(e, 'testCommand')
-                                                }} placeholder="npm run release" />
+                                                }} placeholder="npm run release" disabled={!canSetting}/>
                                             </InputGroup>
                                         </FormGroup>
 
                                         <FormGroup controlId="formValidationError4" validationState="warning" className="dev-input">
                                             <ControlLabel title="预发布部署">预发布部署</ControlLabel>
                                             <InputGroup>
-                                                <InputGroup.Addon>IP</InputGroup.Addon>
+                                                <InputGroup.Addon> </InputGroup.Addon>
                                                 <FormControl title={preReleaseCommand} type="text" value={preReleaseCommand} onChange={(e) => {
                                                     this._changeHandle(e, 'preReleaseCommand')
-                                                }} placeholder="npm run release" />
+                                                }} placeholder="npm run release" disabled={!canSetting}/>
                                             </InputGroup>
                                         </FormGroup>
 
-                                        <Button type="button" bsStyle="warning" onClick={this._setDomainAndIp.bind(this)}>保存设置</Button>
+                                        <Button type="button" bsStyle={canSetting ? 'success' : 'warning'} onClick={this._setSettingEnable.bind(this)}>
+                                            {canSetting ? '保存' : '编辑'}
+                                        </Button>
                                     </Form>
                                     <hr />
                                     <h4>设置联调Mock数据<Label bsStyle="warning">针对组件生效</Label></h4>
@@ -315,6 +320,12 @@ class Preview extends React.Component {
                 </div>
             </div>
         );
+    }
+
+    _setSettingEnable() {
+        this.setState({
+            canSetting: !this.state.canSetting
+        });
     }
 
     /**

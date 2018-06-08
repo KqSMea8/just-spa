@@ -1,6 +1,6 @@
 
 import React from 'react';
-import {assert, expect} from 'chai';
+import { expect } from 'chai';
 import Enzyme, {shallow, render, mount} from 'enzyme';
 import Adapter from 'enzyme-adapter-react-15';
 

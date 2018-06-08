@@ -21,11 +21,6 @@ body {
     user-select: none;
 }
 
-header,
-section,
-main,
-footer {}
-
 .section-header {
     width: 100%;
     height: 84px;
@@ -170,3 +165,4 @@ footer {}
     margin: 0 auto;
     color: #fff;
 }
+

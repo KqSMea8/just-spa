@@ -212,12 +212,12 @@ class Index extends React.Component {
                                         style={stylePreview}>
                                     </a>
                                 </li>
-                                <li>name： <a className="component-name" target="_blank" href={`/src/web/preview.html?c=${component.name}&stack=${component.stack || 'react'}`}>{component.name}</a>
+                                <li>组件名： <a className="component-name" target="_blank" href={`/src/web/preview.html?c=${component.name}&stack=${component.stack || 'react'}`}>{component.name}</a>
                                     @{component.version || '1.0.0'}
                                 </li>
-                                <li>author： {component.author || '未知'}</li>
-                                <li>description： {component.description || component.name}</li>
-                                <li>template： {component.template}</li>
+                                <li>作者： {component.author || '未知'}</li>
+                                <li>描述： {component.description || component.name}</li>
+                                <li>模板： {component.template}</li>
                                 {
                                     component.stack ? (<li className="component-logo">
                                         <img src={`./src/web/img/${component.stack}.png`} width="50" height="45" />
@@ -253,12 +253,12 @@ class Index extends React.Component {
 
                             return (<a href={`/src/web/webapp.html?webapp=${webappName}`} target="_blank">
                                 <ul className="component-info" title={webapp.description || webappName}>
-                                    <li>name： <a className="component-name">{webappName}</a>
+                                    <li>应用名：<a className="component-name">{webappName}</a>
                                         @{webapp.version || '1.0.0'}
                                     </li>
-                                    <li>author： {webapp.author || '未知'}</li>
-                                    <li>description： {webapp.description || webappName}</li>
-                                    <li>template： {webapp.template}</li>
+                                    <li>作者： {webapp.author || '未知'}</li>
+                                    <li>描述： {webapp.description || webappName}</li>
+                                    <li>模板： {webapp.template}</li>
                                 </ul>
                             </a>)
                         }) : <div class="empty-list">无</div>
