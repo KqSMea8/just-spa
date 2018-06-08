@@ -393,36 +393,44 @@ function _readDirSync(rootDir) {
 /**
  * 根据目录下的组件生成一份组件信息的配置
  * 
- * @param {any} componentDirs 组件目录列表
+ * @param {any} workDirs 工作目录列表
  * @param {any} serverPath 服务器根目录
  */
-function _writeComponentInfo(componentDirs, serverPath) {
+function _writeComponentInfo(workDirs, serverPath) {
 
     let componentInfos = { components: [], templates: {} };
+    let webappInfos = { webapps: [], templates: {} };
     // 物料模板选项映射表
     const templatesJson = fse.readJsonSync(__dirname + '/src/lib/template-source/template.json') || {};
-    for (let componentDir of componentDirs) {
+    for (let componentDir of workDirs) {
 
-        let componentName,
-            componentInfo; // 读取组件的package.json，获取组件信息，如果没有则放入组件名称
+        let packageName,
+            packageInfo; // 读取组件的package.json，获取组件信息，如果没有则放入组件名称
 
         // 处理mac和windows系统差异性
         if (_isWinPlatform()) {
-            componentName = componentDir.split("\\");
+            packageName = componentDir.split("\\");
         } else {
-            componentName = componentDir.split('/');
+            packageName = componentDir.split('/');
         }
 
         // 如果存在package.json则获取组件名
         let existPackageJSON = fse.pathExistsSync(path.join(componentDir, 'package.json'));
 
         if (existPackageJSON) {
-            componentName = componentName[componentName.length - 1];
-            componentInfo = fse.readJsonSync(path.join(componentDir, 'package.json'));
+            packageName = packageName[packageName.length - 1];
+            packageInfo = fse.readJsonSync(path.join(componentDir, 'package.json'));
 
-            componentInfos.components.push(Object.assign({
-                name: componentName
-            }, componentInfo));
+            // 如果是应用，则添加应用信息，否则添加组件信息
+            if (packageInfo.template === 'webapp') {
+                webappInfos.webapps.push(Object.assign(packageInfo, {
+                    name: packageName
+                }));
+            } else {
+                componentInfos.components.push(Object.assign({
+                    name: packageName
+                }, packageInfo));
+            }
         }
     }
 
@@ -430,10 +438,18 @@ function _writeComponentInfo(componentDirs, serverPath) {
 
     componentInfos = JSON.stringify(componentInfos);
 
+    webappInfos = JSON.stringify(webappInfos);
+
     // 根据当前调试根目录生成所有组件的列表
     fse.outputFile(path.join(serverPath + '/.build', 'component-info') + '.js', `var componentInfo = JSON.parse(\`${componentInfos}\`)`, (err) => {
         if (err) throw err;
         logger(`component list info has been created successfully.`, 'cyan');
+    });
+
+    // 根据当前调试根目录生成所有组件的列表
+    fse.outputFile(path.join(serverPath + '/.build', 'webapp-info') + '.js', `var webappInfo = JSON.parse(\`${webappInfos}\`)`, (err) => {
+        if (err) throw err;
+        logger(`webapp list info has been created successfully.`, 'cyan');
     });
 }
 

@@ -5,7 +5,6 @@ const WebpackDevServer = require('webpack-dev-server');
 const getConfig = require('./webpack.config');
 const logger = require('./src/lib/logger');
 const fse = require('fs-extra');
-const minimist = require('minimist');
 const axios = require('axios');
 
 const axon = require('axon');
@@ -14,15 +13,16 @@ const socketUrl = 'tcp://127.0.0.1:6677';
 
 const childProcess = require('child_process');
 
-
+const minimist = require('minimist');
 const argvs = minimist(process.argv.slice(2));
 
 const commandParams = process.argv.splice(2);
 const port = argvs.p || argvs.port || 8000;
 
-
 const express = require('express');
 const bodyParser = require('body-parser');
+
+const kill = require('./src/kill/thread-kill');
 
 const app = express();
 const router = express.Router();
@@ -30,6 +30,8 @@ const router = express.Router();
 app.use('/api', router);
 app.use('/test', router);
 app.use('/saveReadme', router);
+
+let worker = null;
 
 function _isWinPlatform() {
     return process.platform.indexOf('win') > -1;
@@ -128,6 +130,7 @@ const webpackDevServer = new WebpackDevServer(webpack(config), {
                         res.json({ success: false, result: JSON.stringify(error) });
                         return;
                     }
+                    res.json({ success: true, result: stdout });
 
                 }
             });
@@ -158,9 +161,80 @@ const webpackDevServer = new WebpackDevServer(webpack(config), {
                         res.json({ success: false, result: JSON.stringify(error) });
                         return;
                     }
+                    res.json({ success: true, result: stdout });
                 }
             });
         });
+
+        // 在工作目录下运行脚本，webapp
+        app.get('/webapp/script', function (req, res) {
+
+            let webappName = req.query.webappName || '';
+            let webappCommand = req.query.webappCommand || '';
+        
+            let cdDisk = '';
+
+            if(argvs.devpath && webappName) {
+                // 如果匹配到windows环境的盘符，则需要转盘符
+                if (/(\w:)/ig.test(argvs.devpath)) {
+                    cdDisk = argvs.devpath.match(/(\w:)/gi)[0] + ' && ';
+                }
+                let devpath = path.join(argvs.devpath, webappName)
+                if (_isWinPlatform()) {
+                    webappCommand = `cd "${devpath}" && ${cdDisk} ${webappCommand}`;
+                } else {
+                    webappCommand = `cd "${devpath}" && ${cdDisk} ${webappCommand}`;
+                }
+            } else {
+                res.json({ success: false, result: '没有找到应用名称' });
+            }
+            
+            logger(`running ${webappCommand}`, 'cyan');
+            
+            if (worker) {
+                // https://github.com/nuintun/command-manager/blob/master/bin/thread-kill.js
+                // 结束掉正在进行的进程
+                kill(worker.pid, 'SIGKILL', () => {
+                    startShell();
+                })
+            } else {
+                startShell();
+            }
+
+            function startShell() {
+                worker = childProcess.exec(webappCommand, (error, stdout, stderr) => {
+                    // 目前根据测试结果的标识判断是否测试通过
+                    if (stdout.indexOf('Error') > -1) {
+                        logger(`childProcess.exec error: ${error}`, 'magenta');
+                        res.json({ success: false, result: stdout });
+                    } else if (stdout.indexOf('passing') > -1) {
+                        logger(`childProcess.exec error: ${stdout}`, 'magenta');
+                        res.json({ success: true, result: stdout });
+                    } else {
+                        if (error) {
+                            logger(`childProcess.exec error: ${error}`, 'magenta');
+                            res.json({ success: false, result: JSON.stringify(error) });
+                            return;
+                        }
+                        res.json({ success: true, result: stdout });
+                    }
+                });
+            }
+        });
+
+        // 在工作目录下停止脚本运行，webapp
+        app.get('/webapp/stop', function (req, res) {
+            
+            if (worker) {
+                // https://github.com/nuintun/command-manager/blob/master/bin/thread-kill.js
+                // 结束掉正在进行的进程
+                kill(worker.pid, 'SIGKILL', () => {
+                    res.json({ success: true, result: '已停止' });
+                });
+            } else {
+                res.json({ success: true, result: '已停止' });
+            }
+        })
     }
 });
 

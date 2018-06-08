@@ -170,60 +170,101 @@ class Index extends React.Component {
             }
         });
 
+        let webappList = webappInfo.webapps;
+
         return <div>
             <LeftMenu hashMenu={hashMenu} />
             {this._renderDocsMenu()}
-            <Grid>
-                <Row className="show-grid">
-                    <Col xs={12} md={12}>
-                        <div className="types-list">
-                            {typesList}
-                        </div>
-                    </Col>
-                </Row>
-                <Row className="show-grid">
-                    <Col xs={4} md={4} className="search">
-                            <FormGroup controlId="formValidationWarning2" inline>
-                                <Col xs={10}>
-                                    <FormControl type="text" value={searchWord} onChange={(e) => {
-                                        this._changeHandle(e, 'searchWord')
-                                    }} placeholder="输入组件名称或开发者名称进行过滤"/>
-                                    <i className="fa fa-search"></i>
-                                </Col>
-                            </FormGroup>
-                    </Col>
-                </Row>
-                {
-                    componentList.length > 0 ? componentList.map((component, index) => {
-                        let componentName = Utils.getComponentName(component.name);
-                        let previewImage = component['preview-image'] ? `./.build/${componentName}/${component['preview-image']}` : defaultComponentBanner;
-                        let stylePreview = { 'backgroundImage': `url(${previewImage})` };
+            {
+                hashMenu === "index" ? <Grid>
+                    <Row className="show-grid">
+                        <Col xs={12} md={12}>
+                            <div className="types-list">
+                                {typesList}
+                            </div>
+                        </Col>
+                    </Row>
+                    <Row className="show-grid">
+                        <Col xs={4} md={4} className="search">
+                                <FormGroup controlId="formValidationWarning2" inline>
+                                    <Col xs={10}>
+                                        <FormControl type="text" value={searchWord} onChange={(e) => {
+                                            this._changeHandle(e, 'searchWord')
+                                        }} placeholder="输入组件名称或开发者名称进行过滤"/>
+                                        <i className="fa fa-search"></i>
+                                    </Col>
+                                </FormGroup>
+                        </Col>
+                    </Row>
+                    {
+                        componentList.length > 0 ? componentList.map((component, index) => {
+                            let componentName = Utils.getComponentName(component.name);
+                            let previewImage = component['preview-image'] ? `./.build/${componentName}/${component['preview-image']}` : defaultComponentBanner;
+                            let stylePreview = { 'backgroundImage': `url(${previewImage})` };
 
-                        if (searchWord && component.name.indexOf(searchWord) < 0 && (component.author || '未知').indexOf(searchWord) < 0) {
-                            return null;
-                        }
-
-                        return (<ul className="component-info" title={component.description || component.name}>
-                            <li>
-                                <a target="_blank" className="preview" href={`/src/web/preview.html?c=${component.name}&stack=${component.stack || 'react'}`}
-                                    style={stylePreview}>
-                                </a>
-                            </li>
-                            <li>name： <a className="component-name" target="_blank" href={`/src/web/preview.html?c=${component.name}&stack=${component.stack || 'react'}`}>{component.name}</a>
-                                @{component.version || '1.0.0'}
-                            </li>
-                            <li>author： {component.author || '未知'}</li>
-                            <li>description： {component.description || component.name}</li>
-                            <li>template： {component.template}</li>
-                            {
-                                component.stack ? (<li className="component-logo">
-                                    <img src={`./src/web/img/${component.stack}.png`} width="50" height="45" />
-                                </li>) : null
+                            if (searchWord && component.name.indexOf(searchWord) < 0 && (component.author || '未知').indexOf(searchWord) < 0) {
+                                return null;
                             }
-                        </ul>)
-                    }) : <div class="empty-list">无</div>
-                }
-            </Grid>
+
+                            return (<ul className="component-info" title={component.description || component.name}>
+                                <li>
+                                    <a target="_blank" className="preview" href={`/src/web/preview.html?c=${component.name}&stack=${component.stack || 'react'}`}
+                                        style={stylePreview}>
+                                    </a>
+                                </li>
+                                <li>name： <a className="component-name" target="_blank" href={`/src/web/preview.html?c=${component.name}&stack=${component.stack || 'react'}`}>{component.name}</a>
+                                    @{component.version || '1.0.0'}
+                                </li>
+                                <li>author： {component.author || '未知'}</li>
+                                <li>description： {component.description || component.name}</li>
+                                <li>template： {component.template}</li>
+                                {
+                                    component.stack ? (<li className="component-logo">
+                                        <img src={`./src/web/img/${component.stack}.png`} width="50" height="45" />
+                                    </li>) : null
+                                }
+                            </ul>)
+                        }) : <div class="empty-list">无</div>
+                    }
+                </Grid> : null
+            }
+            {
+                hashMenu === "webapp" ? <Grid>
+
+                    <Row className="show-grid">
+                        <Col xs={4} md={4} className="search">
+                                <FormGroup controlId="formValidationWarning2" inline>
+                                    <Col xs={10}>
+                                        <FormControl type="text" value={searchWord} onChange={(e) => {
+                                            this._changeHandle(e, 'searchWord')
+                                        }} placeholder="输入组件名称或开发者名称进行过滤"/>
+                                        <i className="fa fa-search"></i>
+                                    </Col>
+                                </FormGroup>
+                        </Col>
+                    </Row>
+                    {
+                        webappList.length > 0 ? webappList.map((webapp, index) => {
+
+                            let webappName = Utils.getComponentName(webapp.name);
+                            if (searchWord && webappName.indexOf(searchWord) < 0 && (webapp.author || '未知').indexOf(searchWord) < 0) {
+                                return null;
+                            }
+
+                            return (<a href={`/src/web/webapp.html?webapp=${webappName}`} target="_blank">
+                                <ul className="component-info" title={webapp.description || webappName}>
+                                    <li>name： <a className="component-name">{webappName}</a>
+                                        @{webapp.version || '1.0.0'}
+                                    </li>
+                                    <li>author： {webapp.author || '未知'}</li>
+                                    <li>description： {webapp.description || webappName}</li>
+                                    <li>template： {webapp.template}</li>
+                                </ul>
+                            </a>)
+                        }) : <div class="empty-list">无</div>
+                    }
+                </Grid> : null
+            }
         </div>
     }
 
@@ -260,10 +301,10 @@ class LeftMenu extends React.Component {
         let { hashMenu } = this.props;
         return (<ul className="left-menu-list">
             <li className={hashMenu === 'index' ? 'active' : ''}><a href="/#index"><i className="fa fa-window-maximize"></i>组件列表</a></li>
+            <li className={hashMenu === 'webapp' ? 'active' : ''}><a href="/#webapp"><i className="fa fa-th-large"></i>应用列表</a></li>
         </ul>)
     }
     // 可选的目录
-    // <li className={hashMenu === 'app' ? 'active' : ''}><a href="/#app"><i className="fa fa-th-large"></i>应用列表</a></li>
     // <li className={hashMenu === 'debug' ? 'active' : ''}><a href="/#debug"><i className="fa fa-wrench"></i>联调设置</a></li>
     // <li className={hashMenu === 'settings' ? 'active' : ''}><a href="/#settings"><i className="fa fa-cog fa-fw"></i>系统设置</a></li>
 };

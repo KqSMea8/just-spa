@@ -4,7 +4,7 @@
     "version": "0.1.0",
     "template": "spaui-template",
     "preview-image": "",
-    "main": "lib/index.js",
+    "main": "src/index.js",
     "scripts": {
         "test": "",
         "start": ""
@@ -13,6 +13,5 @@
     "description": "",
     "license": "ISC",
     "dependencies": {
-        "@tencent/spaui-utils": "0.2.29"
     }
 }

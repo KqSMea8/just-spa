@@ -1,18 +1,18 @@
 'use strict';
 
-const { Grid, Row, Col, Button, Label, Image, Form, InputGroup, FormGroup, ControlLabel, FormControl, Tabs, Tab } = ReactBootstrap;
+const { Grid, Row, Col, Button, Label, Image, Form, InputGroup, FormGroup, ControlLabel, FormControl, Tabs, Tab, Table } = ReactBootstrap;
 
 const defaultComponentBanner = './src/web/img/banner.jpg';
 
-const packageName = Utils.getUrlParams('c') || '';
-const componentName = Utils.getComponentName(packageName);
+const webappName = Utils.getUrlParams('webapp') || '';
 const stack = Utils.getUrlParams('stack') || 'react';
 
 // 根据不同技术栈选择不同模板
-const componentUrl = `./${stack}.html?c=${packageName}`;
-const component = _getComponent(componentInfo.components);
+const componentUrl = `./${stack}.html?c=${webappName}`;
+const webapp = _getComponent(webappInfo.webapps);
 
 let jsonEditor;
+let countInterval = null;
 
 class Preview extends React.Component {
 
@@ -27,23 +27,35 @@ class Preview extends React.Component {
             jsonData: '',       // dispatch到store的数据
             apis: [],           // api列表
             testFile: 'test',   // 单元测试用例文件名
-            scriptCommand: 'mocha', // 单元测试命令
+            scriptCommand: 'npm run release', // 单元测试命令
             scriptFile: '',         // 自定义脚本文件名(包含路径)
-            unitTestResult: {},     // 单元测试运行结果
+
             scriptResult: {},       // 自定义脚本运行结果
             showReadme: false,      // 是否显示readme内容
-            debugDomain: '',        // 调试域名
-            debugIp: '',            // 调试ip
+            debugDomain: '',        // 联调域名
+            debugIp: '',            // 联调IP
+
+            initCommand: 'npm i',        // 应用初始化命令
+            devCommand: 'npm run dev',            // 启动开发命令
+            testCommand: 'npm run release',        // 测试打包命令
+            preReleaseCommand: 'npm run release',  // 预发打包命令
+            initCommandResult: {},         // 初始化状态
+            devCommandResult: {},         // 启动调试状态
+            testCommandResult: {},         // 测试部署状态
+            preReleaseCommandResult: {},         // 预发布部署状态
+            processStatus: '',             // 进行处理的阶段
+            processTime: 0,                 // 进行处理的时间
+
             mockRule: '',           // mock规则
             mockData: '',           // mock数据
             mockDataSet: {},        // mock数据集
-            activeKey: 'component', // tab默认选中的key
+            activeKey: 'webapp', // tab默认选中的key
             mockSwitch: false       //是否启用mock
-        }, this._getStateFromLocalstorage(componentName + '_componnet_key'))
+        }, this._getStateFromLocalstorage(webappName + '_componnet_key'))
     }
 
     componentDidMount() {
-        document.title = packageName + '|' + document.title;
+        document.title = webappName + '|' + document.title;
         window.reflectStore = function (store) {
             console.log('当前组件store:')
             console.log(store.getState());
@@ -52,119 +64,123 @@ class Preview extends React.Component {
     }
 
     componentDidUpdate() {
-        localStorage.setItem(componentName + '_componnet_key', JSON.stringify(this.state));
+        localStorage.setItem(webappName + '_componnet_key', JSON.stringify(this.state));
     }
 
     render() {
 
-        let { api, apis, storeKey, actionType, mockDataPath, jsonData, unitTestResult, scriptResult, testFile,
-            scriptFile, scriptCommand, showReadme, activeKey, debugDomain, debugIp, mockData, mockRule, mockDataSet,
-            mockSwitch } = this.state;
+        let { api, apis, storeKey, actionType, mockDataPath, jsonData, scriptResult, testFile,
+            scriptFile, scriptCommand, showReadme, activeKey, initCommand, devCommand, testCommand, preReleaseCommand,
+            mockDataSet, mockRule, mockData, mockSwitch, debugDomain, debugIp, processStatus, processTime } = this.state;
         apis = apis.join('\n');
 
-        let isRedux = this._isRedux();
+        let loadingStatus = scriptResult.success === 'loading' && processStatus ? `animate-loading ${processStatus}` : null;
+        
+        let scripts = [];
+
+        for (let key in webapp.scripts) {
+            scripts.push(<div>{key} : {webapp.scripts[key]}</div>)
+        }
+
+        
+        let webappList = webappInfo.webapps;
+
         return (
             <div class="preview">
                 <div>
                     <section className="left-nav" id="left-info">
-                        <ul className="component-info" title={component.description || component.name}>
-                            <li><b>组件名称： {component.name}</b></li>
-                            <li>作者： {component.author || '未知'}</li>
-                            <li>描述： {component.description || component.name}</li>
-                            <li>模板： {component.template}</li>
-                            <li>版本： {component.version || '1.0.0'}</li>
-                            {
-                                component.stack ? (<li className="component-logo">
-                                    <img src={`./img/${component.stack}.png`} width="50" height="45" />
-                                </li>) : null
-                            }
-                            {
-                                component.git ? <li>仓库url： <a href={component.git || ''} target="_blank">{component.git || ''}</a></li> : null
-                            }
-                        </ul>
+                    <h4>应用列表</h4>
+                    <hr />
+                    {
+                        webappList.length > 0 ? webappList.map((webapp, index) => {
 
-                        {isRedux ? <div className="component-debugger-panel">
-                            <Form>
-                                <FormGroup controlId="formControlsTextarea">
-                                    <div><ControlLabel>线上接口地址</ControlLabel></div>
+                            let webappName = webapp.name;
 
-                                    <FormControl componentClass="textarea" value={api} onChange={(e) => {
-                                        this._changeHandle(e, 'api')
-                                    }} placeholder="请输入要请求的接口地址，例如:http://xx.com/api/v1/get" rows="4" />
-                                    <Button type="button" onClick={this._saveApi.bind(this)}>保存线上接口数据</Button>
-
-                                    <div><ControlLabel>actionType(redux的actionType)</ControlLabel></div>
-                                    <FormControl type="text" value={actionType} onChange={(e) => {
-                                        this._changeHandle(e, 'actionType')
-                                    }} placeholder="请输入acticonType" />
-
-                                    <div><ControlLabel>storeKey(store上挂载的key)</ControlLabel></div>
-                                    <FormControl type="text" value={storeKey} onChange={(e) => {
-                                        this._changeHandle(e, 'storeKey')
-                                    }} placeholder="请输入storeKey" />
-
-                                    <div><ControlLabel>JSON数据(dispatch到store的数据)</ControlLabel></div>
-                                    <FormControl value={jsonData} componentClass="textarea" onChange={(e) => {
-                                        this._changeHandle(e, 'jsonData')
-                                    }} placeholder="例如:{text: 'hello world'}" rows="4" />
-                                    <Button type="button" bsStyle="primary" onClick={this._dispatchJSON.bind(this)}>获取JSON dispatch</Button>
-
-                                    <div><ControlLabel>mockDataPath(本地mock数据路径)</ControlLabel></div>
-                                    <FormControl value={mockDataPath} componentClass="textarea" onChange={(e) => {
-                                        this._changeHandle(e, 'mockDataPath')
-                                    }} placeholder="例如: E:\mock\data.json" rows="3" />
-                                    <Button type="button" bsStyle="primary" onClick={this._dispatchApi.bind(this)}>请求接口dispatch</Button>
-                                </FormGroup>
-                            </Form>
-                            <div><ControlLabel>已添加接口数据</ControlLabel></div>
-                            <FormControl componentClass="textarea" value={apis} placeholder="" rows="6" />
-                        </div> : null}
-
+                            return (
+                                <ul className="webapp-info" title={webapp.description || webapp.name}>
+                                    <li>应用名称： <a href={`/src/web/webapp.html?webapp=${webappName}`}><b>{webapp.name}</b></a></li>
+                                    <li>作者： {webapp.author || '未知'}</li>
+                                    <li>描述： {webapp.description || webapp.name}</li>
+                                    <li>模板： {webapp.template}</li>
+                                    <li>版本： {webapp.version || '1.0.0'}</li>
+                                    {
+                                        webapp.git ? <li>仓库url： <a href={webapp.git || ''} target="_blank">{webapp.git || ''}</a></li> : null
+                                    }
+                            </ul>)
+                        }) : <div class="empty-list">无</div>
+                    }
+                        
                     </section>
                     <section class="right-content">
                         <Tabs activeKey={activeKey} id="uncontrolled-tab-example" onSelect={this._handleSelect.bind(this)}>
-                            <Tab eventKey={'component'} title="组件预览">
-                                <div>
-                                    <div class="menus">
-                                        <a href="javascript: void(0);" onClick={this._reloadIframe} title="打开新页面预览组件">
-                                            <i class="fa fa-refresh"><span>刷新</span></i>
-                                        </a>
-                                        <a href={componentUrl} title="打开新页面预览组件">
-                                            <i class="fa fa-arrows-alt"><span>全屏</span></i>
-                                        </a>
+                            <Tab eventKey={'webapp'} title="应用信息">
+                                <h4>应用打包部署：<Label>初始化时间可能较长</Label></h4>
+                                <hr />
+                                <div className="progress-container">
+                                    <div className="progress-btn progress-init" onClick={this._triggerScriptExcute.bind(this, initCommand, 'init')}>
+                                        {loadingStatus && processStatus === 'init' ? `${processTime} S` : '初始化'}
+                                    </div>
+                                    <div className="progress-btn progress-dev" onClick={this._triggerScriptExcute.bind(this, devCommand, 'dev')}>
+                                        {loadingStatus && processStatus === 'dev' ? `${processTime} S` : '开发'}
+                                    </div>
+                                    <div className="progress-btn progress-test" onClick={this._triggerScriptExcute.bind(this, testCommand, 'test')}>
+                                        {loadingStatus && processStatus === 'test' ? `${processTime} S` : '测试部署'}
+                                    </div>
+                                    <div className="progress-btn progress-release" onClick={this._triggerScriptExcute.bind(this, preReleaseCommand, 'release')}>
+                                        {loadingStatus && processStatus === 'release' ? `${processTime} S` : '预发部署'}
+                                    </div>
+                                    <div className={loadingStatus}>
+                                        <div><span></span></div>
+                                        <div><span></span></div>
+                                        <div><span></span></div>
                                     </div>
                                 </div>
-                                <iframe name="previewContainer" id="previewContainer" class="preview-container" src={componentUrl} frameborder="1"></iframe>
-                            </Tab>
-                            <Tab eventKey={'readme'} title="readme调试">
-                                <MdEditor />
-                            </Tab>
-                            <Tab eventKey={'test'} title="单元测试">
-                                <div className={'script-wrap ' + (unitTestResult.success === true ? 'success' : '') + (unitTestResult.success === false ? 'fail' : '')}>
-                                    <Button type="button" bsStyle="success" onClick={this._triggerUnitTest.bind(this)}>单元测试</Button>
-                                    <span className="script-input">
-                                        /.build/{componentName}/test/<FormControl title={testFile} className="test-file-name" type="text" value={testFile} onChange={(e) => {
-                                            this._changeHandle(e, 'testFile')
-                                        }} placeholder="要测试的文件脚本，默认为test.js" />
-                                    </span>
-                                    {unitTestResult.success === true ? <i class="fa fa-check"><span>{testFile || 'test.js'}测试通过</span></i> : null}
-                                    {unitTestResult.success === 'loading' ? <i className="loading"></i> : null}
-                                    {unitTestResult.success === false ? <i class="fa fa-times-circle"><span>失败</span></i> : null}
-                                    <FormControl componentClass="textarea" value={unitTestResult.result} placeholder="单元测试结果" rows="35" disabled />
-                                </div>
+                                <Button type="button" bsStyle="danger" onClick={this._triggerScriptStop.bind(this)}>  停止  </Button>
+                                <hr />
+                                <Table>
+                                    <thead>
+                                    <tr>
+                                        <th>应用信息：</th>
+                                        <th>详情</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr>
+                                        <td>应用名</td>
+                                        <td>{webapp.name}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>版本号</td>
+                                        <td>{webapp.version}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>仓库地址</td>
+                                        <td>{webapp.git}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>应用线上地址</td>
+                                        <td>{webapp.url}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>license</td>
+                                        <td>{webapp.license}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>scripts</td>
+                                        <td>{scripts}</td>
+                                    </tr>
+                                    </tbody>
+                                </Table>
                             </Tab>
 
-                            <Tab eventKey={'script'} title="运行脚本">
+                            <Tab eventKey={'script'} title="打包部署日志">
                                 <div className={'script-wrap ' + (scriptResult.success === true ? 'success' : '') + (scriptResult.success === false ? 'fail' : '')}>
-                                    <Button type="button" bsStyle="success" onClick={this._triggerScriptExcute.bind(this)}>运行脚本</Button>
+                                    <Button type="button" bsStyle="success" onClick={this._triggerScriptExcute.bind(this, scriptCommand, null)}>运行命令</Button>
 
                                     <span className="script-input">
                                         <FormControl title={scriptCommand} className="script-file-command" type="text" value={scriptCommand} onChange={(e) => {
                                             this._changeHandle(e, 'scriptCommand')
-                                        }} placeholder="输入要运行的运行命令" />  /.build/{componentName}/
-                                    <FormControl title={scriptFile} className="test-file-name" type="text" value={scriptFile} onChange={(e) => {
-                                            this._changeHandle(e, 'scriptFile')
-                                        }} placeholder="输入要运行的文件脚本" />
+                                        }} placeholder="输入要运行的运行命令" />
                                     </span>
 
                                     {scriptResult.success === true ? <i class="fa fa-check"><span>{scriptFile}运行成功</span></i> : null}
@@ -173,18 +189,20 @@ class Preview extends React.Component {
                                     <FormControl componentClass="textarea" value={scriptResult.result} placeholder="脚本运行结果" rows="35" disabled />
                                 </div>
                             </Tab>
-                            <Tab eventKey={'mock'} title="Mock联调">
-                                联调切换：
+                            <Tab eventKey={'readme'} title="查看readme">
+                            </Tab>
+                            <Tab eventKey={'settings'} title="应用设置">
+                                启用代理：
                                 <div className={'switch ' + (mockSwitch ? 'on' : 'off')}>
                                     <div className='track' onClick={this._removeMockRule.bind(this, mockSwitch)}>
                                         <div className='thumb' />
                                     </div>
-                                </div><span className={ mockSwitch ? 'on' : 'off'}>{mockSwitch ? '已开启' : '已停止'}</span>
+                                </div><span className={mockSwitch ? 'on' : 'off'}>{mockSwitch ? '已开启' : '已停止'}</span>
                                 <hr />
                                 <div>
                                     <h4>设置联调域名和IP<Label bsStyle="warning">针对应用生效</Label></h4>
                                     <Form componentClass="fieldset" inline>
-                                        <FormGroup controlId="formValidationWarning4" validationState="warning" className="debug-domain" >
+                                        <FormGroup controlId="formValidationWarning4" validationState="warning" className="dev-input" >
                                             <ControlLabel>联调域名</ControlLabel>
                                             <InputGroup>
                                                 <InputGroup.Addon>domain</InputGroup.Addon>
@@ -194,7 +212,7 @@ class Preview extends React.Component {
                                             </InputGroup>
                                         </FormGroup>
 
-                                        <FormGroup controlId="formValidationError4" validationState="warning" className="debug-ip">
+                                        <FormGroup controlId="formValidationError4" validationState="warning" className="dev-input">
                                             <ControlLabel title="例如线上或测试环境IP">联调指定IP</ControlLabel>
                                             <InputGroup>
                                                 <InputGroup.Addon>IP</InputGroup.Addon>
@@ -203,6 +221,51 @@ class Preview extends React.Component {
                                                 }} placeholder="127.0.0.1" />
                                             </InputGroup>
                                         </FormGroup>
+                                        <Button type="button" bsStyle="warning" onClick={this._setDomainAndIp.bind(this)}>保存设置</Button>
+                                    </Form>
+                                    <hr />
+                                    <h4>命令配置<Label bsStyle="warning">针对应用生效</Label></h4>
+                                    <Form componentClass="fieldset" inline>
+                                        <FormGroup controlId="formValidationWarning4" validationState="warning" className="dev-input" >
+                                            <ControlLabel>初始化</ControlLabel>
+                                            <InputGroup>
+                                                <InputGroup.Addon>init</InputGroup.Addon>
+                                                <FormControl title={initCommand} type="text" value={initCommand} onChange={(e) => {
+                                                    this._changeHandle(e, 'initCommand')
+                                                }} placeholder="npm i" />
+                                            </InputGroup>
+                                        </FormGroup>
+
+                                        <FormGroup controlId="formValidationError4" validationState="warning" className="dev-input">
+                                            <ControlLabel title="启动调试命令">启动调试</ControlLabel>
+                                            <InputGroup>
+                                                <InputGroup.Addon>IP</InputGroup.Addon>
+                                                <FormControl title={devCommand} type="text" value={devCommand} onChange={(e) => {
+                                                    this._changeHandle(e, 'devCommand')
+                                                }} placeholder="npm run dev" />
+                                            </InputGroup>
+                                        </FormGroup>
+
+                                        <FormGroup controlId="formValidationError4" validationState="warning" className="dev-input">
+                                            <ControlLabel title="测试打包部署">测试部署</ControlLabel>
+                                            <InputGroup>
+                                                <InputGroup.Addon>IP</InputGroup.Addon>
+                                                <FormControl title={testCommand} type="text" value={testCommand} onChange={(e) => {
+                                                    this._changeHandle(e, 'testCommand')
+                                                }} placeholder="npm run release" />
+                                            </InputGroup>
+                                        </FormGroup>
+
+                                        <FormGroup controlId="formValidationError4" validationState="warning" className="dev-input">
+                                            <ControlLabel title="预发布部署">预发布部署</ControlLabel>
+                                            <InputGroup>
+                                                <InputGroup.Addon>IP</InputGroup.Addon>
+                                                <FormControl title={preReleaseCommand} type="text" value={preReleaseCommand} onChange={(e) => {
+                                                    this._changeHandle(e, 'preReleaseCommand')
+                                                }} placeholder="npm run release" />
+                                            </InputGroup>
+                                        </FormGroup>
+
                                         <Button type="button" bsStyle="warning" onClick={this._setDomainAndIp.bind(this)}>保存设置</Button>
                                     </Form>
                                     <hr />
@@ -221,7 +284,7 @@ class Preview extends React.Component {
                                         </FormGroup>
                                     </div>
                                     <Form componentClass="fieldset">
-                                        <FormGroup controlId="formValidationWarning4" validationState="warning" className="dev-input" >
+                                        <FormGroup controlId="formValidationWarning4" validationState="warning" className="debug-domain" >
                                             <ControlLabel>接口地址</ControlLabel>
                                             <InputGroup>
                                                 <InputGroup.Addon>api</InputGroup.Addon>
@@ -231,7 +294,7 @@ class Preview extends React.Component {
                                             </InputGroup>
                                         </FormGroup>
 
-                                        <FormGroup controlId="formValidationError4" validationState="warning" className="dev-input">
+                                        <FormGroup controlId="formValidationError4" validationState="warning" className="debug-ip">
                                             <ControlLabel title="返回数据格式">返回数据格式</ControlLabel>
                                             <InputGroup>
                                                 <InputGroup.Addon>json</InputGroup.Addon>
@@ -384,58 +447,23 @@ class Preview extends React.Component {
     }
 
     /**
-     * 启动单元测试
+     * 停止运行脚本
      * 
      * @memberof Preview
      */
-    _triggerUnitTest() {
-        let { testFile } = this.state;
+    _triggerScriptStop() {
 
-        this.setState({
-            unitTestResult: {
-                success: 'loading'
-            }
-        });
+        clearInterval(countInterval);
 
         // 读取固定的api
-        axios.get('/test', {
-            params: {
-                componentName: componentName,
-                testFile: testFile || 'test.js'
-            }
+        axios.get('/webapp/stop', {
+            params: {}
         }).then(res => {
-            this.setState({
-                unitTestResult: res.data
-            });
-        }).catch(err => {
-            console.log(err);
-        });
-
-    }
-
-
-    /**
-     * 启动运行脚本
-     * 
-     * @memberof Preview
-     */
-    _triggerScriptExcute() {
-        let { scriptFile, scriptCommand } = this.state;
-
-        this.setState({
-            scriptResult: {
-                success: 'loading'
+            if (res.data.success) {
+                Dialog.alert({
+                    content: res.data.result
+                });
             }
-        });
-
-        // 读取固定的api
-        axios.get('/script', {
-            params: {
-                componentName: componentName,
-                scriptFile: scriptFile || 'test/test.js',
-                scriptCommand: scriptCommand || 'mocha'
-            }
-        }).then(res => {
             this.setState({
                 scriptResult: res.data
             });
@@ -446,12 +474,68 @@ class Preview extends React.Component {
     }
 
     /**
-     * 刷新iframe
+     * 启动运行脚本
      * 
      * @memberof Preview
      */
-    _reloadIframe() {
-        previewContainer.window.location.reload();
+    _triggerScriptExcute(webappCommand, processStatus) {
+        let { scriptCommand } = this.state;
+
+        this.setState({
+            scriptResult: {
+                success: 'loading'
+            },
+            processStatus: processStatus,
+            processTime: 0
+        });
+
+
+        clearInterval(countInterval);
+        this._startProcessCount();
+
+        // 读取固定的api
+        axios.get('/webapp/script', {
+            params: {
+                webappName: webappName,
+                webappCommand: webappCommand || 'node'
+            }
+        }).then(res => {
+
+            if (res.data.success) {
+                Dialog.alert({
+                    content: '运行成功'
+                });
+            }
+            try {
+                let result = JSON.parse(res.data.result);
+
+                if (!result.killed) {
+                    // 终结其它的命令
+                } else {
+                    this.setState({
+                        scriptResult: res.data,
+                        processStatus: ''
+                    });
+                    clearInterval(countInterval);
+                }
+            } catch (e) {
+                this.setState({
+                    scriptResult: res.data,
+                    processStatus: ''
+                });
+                clearInterval(countInterval);
+            }
+        }).catch(err => {
+            console.log(err);
+        });
+    }
+
+    _startProcessCount() {
+        countInterval = setInterval(() => {
+            this.setState({
+                processTime: this.state.processTime + 1
+            });
+        }, 1000)
     }
 
     /**
@@ -478,11 +562,6 @@ class Preview extends React.Component {
      * @memberof Preview
      */
     _changeHandle(e, name) {
-        this.setState({
-            unitTestResult: {
-                success: ''
-            }
-        });
         this.setState({
             [name]: e.target.value
         });
@@ -575,16 +654,6 @@ class Preview extends React.Component {
         }
 
     }
-
-    /**
-     * 是否是react-redux组件
-     * 
-     * @returns 
-     * @memberof Preview
-     */
-    _isRedux() {
-        return component.template.indexOf('redux') > -1;
-    }
 };
 
 
@@ -596,7 +665,7 @@ class MdEditor extends React.Component {
 
     componentWillMount() {
         // 获取调试服务器组件目录下的readme
-        axios.get(`/.build/${componentName}/readme.md`, {
+        axios.get(`/.build/${webappName}/readme.md`, {
             params: {}
         }).then(res => {
             console.log('获取readme文档成功');
@@ -660,14 +729,14 @@ class MdEditor extends React.Component {
 }
 
 /**
- * 从component中找到当前component信息
+ * 从应用列表中找到当前应用信息
  * 
- * @param {any} componentInfo
+ * @param {any} webappInfo
  * @returns 
  */
-function _getComponent(componentInfo) {
-    return componentInfo.find(function (item) {
-        return item.name == packageName;
+function _getComponent(webappInfo) {
+    return webappInfo.find(function (item) {
+        return item.name == webappName;
     })
 };
 
