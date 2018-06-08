@@ -38,7 +38,7 @@ function asyncFilesAndWatch(serverPath, componentDir) {
     // https://www.npmjs.com/package/chokidar
     chokidar.watch(componentDir, {
         persistent: true,
-        ignored: '*.md',
+        ignored: /node_modules/ig,
         ignoreInitial: false,
         followSymlinks: true,
         cwd: '.',

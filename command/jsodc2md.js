@@ -34,7 +34,7 @@ gulp.src([
 ]).pipe(gulp.dest(options.dist));
 
 // 处理js
-gulp.src(path.join(options.src, 'src/**/*.js'))
+gulp.src(path.join(options.src, 'src/**.js'))
     .pipe(babel({
         presets: ['es2015', 'react', 'stage-0']
     }))
