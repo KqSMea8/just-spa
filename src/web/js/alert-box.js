@@ -10,7 +10,7 @@ var Dialog = {
         okBtn: '确定',
         cancelBtn: '取消',
         contentColor: '#000000',
-        okBtnColor: '#fff',
+        okBtnColor: '#ccc',
         promptTitle: '请输入内容',
         promptOkBtn: '确定',
     },
@@ -55,6 +55,11 @@ var Dialog = {
             '</div>' +
             '</div>';
     },
+    getToastTemplate: function() {
+        return '<div class="toast-container">' +
+            '<div class="toast-dialog">' + this.textTemplate.content + '</div>'
+        '</div>';
+    },
     getPromptTemplate: function () {
         return '<div class="dialog-container">' +
             '<div class="postbird-box-dialog">' +
@@ -95,6 +100,21 @@ var Dialog = {
             }
             _this.removeBox();
         }
+    },
+    toast: function(opt) {
+        this.textTemplate.content = opt.content || opt;
+        var box = document.createElement("div"),
+            _this = this;
+        box.innerHTML = this.getToastTemplate(opt);
+        document.body.appendChild(box);
+        setTimeout(function() {
+            box.className = "show";
+        }, 200);
+        
+        setTimeout(function() {
+            box.className = "";
+            document.body.removeChild(box)
+        }, opt.time || 2000);
     },
     confirm: function (opt) {
         this.textTemplate.title = opt.title || this.textTemplate.promptTitle;
