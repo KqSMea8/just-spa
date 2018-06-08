@@ -21,9 +21,6 @@ function _writeComponent(componentInfo, componentPath) {
 
     let generatorJson, generatorJsonFileList;
     let promises = [], promise, filePromises = [];
-
-    // 计算生成组件名的中划线格式
-    componentInfo.lineThroughName = componentInfo.name.replace(/([A-Z])/g, '-$1').toLowerCase().replace(/^-/, '');
     
     if(fse.pathExistsSync(generatorJsonPath)) {
         generatorJson = fse.readJsonSync(generatorJsonPath);
@@ -129,7 +126,7 @@ function _writePackageJson(jsonPackagePath, componentInfo) {
         // 如果组件物料库中存在package.json，需带上组件物料中默认信息
         let packageJson = fse.readJsonSync(templatePackageJsonPath);
         packageJsonTemplate = Object.assign({}, packageJson, {
-            'name': componentInfo.name,
+            'name': componentInfo.lineThroughName,
             'version': componentInfo.version,
             'template': componentInfo.template,
             'stack': componentInfo.stack,
@@ -142,7 +139,7 @@ function _writePackageJson(jsonPackagePath, componentInfo) {
 
         // 如果不存在package.json，则使用默认的生成配置
         packageJsonTemplate = {
-            'name': componentInfo.name,
+            'name': componentInfo.lineThroughName,
             'version': componentInfo.version,
             'template': componentInfo.template,
             'preview-image': '',
@@ -175,7 +172,12 @@ function _writePackageJson(jsonPackagePath, componentInfo) {
  */
 function createComponent(componentInfo, currentPath, callback) {
 
-    let componentPath = currentPath + '/' + componentInfo.name;
+    // 计算生成组件名的中划线格式
+    componentInfo.lineThroughName = componentInfo.name.replace(/([A-Z])/g, '-$1').toLowerCase().replace(/^-/, '');
+
+    let componentPath = currentPath + '/' + componentInfo.lineThroughName;
+    
+
 
     fse.pathExists(componentPath, function(exists) {
         // 如果目录存在则开始写文件， 否则提示不存在
@@ -185,7 +187,7 @@ function createComponent(componentInfo, currentPath, callback) {
             fse.mkdirsSync(componentPath);
             logger(componentPath + '  组件目录创建成功!', 'magenta');
         }
-        _writeComponent(componentInfo, componentPath).then(callback.bind(this, componentInfo.name));
+        _writeComponent(componentInfo, componentPath).then(callback.bind(this, componentInfo.lineThroughName));
     });
 }
 
