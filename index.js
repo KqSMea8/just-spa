@@ -426,7 +426,7 @@ function _writeComponentInfo(workDirs, serverPath) {
                 webappInfos.webapps.push(Object.assign(packageInfo, {
                     name: packageName
                 }));
-            } else {
+            } else if (packageInfo.template){
                 componentInfos.components.push(Object.assign({
                     name: packageName
                 }, packageInfo));

@@ -195,11 +195,12 @@ class Preview extends React.Component {
                                 </div>
                             </Tab>
                             <Tab eventKey={'readme'} title="查看readme">
+                                <MdEditor />
                             </Tab>
                             <Tab eventKey={'settings'} title="应用设置">
                                 启用代理：
                                 <div className={'switch ' + (mockSwitch ? 'on' : 'off')}>
-                                    <div className='track' onClick={this._removeMockRule.bind(this, mockSwitch)}>
+                                    <div className='track' onClick={this._switchMockRule.bind(this, mockSwitch)}>
                                         <div className='thumb' />
                                     </div>
                                 </div><span className={mockSwitch ? 'on' : 'off'}>{mockSwitch ? '已开启' : '已停止'}</span>
@@ -364,7 +365,7 @@ class Preview extends React.Component {
         }
         jsonEditor.setValue(JSON.parse(mockData));
     }
-    /**\t
+    /**
      * 设置联调Mock规则与数据
      * 
      * @memberof Preview
@@ -379,7 +380,7 @@ class Preview extends React.Component {
         })
         // 如果是redux组件则需要判断actionType并进行动态dispatch
         if (!mockRule || !mockData) {
-            Dialog.alert({
+            Dialog.toast.warn({
                 content: 'mock接口地址或返回数据不能为空。'
             });
             return;
@@ -392,13 +393,13 @@ class Preview extends React.Component {
                 });
                 previewContainer.window.setMockData(mockDataSet, () => {
                     // mock数据联调启用
-                    Dialog.alert({
+                    Dialog.toast.error({
                         content: 'Mock规则保存并已启用'
                     });
                 });
             } catch (e) {
                 console.error(e);
-                Dialog.alert({
+                Dialog.toast.error({
                     content: '输入的mock数据格式必须为json'
                 });
             }
@@ -411,7 +412,7 @@ class Preview extends React.Component {
      * 
      * @memberof Preview
      */
-    _removeMockRule(mockSwitch) {
+    _switchMockRule(mockSwitch) {
         let { mockRule } = this.state;
 
         this.setState({
@@ -422,22 +423,13 @@ class Preview extends React.Component {
         if (mockSwitch) {
             previewContainer.window.removeMockData(() => {
                 // mock数据联调停止
-                // Dialog.alert({
-                //     content: '已移除'
-                // });
+                Dialog.toast.info({
+                    content: '应用联调已停用'
+                });
             }, mockRule);
         } else {
             this._saveMockRule();
         }
-    }
-
-    /**
-     * 设置联调域名和Ip
-     * 
-     * @memberof Preview
-     */
-    _setDomainAndIp() {
-        let { debugDomain, debugIp } = this.state;
     }
 
     /**
@@ -471,7 +463,7 @@ class Preview extends React.Component {
             params: {}
         }).then(res => {
             if (res.data.success) {
-                Dialog.alert({
+                Dialog.toast.info({
                     content: res.data.result
                 });
             }
@@ -513,15 +505,21 @@ class Preview extends React.Component {
         }).then(res => {
 
             if (res.data.success) {
-                Dialog.alert({
+                Dialog.toast.success({
                     content: '运行成功'
                 });
             }
             try {
                 let result = JSON.parse(res.data.result);
-
+                
                 if (!result.killed) {
                     // 终结其它的命令
+                } else if (!res.data.success) {
+                    this.setState({
+                        scriptResult: res.data,
+                        processStatus: ''
+                    });
+                    clearInterval(countInterval);
                 } else {
                     this.setState({
                         scriptResult: res.data,
@@ -537,6 +535,10 @@ class Preview extends React.Component {
                 clearInterval(countInterval);
             }
         }).catch(err => {
+            this.setState({
+                processStatus: ''
+            });
+            Dialog.toast.error('请求失败，确认just start服务是否运行正常');
             console.log(err);
         });
     }
@@ -576,94 +578,6 @@ class Preview extends React.Component {
         this.setState({
             [name]: e.target.value
         });
-    }
-
-    /**
-     * 保存api
-     * 
-     * @memberof Preview
-     */
-    _saveApi() {
-        let { api, apis } = this.state;
-        if (!api) {
-            Dialog.alert({
-                content: '请填写接口地址'
-            });
-        } else {
-            apis.push(api);
-            this.setState({
-                apis: apis
-            })
-            window.open(api, '_blank');
-        }
-    }
-
-    /**
-     * 请求本地数据mock数据接口并注入到组件环境中
-     * 
-     * @returns 
-     * @memberof Preview
-     */
-    _dispatchApi() {
-        let { actionType, storeKey, mockDataPath } = this.state;
-
-        // 如果是redux组件则需要判断actionType并进行动态dispatch
-
-        if (!mockDataPath || !actionType) {
-            Dialog.alert({
-                content: 'mockDataPath或actionType不能为空。'
-            });
-            return;
-        }
-        // 读取固定的api
-        axios.get('/api', {
-            params: {
-                mockUri: mockDataPath
-            }
-        }).then(res => {
-
-            // 如果是redux组件，则使用dispatch的参数，否则使用react组件的参数
-
-            previewContainer.window.dispatchData(actionType, res.data, storeKey);
-        }).catch(err => {
-            console.log(err);
-        });
-    }
-
-
-    /**
-     * 获取输入的json数据并注入到组件环境中
-     * 
-     * @returns 
-     * @memberof Preview
-     */
-    _dispatchJSON() {
-
-        let { actionType, storeKey, jsonData } = this.state;
-
-        // 如果是redux组件则需要判断actionType并进行动态dispatch
-        if (!jsonData) {
-            Dialog.alert({
-                content: 'jsonData不能为空。'
-            });
-            return;
-        }
-
-        try {
-            // 如果有storeKey可以支持jsonData为其它类型
-            previewContainer.window.dispatchData(actionType || '', JSON.parse(jsonData), storeKey);
-        } catch (e) {
-            if (storeKey) {
-                previewContainer.window.dispatchData(actionType || '', {
-                    [storeKey]: jsonData
-                });
-            } else {
-                Dialog.alert({
-                    content: '输入的json格式有误'
-                });
-            }
-        }
-
     }
 };
 

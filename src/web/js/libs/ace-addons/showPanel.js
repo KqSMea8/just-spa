@@ -111,11 +111,11 @@ var initMdEditor = function () {
     }
 
     function saveReadme() {
-        var componentName = Utils.getComponentName(Utils.getUrlParams('c') || '');
+        var appName = Utils.getComponentName(Utils.getUrlParams('c') || '') || Utils.getComponentName(Utils.getUrlParams('webapp') || '');
         var value = ace.edit('mdeditor').getValue();
 
         if (!value) {
-            Dialog.alert({
+            Dialog.toast.warn({
                 content: '文档内容不能为空'
             });
             return;
@@ -124,14 +124,14 @@ var initMdEditor = function () {
         // 获取调试服务器组件目录下的readme
         axios.post(`/saveReadme`, {
             readmeContent: value,
-            componentName: componentName
+            appName: appName
         }).then(res => {
             console.log(res.data.result);
-            Dialog.alert({
-                content: res.data.result
-            });
+            Dialog.toast.info(res.data.result);
         }).catch(err => {
-            alert('获取readme文档失败');
+            Dialog.alert({
+                content: '获取readme文档失败'
+            });
             console.log(err);
         });
     }

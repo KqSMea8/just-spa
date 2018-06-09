@@ -90,7 +90,7 @@ const webpackDevServer = new WebpackDevServer(webpack(config), {
                 return ;
             }
 
-            let readMePath = path.join(argvs.devpath || '', req.body.componentName, 'readme.md');
+            let readMePath = path.join(argvs.devpath || '', req.body.appName, 'readme.md');
 
             fse.outputFile(readMePath, req.body && req.body.readmeContent).then(() => {
                 res.json(

@@ -31,7 +31,15 @@ function asyncFilesAndWatch(serverPath, componentDir) {
 
     fse.ensureDirSync(path.join(serverPath, serverBuildPath, componentName));
 
-    fse.copy(componentDir, path.join(serverPath, serverBuildPath, componentName), () => {
+    fse.copy(componentDir, path.join(serverPath, serverBuildPath, componentName), {
+        // 过滤node_modules不拷贝
+        filter: function (src, dest) {
+            if (src.indexOf('node_modules') >= 0) {
+                return false;
+            }
+            return true;
+        }
+    }, () => {
         _createTemlateFile(serverPath, componentDir, componentName);
     });
 
@@ -58,7 +66,15 @@ function asyncFilesAndWatch(serverPath, componentDir) {
         logger(filePath + ' saved.', 'cyan');
 
         // 目前使用全部拷贝的方式，重新拷贝组件。理想情况是只拷贝修改的文件，待优化
-        fse.copy(this.componentDir, path.join(this.serverPath, serverBuildPath, this.componentName), () => {
+        fse.copy(this.componentDir, path.join(this.serverPath, serverBuildPath, this.componentName), {
+            // 过滤node_modules不拷贝
+            filter: function (src, dest) {
+                if (src.indexOf('node_modules') >= 0) {
+                    return false;
+                }
+                return true;
+            }
+        }, () => {
             
             // 如果修改的是入口文档，支持组件入口文件
             if (filePath.indexOf('index.js') > -1 || filePath.indexOf('src') > -1) {
@@ -88,6 +104,11 @@ function _createTemlateFile(serverPath, componentDir, componentName) {
     if (existPackageJson) {
         // 根据package中输入的template名称来选取模板生成文件
         const packageInfo = fse.readJsonSync(path.join(componentDir + '/', 'package.json'));
+        
+        // 如果是应用或没有模板，则跳过模板生成
+        if (packageInfo.template === 'webapp' || !packageInfo.template) {
+            return ;
+        }
         
         const codeTemplate = (require(`./lib/template/${packageInfo.template}`))(componentName);
     

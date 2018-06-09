@@ -71,5 +71,6 @@
     "release": "gulp clean && npm run lint && gulp release && gulp pkg",
     "lint": "node ./node_modules/eslint/bin/eslint ./src --ext .jsx --ext .js--fix --quiet"
   },
-  "license": "ISC"
+  "license": "ISC",
+  "template": "webapp"
 }
