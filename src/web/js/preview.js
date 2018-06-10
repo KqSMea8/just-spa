@@ -1,6 +1,6 @@
 'use strict';
 
-const { Grid, Row, Col, Button, Label, Image, Form, InputGroup, FormGroup, ControlLabel, FormControl, Tabs, Tab } = ReactBootstrap;
+const { Grid, Row, Col, Button, Label, Table, Image, Form, InputGroup, FormGroup, ControlLabel, FormControl, Tabs, Tab } = ReactBootstrap;
 
 const defaultComponentBanner = './src/web/img/banner.jpg';
 
@@ -31,7 +31,6 @@ class Preview extends React.Component {
             scriptFile: '',         // 自定义脚本文件名(包含路径)
             unitTestResult: {},     // 单元测试运行结果
             scriptResult: {},       // 自定义脚本运行结果
-            buildEs5Result: {},       // 组件构建结果
             showReadme: false,      // 是否显示readme内容
             debugDomain: '',        // 调试域名
             debugIp: '',            // 调试ip
@@ -39,8 +38,24 @@ class Preview extends React.Component {
             mockData: '',           // mock数据
             mockDataSet: {},        // mock数据集
             activeKey: 'component', // tab默认选中的key
-            mockSwitch: false       //是否启用mock
+            mockSwitch: false,       //是否启用mock
+            component: component     // 组件信息
         }, this._getStateFromLocalstorage(componentName + '_componnet_key'))
+    }
+
+    componentWillMount() {
+         // 获取调试服务器组件目录下的readme
+         axios.get(`/.build/${componentName}/package.json`, {
+            params: {}
+        }).then(res => {
+            // 设置编辑器内容
+            console.log(res.data);
+            this.setState({
+                component: Object.assign({}, component, res.data)
+            })
+        }).catch(err => {
+            console.log(err);
+        });
     }
 
     componentDidMount() {
@@ -58,12 +73,44 @@ class Preview extends React.Component {
 
     render() {
 
-        let { api, apis, storeKey, actionType, mockDataPath, jsonData, unitTestResult, scriptResult, buildEs5Result, testFile,
+        let { component, api, apis, storeKey, actionType, mockDataPath, jsonData, unitTestResult, scriptResult, testFile,
             scriptFile, scriptCommand, showReadme, activeKey, debugDomain, debugIp, mockData, mockRule, mockDataSet,
-            mockSwitch } = this.state;
+            mockSwitch, addPackageName, addPackageVersion } = this.state;
         apis = apis.join('\n');
 
+        let dependencies = [];
         let isRedux = this._isRedux();
+
+        if (component.dependencies) {
+            for (let key in component.dependencies) {
+                dependencies.push(<div className="dependencies-item">{key} : {component.dependencies[key]} 
+                <Button type="button" bsStyle="danger" bsSize="small" onClick={this._removeDependencies.bind(this, key, component.dependencies[key])}>移除</Button></div>)
+            }
+            dependencies.push(<span>
+                <Form componentClass="fieldset" inline>
+                    <FormGroup controlId="formValidationWarning4" validationState="warning" className="debug-domain" >
+                        <InputGroup>
+                            <InputGroup.Addon>包名</InputGroup.Addon>
+                            <FormControl title={addPackageName} type="text" value={addPackageName} onChange={(e) => {
+                                this._changeHandle(e, 'addPackageName')
+                            }} placeholder="例如：react" />
+                        </InputGroup>
+                    </FormGroup>
+
+                    <FormGroup controlId="formValidationError4" validationState="warning" className="debug-ip">
+                        <InputGroup>
+                            <InputGroup.Addon>@</InputGroup.Addon>
+                            <FormControl title={addPackageVersion} type="text" value={addPackageVersion} onChange={(e) => {
+                                this._changeHandle(e, 'addPackageVersion')
+                            }} placeholder="包版本号，例如：1.0.0" />
+                        </InputGroup>
+                    </FormGroup>
+                    <Button className="btn-add-dependencies" type="button" bsStyle="success" onClick={this._addDependencies.bind(this, addPackageName, addPackageVersion)}>添加依赖</Button>
+                </Form>
+            </span>
+            )
+        }
+
         return (
             <div class="preview">
                 <div>
@@ -137,6 +184,38 @@ class Preview extends React.Component {
                                 </div>
                                 <iframe name="previewContainer" id="previewContainer" class="preview-container" src={componentUrl} frameborder="1"></iframe>
                             </Tab>
+                            <Tab eventKey={'detail'} title="组件详情">
+                                <Table>
+                                    <thead>
+                                    <tr>
+                                        <th>组件信息：</th>
+                                        <th>详情</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr>
+                                        <td>组件名</td>
+                                        <td>{component.name}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>版本号</td>
+                                        <td>{component.version}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>仓库地址</td>
+                                        <td>{component.git}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>license</td>
+                                        <td>{component.license}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>dependencies</td>
+                                        <td>{dependencies}</td>
+                                    </tr>
+                                    </tbody>
+                                </Table>
+                            </Tab>
                             <Tab eventKey={'readme'} title="readme调试">
                                 <MdEditor />
                             </Tab>
@@ -155,14 +234,14 @@ class Preview extends React.Component {
                                 </div>
                             </Tab>
 
-                            <Tab eventKey={'script'} title="打包组件">
-                                <div className={'script-wrap ' + (buildEs5Result.success === true ? 'success' : '') + (buildEs5Result.success === false ? 'fail' : '')}>
+                            <Tab eventKey={'script'} title="运行日志">
+                                <div className={'script-wrap ' + (scriptResult.success === true ? 'success' : '') + (scriptResult.success === false ? 'fail' : '')}>
                                     <Button type="button" bsStyle="success" onClick={this._buildEs5Component.bind(this)}>执行打包</Button>
 
-                                    {buildEs5Result.success === true ? <i class="fa fa-check"><span>构建完成</span></i> : null}
-                                    {buildEs5Result.success === 'loading' ? <i className="loading"></i> : null}
-                                    {buildEs5Result.success === false ? <i class="fa fa-times-circle"><span>执行失败</span></i> : null}
-                                    <FormControl componentClass="textarea" value={buildEs5Result.result} placeholder="脚本运行结果" rows="35" disabled />
+                                    {scriptResult.success === true ? <i class="fa fa-check"><span>构建完成</span></i> : null}
+                                    {scriptResult.success === 'loading' ? <i className="loading"></i> : null}
+                                    {scriptResult.success === false ? <i class="fa fa-times-circle"><span>执行失败</span></i> : null}
+                                    <FormControl componentClass="textarea" value={scriptResult.result} placeholder="脚本运行结果" rows="35" disabled />
                                 </div>
                             </Tab>
                             <Tab eventKey={'mock'} title="Mock联调">
@@ -244,7 +323,72 @@ class Preview extends React.Component {
             </div>
         );
     }
+    /**
+     * 添加组件依赖
+     *
+     * @memberof packageName
+     * @memberof packageVersion
+     */
+    _addDependencies(packageName, packageVersion) {
 
+        if (!packageName || !packageVersion) {
+            Dialog.toast.warn('包名称或版本号均不能为空');
+        }
+
+        // 读取固定的api
+        axios.get('/component/dependencies/add', {
+            params: {
+                packageName: packageName,
+                packageVersion: packageVersion,
+                componentName: componentName
+            }
+        }).then(res => {
+            this.setState({
+                scriptResult: res.data
+            });
+            if (res.data.success) {
+                Dialog.toast.success('安装完成，刷新页面查看新的依赖');
+            } else {
+                Dialog.toast.error('安装失败');
+            }
+        }).catch(err => {
+            Dialog.toast.error('请求失败，请确认just start服务是否正常');
+            console.log(err);
+        });
+    }
+    /**
+     * 移除组件依赖
+     *
+     * @memberof packageName
+     * @memberof packageVersion
+     */
+    _removeDependencies(packageName, packageVersion) {
+
+        if (!packageName || !packageVersion) {
+            Dialog.toast.warn('包名称或版本号均不能为空');
+        }
+
+        // 读取固定的api
+        axios.get('/component/dependencies/remove', {
+            params: {
+                packageName: packageName,
+                packageVersion: packageVersion,
+                componentName: componentName
+            }
+        }).then(res => {
+            this.setState({
+                scriptResult: res.data
+            });
+            if (res.data.success) {
+                Dialog.toast.success('已经移除依赖，刷新页面查看新的依赖');
+            } else {
+                Dialog.toast.error('移除依赖失败');
+            }
+        }).catch(err => {
+            Dialog.toast.error('请求失败，请确认just start服务是否正常');
+            console.log(err);
+        });
+    }
     /**
      * 切换以保存的cgi
      * 
@@ -403,7 +547,7 @@ class Preview extends React.Component {
     _buildEs5Component() {
 
         this.setState({
-            buildEs5Result: {
+            scriptResult: {
                 success: 'loading'
             }
         });
@@ -415,7 +559,7 @@ class Preview extends React.Component {
             }
         }).then(res => {
             this.setState({
-                buildEs5Result: res.data
+                scriptResult: res.data
             });
         }).catch(err => {
             console.log(err);
@@ -449,7 +593,7 @@ class Preview extends React.Component {
                 scriptResult: res.data
             });
         }).catch(err => {
-            Dialog.toast.error('请求失败，请确认just start服务是否正常')
+            Dialog.toast.error('请求失败，请确认just start服务是否正常');
             console.log(err);
         });
 

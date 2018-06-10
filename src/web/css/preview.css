@@ -305,3 +305,11 @@
 .label-warning {
     margin-left: 10px;
 }
+
+.btn-add-dependencies {
+    margin-left: 20px;
+}
+
+.dependencies-item {
+    margin: 5px 0;
+}

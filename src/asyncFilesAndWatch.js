@@ -102,6 +102,7 @@ function _createTemlateFile(serverPath, componentDir, componentName) {
     let existPackageJson = fse.pathExistsSync(path.join(componentDir + '/', 'package.json'));
     
     if (existPackageJson) {
+
         // 根据package中输入的template名称来选取模板生成文件
         const packageInfo = fse.readJsonSync(path.join(componentDir + '/', 'package.json'));
         

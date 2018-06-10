@@ -26,6 +26,8 @@ const bodyParser = require('body-parser');
 
 const kill = require('./src/kill/thread-kill');
 
+const npm = 'npm';  // npm的安装命令
+
 const app = express();
 const router = express.Router();
 
@@ -271,6 +273,114 @@ const webpackDevServer = new WebpackDevServer(webpack(config), {
                     }
                     res.json({ success: true, result: stdout });
                 }
+            });
+        });
+
+        // 添加依赖
+        app.get('/component/dependencies/add', function (req, res) {
+    
+            let componentName = req.query.componentName || '';
+            let packageName = req.query.packageName || '';
+            let packageVersion = req.query.packageVersion || '';
+            let packageInfo = `${packageName}@${packageVersion}`;
+
+        
+            // 使用一个子进程进入服务器目录并启动组件服务
+            if (!packageName || !packageVersion) {
+                res.json({ success: false, result: '包名称或版本号均不能为空' });
+                return;
+            }
+
+            let componentDir = path.join(argvs.devpath, componentName);
+
+            if (!componentDir) {
+                res.json({ success: false, result: '输入的组件名称不正确，任务即将跳过' });
+                return;
+            }
+
+            let packageJson = fse.readJSONSync(path.resolve(componentDir, 'package.json'));
+
+            packageJson.dependencies = packageJson.dependencies || {};
+            packageJson.dependencies[packageName] = packageVersion;
+
+            fse.outputJson(path.resolve(componentDir, 'package.json'), packageJson, {
+                encoding: 'utf8',
+                spaces: 4
+            }, (err, data) => {
+                if (err) {
+                    res.json({ success: false, result: '写入依赖信息失败' });
+                }
+
+                childProcess.exec(`${npm} install ${packageInfo}`, (error, stdout, stderr) => {
+                    // 目前打包结果的标识判断是否通过
+                    if (stdout.indexOf('Error') > -1) {
+                        res.json({ success: false, result: stdout });
+                    } else if (stdout.indexOf('passing') > -1) {
+                        res.json({ success: true, result: stdout });
+                    } else {
+                        if (error) {
+                            logger(`childProcess.exec error: ${error}`, 'magenta');
+                            res.json({ success: false, result: JSON.stringify(error) });
+                            return;
+                        }
+                        res.json({ success: true, result: stdout });
+                    }
+                    logger(`组件依赖安装成功.`, 'cyan');
+                });
+            });
+        });
+
+        // 移除依赖
+        app.get('/component/dependencies/remove', function (req, res) {
+
+            let componentName = req.query.componentName || '';
+            let packageName = req.query.packageName || '';
+            let packageVersion = req.query.packageVersion || '';
+            let packageInfo = `${packageName}@${packageVersion}`;
+
+        
+            // 使用一个子进程进入服务器目录并启动组件服务
+            if (!packageName || !packageVersion) {
+                res.json({ success: false, result: '包名称或版本号均不能为空' });
+                return;
+            }
+
+            let componentDir = path.join(argvs.devpath, componentName);
+
+            if (!componentDir) {
+                res.json({ success: false, result: '输入的组件名称不正确，任务即将跳过' });
+                return;
+            }
+
+            let packageJson = fse.readJSONSync(path.resolve(componentDir, 'package.json'));
+
+            packageJson.dependencies = packageJson.dependencies || {};
+            delete packageJson.dependencies[packageName];
+
+            fse.outputJson(path.resolve(componentDir, 'package.json'), packageJson, {
+                encoding: 'utf8',
+                spaces: 4
+            }, (err, data) => {
+                if (err) {
+                    res.json({ success: false, result: '写入依赖信息失败' });
+                }
+
+                childProcess.exec(`${npm} remove ${packageInfo}`, (error, stdout, stderr) => {
+                    // 目前打包结果的标识判断是否通过
+                    if (stdout.indexOf('Error') > -1) {
+                        res.json({ success: false, result: stdout });
+                    } else if (stdout.indexOf('passing') > -1) {
+                        res.json({ success: true, result: stdout });
+                    } else {
+                        if (error) {
+                            logger(`childProcess.exec error: ${error}`, 'magenta');
+                            res.json({ success: false, result: JSON.stringify(error) });
+                            return;
+                        }
+                        res.json({ success: true, result: stdout });
+                    }
+                    logger(`组件依赖移除成功.`, 'cyan');
+                });
             });
         });
     }
