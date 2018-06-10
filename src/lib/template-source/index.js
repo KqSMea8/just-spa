@@ -143,7 +143,7 @@ function _writePackageJson(jsonPackagePath, componentInfo) {
             'version': componentInfo.version,
             'template': componentInfo.template,
             'preview-image': '',
-            'main': 'index.js',
+            'main': 'index',  // 默认入口文件为index.js或index.jsx
             'stack': componentInfo.stack,
             'scripts': {
                 'test': '',

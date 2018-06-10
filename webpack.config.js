@@ -12,8 +12,12 @@ const configs = {
 
 const jsDir = path.resolve(process.cwd(), configs.buidDir);
 
-// 读取开发中的全局依赖
-let alias = {}
+// 读取本地其它组件的依赖
+let alias = require(`./${configs.buidDir}/alias.json`);
+// 解析本地其它组件的依赖
+for(let key in alias) {
+    alias[key] = path.resolve(__dirname, './.build/' + alias[key])
+}
 
 for(let key in dependencies){
     alias[key] = path.resolve(jsDir, dependencies[key])

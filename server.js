@@ -19,6 +19,8 @@ const argvs = minimist(process.argv.slice(2));
 const commandParams = process.argv.splice(2);
 const port = argvs.p || argvs.port || 8000;
 
+const currentPath = process.cwd();
+
 const express = require('express');
 const bodyParser = require('body-parser');
 
@@ -234,7 +236,43 @@ const webpackDevServer = new WebpackDevServer(webpack(config), {
             } else {
                 res.json({ success: true, result: '已停止' });
             }
-        })
+        });
+
+        // 构建组件
+        app.get('/component/build', function (req, res) {
+            
+            let componentName = req.query.componentName || '';
+        
+            // 使用一个子进程进入服务器目录并启动组件服务
+            if (!componentName) {
+                res.json({ success: false, result: '请输入要打包的组件名称，输入例如：just build ComponentName' });
+                return;
+            }
+
+            let componentDir = path.join(argvs.devpath, componentName);
+
+            if (!componentDir) {
+                res.json({ success: false, result: '输入的组件名称不正确，任务即将跳过' });
+                return;
+            }
+
+            childProcess.exec(`node "./command/build-es5" --src "${currentPath}" --dist "${componentDir}" --name "${componentName}"`, (error, stdout, stderr) => {
+
+                // 目前打包结果的标识判断是否通过
+                if (stdout.indexOf('Error') > -1) {
+                    res.json({ success: false, result: stdout });
+                } else if (stdout.indexOf('passing') > -1) {
+                    res.json({ success: true, result: stdout });
+                } else {
+                    if (error) {
+                        logger(`childProcess.exec error: ${error}`, 'magenta');
+                        res.json({ success: false, result: JSON.stringify(error) });
+                        return;
+                    }
+                    res.json({ success: true, result: stdout });
+                }
+            });
+        });
     }
 });
 

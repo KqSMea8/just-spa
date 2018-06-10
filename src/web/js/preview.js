@@ -31,6 +31,7 @@ class Preview extends React.Component {
             scriptFile: '',         // 自定义脚本文件名(包含路径)
             unitTestResult: {},     // 单元测试运行结果
             scriptResult: {},       // 自定义脚本运行结果
+            buildEs5Result: {},       // 组件构建结果
             showReadme: false,      // 是否显示readme内容
             debugDomain: '',        // 调试域名
             debugIp: '',            // 调试ip
@@ -57,7 +58,7 @@ class Preview extends React.Component {
 
     render() {
 
-        let { api, apis, storeKey, actionType, mockDataPath, jsonData, unitTestResult, scriptResult, testFile,
+        let { api, apis, storeKey, actionType, mockDataPath, jsonData, unitTestResult, scriptResult, buildEs5Result, testFile,
             scriptFile, scriptCommand, showReadme, activeKey, debugDomain, debugIp, mockData, mockRule, mockDataSet,
             mockSwitch } = this.state;
         apis = apis.join('\n');
@@ -154,23 +155,14 @@ class Preview extends React.Component {
                                 </div>
                             </Tab>
 
-                            <Tab eventKey={'script'} title="运行脚本">
-                                <div className={'script-wrap ' + (scriptResult.success === true ? 'success' : '') + (scriptResult.success === false ? 'fail' : '')}>
-                                    <Button type="button" bsStyle="success" onClick={this._triggerScriptExcute.bind(this)}>运行脚本</Button>
+                            <Tab eventKey={'script'} title="打包组件">
+                                <div className={'script-wrap ' + (buildEs5Result.success === true ? 'success' : '') + (buildEs5Result.success === false ? 'fail' : '')}>
+                                    <Button type="button" bsStyle="success" onClick={this._buildEs5Component.bind(this)}>执行打包</Button>
 
-                                    <span className="script-input">
-                                        <FormControl title={scriptCommand} className="script-file-command" type="text" value={scriptCommand} onChange={(e) => {
-                                            this._changeHandle(e, 'scriptCommand')
-                                        }} placeholder="输入要运行的运行命令" />  /.build/{componentName}/
-                                    <FormControl title={scriptFile} className="test-file-name" type="text" value={scriptFile} onChange={(e) => {
-                                            this._changeHandle(e, 'scriptFile')
-                                        }} placeholder="输入要运行的文件脚本" />
-                                    </span>
-
-                                    {scriptResult.success === true ? <i class="fa fa-check"><span>{scriptFile}运行成功</span></i> : null}
-                                    {scriptResult.success === 'loading' ? <i className="loading"></i> : null}
-                                    {scriptResult.success === false ? <i class="fa fa-times-circle"><span>执行失败</span></i> : null}
-                                    <FormControl componentClass="textarea" value={scriptResult.result} placeholder="脚本运行结果" rows="35" disabled />
+                                    {buildEs5Result.success === true ? <i class="fa fa-check"><span>构建完成</span></i> : null}
+                                    {buildEs5Result.success === 'loading' ? <i className="loading"></i> : null}
+                                    {buildEs5Result.success === false ? <i class="fa fa-times-circle"><span>执行失败</span></i> : null}
+                                    <FormControl componentClass="textarea" value={buildEs5Result.result} placeholder="脚本运行结果" rows="35" disabled />
                                 </div>
                             </Tab>
                             <Tab eventKey={'mock'} title="Mock联调">
@@ -401,7 +393,33 @@ class Preview extends React.Component {
         }).catch(err => {
             console.log(err);
         });
+    }
 
+    /**
+     * build组件为ES5
+     * 
+     * @memberof Preview
+     */
+    _buildEs5Component() {
+
+        this.setState({
+            buildEs5Result: {
+                success: 'loading'
+            }
+        });
+
+        // 读取固定的api
+        axios.get('/component/build', {
+            params: {
+                componentName: componentName,
+            }
+        }).then(res => {
+            this.setState({
+                buildEs5Result: res.data
+            });
+        }).catch(err => {
+            console.log(err);
+        });
     }
 
 
@@ -431,6 +449,7 @@ class Preview extends React.Component {
                 scriptResult: res.data
             });
         }).catch(err => {
+            Dialog.toast.error('请求失败，请确认just start服务是否正常')
             console.log(err);
         });
 

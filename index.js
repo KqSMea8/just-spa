@@ -20,6 +20,7 @@ const socketPub = axon.socket('push');
 
 const socketUrl = 'tcp://127.0.0.1:6677';
 const devRootHost = 'http://localhost';
+const buildPath = '/.build';
 
 const npm = 'tnpm';  // npm的安装命令
 
@@ -68,7 +69,7 @@ function _initCommandSet(serverPath, command, commandParams) {
         case 'clear':
         case 'clean':
             _clearCacheBuildDir([       // 如果命令为空，则输出help
-                serverPath + '/.build'
+                serverPath + buildPath
             ]);
             break;
         case 'run':
@@ -220,9 +221,9 @@ function _initStart(commandParams = []) {
     logger(`starting dev server...`, 'magenta');
 
     // 使用一个子进程进入服务器目录并启动组件服务
-    logger(`Serverd in ${serverPath}/.build`, 'cyan');
+    logger(`Serverd in ${serverPath}${buildPath}`, 'cyan');
 
-    fse.pathExists(serverPath + '/.build', (err, exists) => {
+    fse.pathExists(serverPath + buildPath, (err, exists) => {
         if (!exists) {
             logger('未运行调试服务，请先选择组件调试目录运行"just watch"再尝试.', 'red');
             return;
@@ -400,9 +401,10 @@ function _writeComponentInfo(workDirs, serverPath) {
 
     let componentInfos = { components: [], templates: {} };
     let webappInfos = { webapps: [], templates: {} };
+    let alias = {};
     // 物料模板选项映射表
-    const templatesJson = fse.readJsonSync(__dirname + '/src/lib/template-source/template.json') || {};
     for (let componentDir of workDirs) {
+        const templateJson = fse.readJsonSync(path.resolve(componentDir, 'package.json'));
 
         let packageName,
             packageInfo; // 读取组件的package.json，获取组件信息，如果没有则放入组件名称
@@ -430,26 +432,33 @@ function _writeComponentInfo(workDirs, serverPath) {
                 componentInfos.components.push(Object.assign({
                     name: packageName
                 }, packageInfo));
+                alias[templateJson.name] = path.join(packageName, templateJson.main || '');
             }
         }
     }
-
-    componentInfos.templates = templatesJson;
 
     componentInfos = JSON.stringify(componentInfos);
 
     webappInfos = JSON.stringify(webappInfos);
 
     // 根据当前调试根目录生成所有组件的列表
-    fse.outputFile(path.join(serverPath + '/.build', 'component-info') + '.js', `var componentInfo = JSON.parse(\`${componentInfos}\`)`, (err) => {
+    fse.outputFile(path.join(serverPath + buildPath, 'component-info') + '.js', `var componentInfo = JSON.parse(\`${componentInfos}\`)`, (err) => {
         if (err) throw err;
         logger(`component list info has been created successfully.`, 'cyan');
     });
 
     // 根据当前调试根目录生成所有组件的列表
-    fse.outputFile(path.join(serverPath + '/.build', 'webapp-info') + '.js', `var webappInfo = JSON.parse(\`${webappInfos}\`)`, (err) => {
+    fse.outputFile(path.join(serverPath + buildPath, 'webapp-info') + '.js', `var webappInfo = JSON.parse(\`${webappInfos}\`)`, (err) => {
         if (err) throw err;
         logger(`webapp list info has been created successfully.`, 'cyan');
+    });
+
+    fse.outputJson(path.join(serverPath + buildPath, 'alias.json'), alias, {
+        encoding: 'utf8',
+        spaces: 4
+    }, function(err, data) {
+        if (err) throw err;
+        logger(`alias info has been created successfully.`, 'cyan');
     });
 }
 
