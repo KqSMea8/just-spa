@@ -481,7 +481,7 @@ function _getPortFromParams(commandParams) {
  * @returns 
  */
 function _isWinPlatform () {
-    return process.platform.indexOf('win') > -1;
+    return process.platform.indexOf('win32') > -1;
 }
 
 module.exports = function () {

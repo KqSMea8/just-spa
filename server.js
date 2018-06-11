@@ -26,7 +26,7 @@ const bodyParser = require('body-parser');
 
 const kill = require('./src/kill/thread-kill');
 
-const npm = 'npm';  // npm的安装命令
+const npm = 'tnpm';  // npm的安装命令
 
 const app = express();
 const router = express.Router();
@@ -36,10 +36,6 @@ app.use('/test', router);
 app.use('/saveReadme', router);
 
 let worker = null;
-
-function _isWinPlatform() {
-    return process.platform.indexOf('win') > -1;
-}
 
 const config = getConfig({
     port: port || 8000
@@ -421,7 +417,7 @@ function _bindZmq() {
  * @returns 
  */
 function _isWinPlatform() {
-    return process.platform.indexOf('win') > -1;
+    return process.platform.indexOf('win32') > -1;
 }
 
 _startWebpackDevServer();
