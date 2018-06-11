@@ -403,23 +403,24 @@ function _writeComponentInfo(workDirs, serverPath) {
     let webappInfos = { webapps: [], templates: {} };
     let alias = {};
     // 物料模板选项映射表
+    const templatesJson = fse.readJsonSync(__dirname + '/src/lib/template-source/template.json') || {};
+    
     for (let componentDir of workDirs) {
-        const templateJson = fse.readJsonSync(path.resolve(componentDir, 'package.json'));
-
+        
         let packageName,
-            packageInfo; // 读取组件的package.json，获取组件信息，如果没有则放入组件名称
-
+        packageInfo; // 读取组件的package.json，获取组件信息，如果没有则放入组件名称
+        
         // 处理mac和windows系统差异性
         if (_isWinPlatform()) {
             packageName = componentDir.split("\\");
         } else {
             packageName = componentDir.split('/');
         }
-
+        
         // 如果存在package.json则获取组件名
         let existPackageJSON = fse.pathExistsSync(path.join(componentDir, 'package.json'));
-
         if (existPackageJSON) {
+            let templateJson = fse.readJsonSync(path.resolve(componentDir, 'package.json'));
             packageName = packageName[packageName.length - 1];
             packageInfo = fse.readJsonSync(path.join(componentDir, 'package.json'));
 
@@ -437,6 +438,7 @@ function _writeComponentInfo(workDirs, serverPath) {
         }
     }
 
+    componentInfos.templates = templatesJson;
     componentInfos = JSON.stringify(componentInfos);
 
     webappInfos = JSON.stringify(webappInfos);

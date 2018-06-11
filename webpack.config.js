@@ -1,5 +1,6 @@
 ﻿var path = require('path');
 const fs = require('fs');
+const fse = require('fs-extra');
 var webpack = require('webpack');
 
 const dependencies = require('./package.json').alias;
@@ -13,10 +14,13 @@ const configs = {
 const jsDir = path.resolve(process.cwd(), configs.buidDir);
 
 // 读取本地其它组件的依赖
-let alias = require(`./${configs.buidDir}/alias.json`);
-// 解析本地其它组件的依赖
-for(let key in alias) {
-    alias[key] = path.resolve(__dirname, './.build/' + alias[key])
+let alias = {};
+
+if (fse.pathExistsSync(path.resolve(__dirname, `./${configs.buidDir}/alias.json`))) {
+    alias = fse.readJsonSync(path.resolve(__dirname, `./${configs.buidDir}/alias.json`));
+    for(let key in alias) {
+        alias[key] = path.resolve(__dirname, './.build/' + alias[key])
+    }
 }
 
 for(let key in dependencies){
