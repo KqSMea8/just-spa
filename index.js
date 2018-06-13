@@ -243,7 +243,7 @@ function _initStart(commandParams = []) {
         logger(`dev server started.`, 'magenta');
         setTimeout(() => {
             logger(`Listening at ${devRootUrl}/ 请尝试访问 ${devRootUrl}/component.html?c=[组件名] 进行调试`, 'green');
-            childProcess.exec(`start ${devRootUrl}`);  // 打开浏览器操作可以使用opn的npm包优化
+            // childProcess.exec(`start ${devRootUrl}`);  // 打开浏览器操作可以使用opn的npm包优化
         }, 400);
 
     })
@@ -337,8 +337,16 @@ function _readDirDependencies() {
 
     const currentPath = process.cwd();
     const componentDirs = _readDirSync(currentPath);
-    const dependencies = [];
-
+    let dependencies = [];
+    let packageNames = [];  // 本地已存在被引用的包
+    if (componentDirs.length) {
+        for (let componentDir of componentDirs) {
+            if(fse.pathExistsSync(componentDir + '/package.json')) {
+                packageJson = fse.readJsonSync(componentDir + '/package.json');
+                packageNames.push(packageJson.name);
+            }
+        }
+    }
     // 如果组件不为空，则需要进入读取组件的dependencies
     if (componentDirs.length) {
         for (let componentDir of componentDirs) {
@@ -349,12 +357,13 @@ function _readDirDependencies() {
             }
 
             for (let key in (packageJson.dependencies || {})) {
-                if(dependencies.indexOf(key) < 0) {
+                if(dependencies.indexOf(key) < 0 && packageNames.indexOf(key) < 0) {
                     dependencies.push(key);
                 }
             }
         }
     }
+
     return dependencies;
 }
 
@@ -433,7 +442,7 @@ function _writeComponentInfo(workDirs, serverPath) {
                 componentInfos.components.push(Object.assign({
                     name: packageName
                 }, packageInfo));
-                alias[templateJson.name] = path.join(packageName, templateJson.main || '');
+                alias[templateJson.name] = path.join(packageName, packageInfo.main || '');
             }
         }
     }
