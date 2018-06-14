@@ -297,10 +297,9 @@ class Preview extends React.Component {
                                             <FormControl componentClass="select" placeholder="select" value={mockType}  onChange={(e) => {
                                                 this._changeHandle(e, 'mockType')
                                             }}>
-                                                <option value="">Mock请求类型</option>
                                                 <option value="get">Get</option>
                                                 <option value="post">Post</option>
-                                                <option value="put">Get</option>
+                                                <option value="put">Put</option>
                                                 <option value="delete">Delete</option>
                                             </FormControl>
                                         </FormGroup>

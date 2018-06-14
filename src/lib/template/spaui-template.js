@@ -27,7 +27,7 @@ const render = (Component) => {
 window.setMockData = function(mockDataSet, callback) {
     if (Mock) {
         for (let mockRule in mockDataSet) {
-            Mock.mock(mockRule, mockDataSet[mockRule].mockType, mockDataSet[mockRule].mockData);
+            Mock.mock(new RegExp(mockRule, 'ig'), mockDataSet[mockRule].mockType, mockDataSet[mockRule].mockData);
         }
         callback && callback();
     }
