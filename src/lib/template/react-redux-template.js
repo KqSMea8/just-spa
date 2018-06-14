@@ -73,7 +73,7 @@ window.setMockData = function(mockDataSet, callback) {
         for (let mockRule in mockDataSet) {
             Mock.mock(mockRule, mockDataSet[mockRule].mockType, mockDataSet[mockRule].mockData);
         }
-        callback && callback()
+        callback && callback();
     }
 }
 
