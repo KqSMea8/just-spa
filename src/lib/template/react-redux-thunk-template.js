@@ -86,7 +86,7 @@ window.dispatchData = function(actionType, data, storeKey) {
 window.setMockData = function(mockDataSet, callback) {
     if (Mock) {
         for (let mockRule in mockDataSet) {
-            Mock.mock(mockRule, mockDataSet[mockRule]);
+            Mock.mock(mockRule, mockDataSet[mockRule].mockType, mockDataSet[mockRule].mockData);
         }
         callback && callback()
     }

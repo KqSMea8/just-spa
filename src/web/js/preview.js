@@ -35,6 +35,7 @@ class Preview extends React.Component {
             debugDomain: '',        // 调试域名
             debugIp: '',            // 调试ip
             mockRule: '',           // mock规则
+            mockType: 'get',           // mock请求类型
             mockData: '',           // mock数据
             mockDataSet: {},        // mock数据集
             activeKey: 'component', // tab默认选中的key
@@ -75,7 +76,7 @@ class Preview extends React.Component {
 
         let { component, api, apis, storeKey, actionType, mockDataPath, jsonData, unitTestResult, scriptResult, testFile,
             scriptFile, scriptCommand, showReadme, activeKey, debugDomain, debugIp, mockData, mockRule, mockDataSet,
-            mockSwitch, addPackageName, addPackageVersion } = this.state;
+            mockSwitch, addPackageName, addPackageVersion, mockType } = this.state;
         apis = apis.join('\n');
 
         let dependencies = [];
@@ -290,6 +291,20 @@ class Preview extends React.Component {
                                             </FormControl>
                                         </FormGroup>
                                     </div>
+                                    <div>
+                                        <FormGroup controlId="formControlsSelect" validationState="warning" >
+                                            <ControlLabel>请求类型（Get,Post,Put,Delete等）</ControlLabel>
+                                            <FormControl componentClass="select" placeholder="select" value={mockType}  onChange={(e) => {
+                                                this._changeHandle(e, 'mockType')
+                                            }}>
+                                                <option value="">Mock请求类型</option>
+                                                <option value="get">Get</option>
+                                                <option value="post">Post</option>
+                                                <option value="put">Get</option>
+                                                <option value="delete">Delete</option>
+                                            </FormControl>
+                                        </FormGroup>
+                                    </div>
                                     <Form componentClass="fieldset">
                                         <FormGroup controlId="formValidationWarning4" validationState="warning" className="dev-input" >
                                             <ControlLabel>接口地址</ControlLabel>
@@ -400,7 +415,8 @@ class Preview extends React.Component {
         if (value && mockDataSet[value]) {
             this.setState({
                 mockRule: value,
-                mockData: JSON.stringify(mockDataSet[value])
+                mockType: mockDataSet[value].mockType,
+                mockData: JSON.stringify(mockDataSet[value].mockData)
             });
         }
     }
@@ -432,7 +448,7 @@ class Preview extends React.Component {
      * @memberof Preview
      */
     _saveMockRule() {
-        let { mockRule, mockDataSet } = this.state;
+        let { mockRule, mockDataSet, mockType } = this.state;
         let mockData = jsonEditor && jsonEditor.getValue(mockData) || JSON.parse(this.state.mockData || '{}');
 
         // json在textarea中的格式化展示，需要优化
@@ -448,7 +464,10 @@ class Preview extends React.Component {
         } else {
             try {
                 // 如果有storeKey可以支持jsonData为其它类型
-                mockDataSet[mockRule] = mockData;
+                mockDataSet[mockRule] = {
+                    mockData: mockData,
+                    mockType: mockType
+                };
                 this.setState({
                     mockDataSet
                 });
