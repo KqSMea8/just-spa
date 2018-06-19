@@ -206,13 +206,13 @@ class Index extends React.Component {
                                 return null;
                             }
 
-                            return (<ul className="component-info" title={component.description || component.name}>
+                            return (<ul className="component-info" title={component.name}>
                                 <li>
                                     <a target="_blank" className="preview" href={`/src/web/preview.html?c=${component.name}&stack=${component.stack || 'react'}`}
                                         style={stylePreview}>
                                     </a>
                                 </li>
-                                <li>组件名： <a className="component-name" target="_blank" href={`/src/web/preview.html?c=${component.name}&stack=${component.stack || 'react'}`}>{component.name}</a>
+                                <li><a className="component-name" target="_blank" href={`/src/web/preview.html?c=${component.name}&stack=${component.stack || 'react'}`}>{component.name}</a>
                                     @{component.version || '1.0.0'}
                                 </li>
                                 <li>作者： {component.author || '未知'}</li>

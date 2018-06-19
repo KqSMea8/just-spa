@@ -114,7 +114,7 @@ function _createTemlateFile(serverPath, componentDir, componentName) {
         const codeTemplate = (require(`./lib/template/${packageInfo.template}`))(componentName);
     
         // 获取readme中的内容并处理写入到服务器端文件
-        _processReadmeContent(_parseReadmeContent(componentDir, componentName), serverPath, componentName);
+        _processReadmeContent(_parseReadmeContent(componentDir, componentName), serverPath, componentName, componentDir);
     
         // 如果获取到的文件名不为空则复制文件到服务器目录下
         fse.outputFile(path.join(serverPath + '/.build', componentName) + '.js', codeTemplate, (err) => {
@@ -228,13 +228,27 @@ function _parseReadmeContent(componentDir, componentName) {
 /**
  * 处理readme中的内容，进行解析写入文件
  * 
- * @param {any} readMeContent 
- * @param {any} serverPath 
- * @param {any} componentName 
+ * @param {any} readMeContent readme内容
+ * @param {any} serverPath 调试服务器路径
+ * @param {any} componentName 组件名称
+ * @param {any} componentDir 组件目录
  */
-function _processReadmeContent(readMeContent, serverPath, componentName){
+function _processReadmeContent(readMeContent, serverPath, componentName, componentDir){
+    // 如果存在package.json，则创建组件信息文件
+    let existPackageJson = fse.pathExistsSync(path.join(componentDir + '/', 'package.json'));
+    let defaultEntry = './index';  // 默认调试的入口文件问'./index'
+    
+    if (existPackageJson) {
+        // 根据package中输入的template名称来选取模板生成文件
+        const packageInfo = fse.readJsonSync(path.join(componentDir + '/', 'package.json'));
+        
+        // 如果有main，则默认使用main的文件入口
+        if (packageInfo.main) {
+            existPackageJson = packageInfo.main;
+        }
+    }
 
-    const defaultJs = `import _Component from './index';
+    const defaultJs = `import _Component from '${defaultEntry}';
 export default <_Component/>`;
 
     // 如果readme中的js部分有内容，则直接写入entry.js里面进行调试

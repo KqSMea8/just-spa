@@ -116,7 +116,7 @@ class Preview extends React.Component {
             <div class="preview">
                 <div>
                     <section className="left-nav" id="left-info">
-                        <ul className="component-info" title={component.description || component.name}>
+                        <ul className="component-info" title={component.name}>
                             <li><b>组件名称： {component.name}</b></li>
                             <li>作者： {component.author || '未知'}</li>
                             <li>描述： {component.description || component.name}</li>
