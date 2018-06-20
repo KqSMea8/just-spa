@@ -5,11 +5,13 @@
 const fs = require('fs');
 const fse = require('fs-extra');
 const path = require('path');
+const childProcess = require('child_process');
 const logger = require('./lib/logger');
 const chokidar = require('chokidar');
 const jsdoc2md = require('jsdoc-to-markdown');
 
 const serverBuildPath = '.build';  // 临时存放文件目录
+
 
 /**
  * 读取组件下的文件。同步到服务调试目录，并进行监听
@@ -18,6 +20,12 @@ const serverBuildPath = '.build';  // 临时存放文件目录
  */
 function asyncFilesAndWatch(serverPath, componentDir) {
     let componentName;
+    let cdDisk = '';
+    
+    // 如果匹配到windows环境的盘符，则需要转盘符
+    if (/(\w:)/ig.test(serverPath)) {
+        cdDisk = serverPath.match(/(\w:)/gi)[0] + ' && ';
+    }
     // 处理mac和windows系统差异性
     if (componentDir.indexOf('/') > -1) {
         componentName = componentDir.split('/');
@@ -46,7 +54,7 @@ function asyncFilesAndWatch(serverPath, componentDir) {
     // https://www.npmjs.com/package/chokidar
     chokidar.watch(componentDir, {
         persistent: true,
-        ignored: /node_modules/ig,
+        ignored: /(node_modules)|(lib)/ig,
         ignoreInitial: false,
         followSymlinks: true,
         cwd: '.',
@@ -66,7 +74,7 @@ function asyncFilesAndWatch(serverPath, componentDir) {
         logger(filePath + ' saved.', 'cyan');
 
         // 目前使用全部拷贝的方式，重新拷贝组件。理想情况是只拷贝修改的文件，待优化
-        fse.copy(this.componentDir, path.join(this.serverPath, serverBuildPath, this.componentName), {
+        fse.copy(this.componentDir, path.join(serverPath, serverBuildPath, this.componentName), {
             // 过滤node_modules不拷贝
             filter: function (src, dest) {
                 if (src.indexOf('node_modules') >= 0) {
@@ -80,8 +88,23 @@ function asyncFilesAndWatch(serverPath, componentDir) {
             if (filePath.indexOf('index.js') > -1 || filePath.indexOf('src') > -1) {
                 jsdoc2md.render({ files: filePath }).then((output) => {
                     _UpdateReadmeContent(this.componentDir, this.componentName, output);
-                })
-            } 
+                });
+
+                // 如果修改了组件js，则需要重新build组件
+                logger(`running: 开始build组件...`, 'cyan');
+                childProcess.exec(`cd "${serverPath}" && ${cdDisk} node "./command/build-es5" --src "${serverPath}" --dist "${this.componentDir}" --name "${this.componentName}"`, (error, stdout, stderr) => {
+                    if (error) {
+                        logger(`childProcess.exec error: ${error}`, 'magenta');
+                        return;
+                    }
+                    if (stderr) {
+                        logger(`warning: ${stderr}`, 'magenta');
+                    }
+                    logger(`stdout: ${stdout}`, 'cyan');
+                    logger(`Es5组件构建任务完成.`, 'green');
+                });
+            }
+
             // 获取readme中的内容并处理写入到服务器端文件
             _processReadmeContent(_parseReadmeContent(this.componentDir, this.componentName), this.serverPath, this.componentName);
         });
