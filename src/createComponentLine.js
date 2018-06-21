@@ -75,7 +75,7 @@ function createWebapp(callback) {
             name: 'name',
             message: 'Input the name of Webapp(Must be lowerCase)? ',
             validate: function (value) {
-                var result = value.match(/^([a-z0-9]+)+$/);
+                var result = value.match(/^([a-z0-9\-]+)+$/);
                 if (result) {
                     return true;
                 }
@@ -208,7 +208,7 @@ function createTemplate(serverPath) {
             name: 'name',
             message: 'Input the name of Template(Must be lowerCase)? ',
             validate: function (value) {
-                var result = value.match(/^([a-z][a-z0-9]+)+$/);
+                var result = value.match(/^([a-z][a-z0-9\-]+)+$/);
                 if (result) {
                     return true;
                 }

@@ -223,13 +223,12 @@
 }
 
 .dev-input {
-    margin: 0 20px 10px;
+    margin: 0 20px 10px 0;
     width: 400px;
 }
 
 .dev-input .control-label {
     margin-right: 20px;
-    width: 100px;
 }
 
 .form-inline .dev-input {

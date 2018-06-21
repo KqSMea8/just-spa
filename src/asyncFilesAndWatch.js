@@ -84,14 +84,14 @@ function asyncFilesAndWatch(serverPath, componentDir) {
             }
         }, () => {
             
-            // 如果修改的是入口文档，支持组件入口文件
+            // 如果修改的是入口文件或者src内的文件，支持组件入口文件
             if (filePath.indexOf('index.js') > -1 || filePath.indexOf('src') > -1) {
                 jsdoc2md.render({ files: filePath }).then((output) => {
                     _UpdateReadmeContent(this.componentDir, this.componentName, output);
                 });
 
                 // 如果修改了组件js，则需要重新build组件
-                logger(`running: 开始build组件...`, 'cyan');
+                logger(`running: 开始build ${this.componentName} 组件...`, 'cyan');
                 childProcess.exec(`cd "${serverPath}" && ${cdDisk} node "./command/build-es5" --src "${serverPath}" --dist "${this.componentDir}" --name "${this.componentName}"`, (error, stdout, stderr) => {
                     if (error) {
                         logger(`childProcess.exec error: ${error}`, 'magenta');

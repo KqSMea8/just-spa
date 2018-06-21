@@ -256,7 +256,7 @@ class Preview extends React.Component {
                                 <div>
                                     <h4>设置联调域名和IP<Label bsStyle="warning">针对应用生效</Label></h4>
                                     <Form componentClass="fieldset" inline>
-                                        <FormGroup controlId="formValidationWarning4" validationState="warning" className="debug-domain" >
+                                        <FormGroup controlId="formValidationWarning4" validationState="warning" className="dev-input" >
                                             <ControlLabel>联调域名</ControlLabel>
                                             <InputGroup>
                                                 <InputGroup.Addon>domain</InputGroup.Addon>
@@ -266,7 +266,7 @@ class Preview extends React.Component {
                                             </InputGroup>
                                         </FormGroup>
 
-                                        <FormGroup controlId="formValidationError4" validationState="warning" className="debug-ip">
+                                        <FormGroup controlId="formValidationError4" validationState="warning" className="dev-input">
                                             <ControlLabel title="例如线上或测试环境IP">联调指定IP</ControlLabel>
                                             <InputGroup>
                                                 <InputGroup.Addon>IP</InputGroup.Addon>
