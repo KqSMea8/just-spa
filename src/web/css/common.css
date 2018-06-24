@@ -30,7 +30,7 @@ fieldset {
     height: 84px;
     line-height: 84px;
     color: #fff;
-    background-color: #4D0000;
+    background-color: #035f94;
 }
 
 .top-menu-container {
@@ -93,7 +93,7 @@ fieldset {
 .left-menu-list li:hover,
 .left-menu-list li.active {
     background-color: #888;
-    border-left: 10px solid #4D0000;
+    border-left: 10px solid #035f94;
 }
 
 .left-menu-list a {
@@ -165,7 +165,7 @@ fieldset {
     height: 200px;
     width: 100%;
     min-width: 1366px;
-    background-color: #4D0000;
+    background-color: #035f94;
 }
 
 .section-footer .footer-attach {

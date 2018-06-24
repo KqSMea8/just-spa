@@ -30,7 +30,7 @@
     padding: 10px;
     margin: 0 5px;
     width: 100%;
-    border: solid 1px #630D12;
+    border: solid 1px #035f94;
 }
 
 .section-main .component-debugger-panel {
@@ -49,7 +49,7 @@
 }
 
 .section-main .component-info:hover {
-    box-shadow: 0 0 10px #630D12;
+    box-shadow: 0 0 10px #035f94;
 }
 
 .section-main .component-info li {
@@ -145,8 +145,8 @@
 .section-main .right-content .nav-tabs>li.active>a:focus,
 .section-main .right-content .nav-tabs>li>a:hover {
     border: none;
-    border-bottom: 5px solid #630D12;
-    border-bottom-color: #630D12;
+    border-bottom: 5px solid #035f94;
+    border-bottom-color: #035f94;
     border-radius: 0;
 }
 
