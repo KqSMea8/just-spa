@@ -10,6 +10,7 @@
         "src/reducer.js",
         "src/dispatch.js",
         "index.jsx",
+        "src/index.jsx",
         "src/index.less"
     ],
     "templateData": {

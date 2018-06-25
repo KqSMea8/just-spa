@@ -195,23 +195,23 @@ class Preview extends React.Component {
                                     </thead>
                                     <tbody>
                                     <tr>
-                                        <td>组件名</td>
+                                        <td>组件名 (name)</td>
                                         <td>{component.name}</td>
                                     </tr>
                                     <tr>
-                                        <td>版本号</td>
+                                        <td>版本号 (version)</td>
                                         <td>{component.version}</td>
                                     </tr>
                                     <tr>
-                                        <td>仓库地址</td>
+                                        <td>仓库地址 (git)</td>
                                         <td>{component.git}</td>
                                     </tr>
                                     <tr>
-                                        <td>license</td>
+                                        <td>license (license)</td>
                                         <td>{component.license}</td>
                                     </tr>
                                     <tr>
-                                        <td>dependencies</td>
+                                        <td>第三方依赖 (dependencies)</td>
                                         <td>{dependencies}</td>
                                     </tr>
                                     </tbody>

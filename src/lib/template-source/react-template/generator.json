@@ -8,6 +8,7 @@
         "README.md",
         "test/test.js",
         "src/events.js",
+        "src/index.jsx",
         "index.jsx",
         "src/index.less"
     ],
