@@ -10,15 +10,14 @@ const logger = require('./lib/logger');
 const chokidar = require('chokidar');
 const jsdoc2md = require('jsdoc-to-markdown');
 
-const serverBuildPath = '.build';  // 临时存放文件目录
-
+const constants = require('./constants');
 
 /**
  * 读取组件下的文件。同步到服务调试目录，并进行监听
  * 
  * @param {any} componentDir 组件所在的路径
  */
-function asyncFilesAndWatch(serverPath, componentDir) {
+function fileAsync(serverPath, componentDir) {
     let componentName;
     let cdDisk = '';
     
@@ -35,11 +34,11 @@ function asyncFilesAndWatch(serverPath, componentDir) {
 
     componentName = componentName[componentName.length - 1];
 
-    fse.ensureDirSync(path.join(serverPath, serverBuildPath));
+    fse.ensureDirSync(path.join(serverPath, constants.BUILD_PATH));
 
-    fse.ensureDirSync(path.join(serverPath, serverBuildPath, componentName));
+    fse.ensureDirSync(path.join(serverPath, constants.BUILD_PATH, componentName));
 
-    fse.copy(componentDir, path.join(serverPath, serverBuildPath, componentName), {
+    fse.copy(componentDir, path.join(serverPath, constants.BUILD_PATH, componentName), {
         // 过滤node_modules不拷贝
         filter: function (src, dest) {
             if (src.indexOf('node_modules') >= 0) {
@@ -74,7 +73,7 @@ function asyncFilesAndWatch(serverPath, componentDir) {
         logger(filePath + ' saved.', 'cyan');
 
         // 目前使用全部拷贝的方式，重新拷贝组件。理想情况是只拷贝修改的文件，待优化
-        fse.copy(this.componentDir, path.join(serverPath, serverBuildPath, this.componentName), {
+        fse.copy(this.componentDir, path.join(serverPath, constants.BUILD_PATH, this.componentName), {
             // 过滤node_modules不拷贝
             filter: function (src, dest) {
                 if (src.indexOf('node_modules') >= 0) {
@@ -295,4 +294,4 @@ export default <_Component/>`;
     }
 }
 
-module.exports = asyncFilesAndWatch;
+module.exports = fileAsync;

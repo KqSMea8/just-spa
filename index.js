@@ -2,27 +2,29 @@
 const fs = require('fs');
 const path = require('path');
 const fse = require('fs-extra');
+const axon = require('axon');
+const socketPub = axon.socket('push');
+const downloadGitRepo = require('download-git-repo');
 const childProcess = require('child_process');
 const logger = require('./src/lib/logger');
-const asyncFilesAndWatch = require('./src/asyncFilesAndWatch');
-const { createComponent, createWebapp, createTemplate, removeTemplate, listTemplates } = require('./src/createComponentLine');
+const fileAsync = require('./src/fileAsync');
+
+const constants = require('./src/constants');
+const { isWinPlatform, getPortFromParams } = require('./src/utils');
+
+const { createComponent, createWebapp, createTemplate, removeTemplate, listTemplates } = require('./src/componentLine');
 
 const args = process.argv.splice(1);
-
 const currentPath = process.cwd();
 const serverPath = path.dirname(path.resolve(args[0], '../'));
 
 const command = args[1] || '';
 const commandParams = args.slice(2) || [];
 
-const axon = require('axon');
-const socketPub = axon.socket('push');
-
-const socketUrl = 'tcp://127.0.0.1:6677';
 const devRootHost = 'http://localhost';
-const buildPath = '/.build';
 
-const npm = 'tnpm';  // npm的安装命令
+const buildPath = constants.BUILD_PATH; // build输出目录
+const npm = constants.NPM;              // npm的安装命令
 
 let cdDisk = '';
 
@@ -39,6 +41,12 @@ function _initCommandSet(serverPath, command, commandParams) {
 
     // 命令行处理
     switch (command) {
+        case 'test':
+            downloadGitRepo('gitlab@git.code.oa.com:ouvenzhang/webapp-compoments-template.git', 'tmp',{ clone: true }, function (err, data) {
+                console.log(err, data);
+                console.log(err ? 'Error' : 'Success')
+            });
+            break;
         case 'i':
         case 'install':
             _installOrUpdateAllDependencies(commandParams, 'install');
@@ -56,7 +64,7 @@ function _initCommandSet(serverPath, command, commandParams) {
             break;
         case 'webapp':
             createWebapp((webappName) => {
-                logger(`项目初始化完成，执行：cd ${webappName} & npm i 安装项目依赖`, 'cyan');
+                logger(`项目初始化完成，执行：cd ${webappName} & ${npm} i 安装项目依赖`, 'cyan');
                 // _installDependencies(commandParams, componentName, 'install');
             }); // 根据项目组件物料库创建项目
             break;
@@ -215,7 +223,7 @@ function _installOrUpdateAllDependencies(commandParams, command) {
  */
 function _initStart(commandParams = []) {
 
-    const port = _getPortFromParams(commandParams);
+    const port = getPortFromParams(commandParams);
     const devRootUrl = `${devRootHost}:${port}`;
 
     logger(`starting dev server...`, 'magenta');
@@ -291,7 +299,7 @@ function _initFileWatch(serverPath) {
     const componentDirs = _readDirSync(currentPath);
 
     for (let componentDir of componentDirs) {
-        asyncFilesAndWatch(serverPath, componentDir);
+        fileAsync(serverPath, componentDir);
     }
 
     // 如果组件不为空，则需要写入组件信息
@@ -300,7 +308,7 @@ function _initFileWatch(serverPath) {
     }
 
     // 通知dev server进行重启等操作
-    socketPub.connect(socketUrl);
+    socketPub.connect(constants.SOCKET_URL);
     socketPub.send('watch');
 }
 
@@ -420,7 +428,7 @@ function _writeComponentInfo(workDirs, serverPath) {
         packageInfo; // 读取组件的package.json，获取组件信息，如果没有则放入组件名称
         
         // 处理mac和windows系统差异性
-        if (_isWinPlatform()) {
+        if (isWinPlatform()) {
             packageName = componentDir.split("\\");
         } else {
             packageName = componentDir.split('/');
@@ -471,26 +479,6 @@ function _writeComponentInfo(workDirs, serverPath) {
         if (err) throw err;
         logger(`alias info has been created successfully.`, 'cyan');
     });
-}
-
-/**
- * 获取运行的端口，默认8000
- * 
- */
-function _getPortFromParams(commandParams) {
-    if (commandParams && ['-p', '-port'].includes(commandParams[0]) && Number(commandParams[1])) {
-        return Number(commandParams[1]);
-    }
-    return 8000;
-}
-
-/**
- * 判断是否为windows平台
- * 
- * @returns 
- */
-function _isWinPlatform () {
-    return process.platform.indexOf('win32') > -1;
 }
 
 module.exports = function () {

@@ -16,19 +16,13 @@ const webappAction = require('./lib/webapp');
 
 const logger = require('./lib/logger');
 
+const constants = require('./constants');
+
 // 物料模板选项映射表
 const templatesJson = fse.readJsonSync(__dirname + '/lib/template-source/template.json');
 
 // 项目物料模板选项映射表
 const webappTemplatesJson = fse.readJsonSync(__dirname + '/lib/webapp/template.json');
-
-// 几个主要的技术栈
-const JavascriptFrameMap = {
-    '1': 'react',
-    '2': 'vue',
-    '3': 'angular',
-    '4': 'jquery或其它'
-};
 
 let templateTip = '',
     componentChoice = [],
@@ -53,11 +47,11 @@ for (let key in webappTemplatesJson) {
     });
 }
 
-for (let key in JavascriptFrameMap) {
+for (let key in constants.STACK_MAP) {
     JavascriptFrameChoice.push({
-        name: `${key}.${JavascriptFrameMap[key]}`,
+        name: `${key}.${constants.STACK_MAP[key]}`,
         value: key,
-        short: `${key}.${JavascriptFrameMap[key]}`
+        short: `${key}.${constants.STACK_MAP[key]}`
     });
 }
 
@@ -274,7 +268,7 @@ function createTemplate(serverPath) {
     ]).then(inputs => {
         // 如果输入的是肯定的
         if (/^(y)(es)?$/ig.test(inputs.end) && inputs.stack) {
-            inputs['stack'] = JavascriptFrameMap[inputs.stack];
+            inputs['stack'] = constants.STACK_MAP[inputs.stack];
             templateAction.createTemplate(inputs, serverPath, templatesJson);
         } else {
             logger('Canceled to Create Template.', 'red');

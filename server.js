@@ -1,35 +1,33 @@
 
 const path = require('path');
+const childProcess = require('child_process');
 const webpack = require('webpack');
-const WebpackDevServer = require('webpack-dev-server');
-const getConfig = require('./webpack.config');
-const logger = require('./src/lib/logger');
+const minimist = require('minimist');
 const fse = require('fs-extra');
-const axios = require('axios');
-
 const axon = require('axon');
 const socketSub = axon.socket('pull');
-const socketUrl = 'tcp://127.0.0.1:6677';
-
-const childProcess = require('child_process');
-
-const minimist = require('minimist');
-const argvs = minimist(process.argv.slice(2));
-
-const commandParams = process.argv.splice(2);
-const port = argvs.p || argvs.port || 8000;
-
-const currentPath = process.cwd();
+const WebpackDevServer = require('webpack-dev-server');
 
 const express = require('express');
 const bodyParser = require('body-parser');
 
+const getConfig = require('./webpack.config');
+const logger = require('./src/lib/logger');
 const kill = require('./src/kill/thread-kill');
+const constants = require('./src/constants');
 
-const npm = 'tnpm';  // npm的安装命令
+const { isWinPlatform, getPortFromParams } = require('./src/utils');
+
+const argvs = minimist(process.argv.slice(2));
+const port = argvs.p || argvs.port || 8000;
+
+const commandParams = process.argv.splice(2);
+const currentPath = process.cwd();
 
 const app = express();
 const router = express.Router();
+
+const npm = constants.NPM;  // npm的安装命令
 
 app.use('/api', router);
 app.use('/test', router);
@@ -40,6 +38,7 @@ let worker = null;
 const config = getConfig({
     port: port || 8000
 });
+
 // https://segmentfault.com/a/1190000006964335
 const webpackDevServer = new WebpackDevServer(webpack(config), {
 
@@ -110,7 +109,7 @@ const webpackDevServer = new WebpackDevServer(webpack(config), {
             let testFile = req.query.testFile || 'test.js';
             let testCommand = '';
 
-            if (_isWinPlatform()) {
+            if (isWinPlatform()) {
                 testCommand = `.\\node_modules\\.bin\\mocha --compilers js:babel-core/register --no-deprecation .\\.build\\${componentName}\\test\\${req.query.testFile}`;
             } else {
                 testCommand = `./node_modules/.bin/mocha --compilers js:babel-core/register --no-deprecation ./.build/${componentName}/test/${req.query.testFile}`;
@@ -143,7 +142,7 @@ const webpackDevServer = new WebpackDevServer(webpack(config), {
             let scriptFile = req.query.scriptFile || '';
             let scriptCommand = req.query.scriptCommand || 'node';
 
-            if (_isWinPlatform()) {
+            if (isWinPlatform()) {
                 scriptCommand = `${scriptCommand} .\\.build\\${componentName}\\${req.query.scriptFile}`;
             } else {
                 scriptCommand = `./node_modules/.bin/${scriptCommand} ./.build/${componentName}/${req.query.scriptFile}`;
@@ -180,7 +179,7 @@ const webpackDevServer = new WebpackDevServer(webpack(config), {
                     cdDisk = argvs.devpath.match(/(\w:)/gi)[0] + ' && ';
                 }
                 let devpath = path.join(argvs.devpath, webappName)
-                if (_isWinPlatform()) {
+                if (isWinPlatform()) {
                     webappCommand = `cd "${devpath}" && ${cdDisk} ${webappCommand}`;
                 } else {
                     webappCommand = `cd "${devpath}" && ${cdDisk} ${webappCommand}`;
@@ -397,7 +396,7 @@ function _startWebpackDevServer() {
 
 function _bindZmq() {
     // 监听watch服务命令
-    socketSub.bind(socketUrl);
+    socketSub.bind(constants.SOCKET_URL);
 
     socketSub.on('message', function (action) {
         switch (action) {
@@ -409,15 +408,6 @@ function _bindZmq() {
                 break;
         }
     });
-}
-
-/**
- * 判断是否为windows平台
- * 
- * @returns 
- */
-function _isWinPlatform() {
-    return process.platform.indexOf('win32') > -1;
 }
 
 _startWebpackDevServer();
