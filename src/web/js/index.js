@@ -177,7 +177,7 @@ class Index extends React.Component {
             <LeftMenu hashMenu={hashMenu} />
             {this._renderDocsMenu()}
             {
-                hashMenu === "index" ? <Grid>
+                hashMenu === "index" || !hashMenu ? <Grid>
                     <Row className="show-grid">
                         <Col xs={12} md={12}>
                             <div className="types-list">

@@ -50,7 +50,6 @@ class Preview extends React.Component {
             params: {}
         }).then(res => {
             // 设置编辑器内容
-            console.log(res.data);
             this.setState({
                 component: Object.assign({}, component, res.data)
             })
@@ -347,6 +346,7 @@ class Preview extends React.Component {
 
         if (!packageName || !packageVersion) {
             Dialog.toast.warn('包名称或版本号均不能为空');
+            return;
         }
 
         // 读取固定的api
@@ -380,28 +380,36 @@ class Preview extends React.Component {
 
         if (!packageName || !packageVersion) {
             Dialog.toast.warn('包名称或版本号均不能为空');
+            return;
         }
 
-        // 读取固定的api
-        axios.get('/component/dependencies/remove', {
-            params: {
-                packageName: packageName,
-                packageVersion: packageVersion,
-                componentName: componentName
+        // 确认移除第三方依赖包
+        Dialog.confirm({
+            title: '请确认',
+            content: `确定移除${packageName}@${packageVersion}，移除后组件可能不能正常运行`,
+            onConfirm: function() {
+                // 读取固定的api
+                axios.get('/component/dependencies/remove', {
+                    params: {
+                        packageName: packageName,
+                        packageVersion: packageVersion,
+                        componentName: componentName
+                    }
+                }).then(res => {
+                    this.setState({
+                        scriptResult: res.data
+                    });
+                    if (res.data.success) {
+                        Dialog.toast.success('已经移除依赖，刷新页面查看新的依赖');
+                    } else {
+                        Dialog.toast.error('移除依赖失败');
+                    }
+                }).catch(err => {
+                    Dialog.toast.error('请求失败，请确认just start服务是否正常');
+                    console.log(err);
+                });
             }
-        }).then(res => {
-            this.setState({
-                scriptResult: res.data
-            });
-            if (res.data.success) {
-                Dialog.toast.success('已经移除依赖，刷新页面查看新的依赖');
-            } else {
-                Dialog.toast.error('移除依赖失败');
-            }
-        }).catch(err => {
-            Dialog.toast.error('请求失败，请确认just start服务是否正常');
-            console.log(err);
-        });
+        })
     }
     /**
      * 切换以保存的cgi
