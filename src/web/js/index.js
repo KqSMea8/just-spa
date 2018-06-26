@@ -12,9 +12,10 @@ class Index extends React.Component {
 
         this.state = Object.assign({}, {
             selectedType: 'all',
-            hashMenu: window.location.hash.replace('#', '') || '',
             searchWord: ''
-        }, this._getStateFromLocalstorage('componnet_all'))
+        }, this._getStateFromLocalstorage('componnet_all'), {
+            hashMenu: window.location.hash.replace('#', '') || ''
+        })
     }
 
     componentDidMount() {
@@ -299,8 +300,9 @@ class LeftMenu extends React.Component {
 
     render() {
         let { hashMenu } = this.props;
+        
         return (<ul className="left-menu-list">
-            <li className={hashMenu === 'index' ? 'active' : ''}><a href="/#index"><i className="fa fa-window-maximize"></i>组件列表</a></li>
+            <li className={hashMenu === 'index' || !hashMenu ? 'active' : ''}><a href="/#index"><i className="fa fa-window-maximize"></i>组件列表</a></li>
             <li className={hashMenu === 'webapp' ? 'active' : ''}><a href="/#webapp"><i className="fa fa-th-large"></i>应用列表</a></li>
         </ul>)
     }

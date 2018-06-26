@@ -1,7 +1,7 @@
 {
-  "name": "Gulp-Webpack-Redux-template",
-  "version": "2.0.0",
-  "author": "fwon",
+  "name": "react-redux-route-template",
+  "version": "1.0.0",
+  "author": "",
   "devDependencies": {
     "babel-core": "^6.26.0",
     "babel-loader": "^6.4.1",
@@ -66,10 +66,10 @@
   "main": "gulpfile.js",
   "scripts": {
     "dev": "gulp clean && gulp dev",
-    "build": "gulp clean && gulp dev",
+    "build": "gulp clean && gulp release && gulp pkg",
     "dist": "./node_modules/.bin/gulp clean && ./node_modules/.bin/gulp release && ./node_modules/.bin/gulp pkg",
     "release": "gulp clean && npm run lint && gulp release && gulp pkg",
-    "lint": "node ./node_modules/eslint/bin/eslint ./src --ext .jsx --ext .js--fix --quiet"
+    "lint": "node ./node_modules/eslint/bin/eslint ./src --ext .jsx --ext .js --fix --quiet"
   },
   "license": "ISC",
   "template": "webapp"

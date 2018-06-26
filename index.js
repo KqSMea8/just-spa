@@ -91,6 +91,9 @@ function _initCommandSet(serverPath, command, commandParams) {
             break;
         case 'watch':
         case 'dev':
+            _clearCacheBuildDir([       // 如果命令为空，则输出help
+                serverPath + buildPath
+            ]);
             // watch、dev均可开启调试模式
             _initFileWatch(serverPath);
             break;

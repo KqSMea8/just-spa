@@ -48,7 +48,7 @@
     margin-bottom: 5px;
 }
 
-.section-main .webapp-info:hover {
+.section-main .webapp-info:hover, .section-main .webapp-info.active {
     box-shadow: 0 0 10px #035f94;
 }
 

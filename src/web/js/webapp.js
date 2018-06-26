@@ -27,7 +27,7 @@ class Preview extends React.Component {
             jsonData: '',       // dispatch到store的数据
             apis: [],           // api列表
             testFile: 'test',   // 单元测试用例文件名
-            scriptCommand: 'npm run release', // 单元测试命令
+            scriptCommand: webapp.scripts && webapp.scripts.release || 'npm run release', // 单元测试命令
             scriptFile: '',         // 自定义脚本文件名(包含路径)
 
             scriptResult: {},       // 自定义脚本运行结果
@@ -37,13 +37,14 @@ class Preview extends React.Component {
             canSetting: false,       // 是否可以修改应用设置
 
             initCommand: 'npm i',        // 应用初始化命令
-            devCommand: 'npm run dev',            // 启动开发命令
-            testCommand: 'npm run release',        // 测试打包命令
-            preReleaseCommand: 'npm run release',  // 预发打包命令
+            devCommand: webapp.scripts && webapp.scripts.dev || 'npm run dev',            // 启动开发命令
+            testCommand: webapp.scripts && webapp.scripts.build || 'npm run build',        // 测试打包命令
+            releaseCommand: webapp.scripts && webapp.scripts.release || 'npm run release',  // 预发打包命令
+
             initCommandResult: {},         // 初始化状态
             devCommandResult: {},         // 启动调试状态
             testCommandResult: {},         // 测试部署状态
-            preReleaseCommandResult: {},         // 预发布部署状态
+            releaseCommandResult: {},         // 预发布部署状态
             processStatus: '',             // 进行处理的阶段
             processTime: 0,                 // 进行处理的时间
 
@@ -75,7 +76,7 @@ class Preview extends React.Component {
     render() {
 
         let { api, apis, storeKey, actionType, mockDataPath, jsonData, scriptResult, testFile,
-            scriptFile, scriptCommand, showReadme, activeKey, initCommand, devCommand, testCommand, preReleaseCommand,
+            scriptFile, scriptCommand, showReadme, activeKey, initCommand, devCommand, testCommand, releaseCommand,
             mockDataSet, mockRule, mockData, mockSwitch, debugDomain, debugIp, processStatus, processTime, canSetting } = this.state;
         apis = apis.join('\n');
 
@@ -98,12 +99,10 @@ class Preview extends React.Component {
                     <hr />
                     {
                         webappList.length > 0 ? webappList.map((webapp, index) => {
-
-                            let webappName = webapp.name;
-
+                            let activeClass = webappName === webapp.name ? 'active ' : ' ';
                             return (
-                                <ul className="webapp-info" title={webapp.description || webapp.name}>
-                                    <li>应用名称：<a href={`/src/web/webapp.html?webapp=${webappName}`}><b>{webapp.name}</b></a></li>
+                                <ul className={`${activeClass}webapp-info`} title={webapp.description || webapp.name}>
+                                    <li>应用名称：<a href={`/src/web/webapp.html?webapp=${webapp.name}`}><b>{webapp.name}</b></a></li>
                                     <li>作者： {webapp.author || '未知'}</li>
                                     <li>描述： {webapp.description || webapp.name}</li>
                                     <li>模板： {webapp.template}</li>
@@ -131,7 +130,7 @@ class Preview extends React.Component {
                                     <div className="progress-btn progress-test" onClick={this._triggerScriptExcute.bind(this, testCommand, 'test')}>
                                         {loadingStatus && processStatus === 'test' ? `${processTime} S` : '测试部署'}
                                     </div>
-                                    <div className="progress-btn progress-release" onClick={this._triggerScriptExcute.bind(this, preReleaseCommand, 'release')}>
+                                    <div className="progress-btn progress-release" onClick={this._triggerScriptExcute.bind(this, releaseCommand, 'release')}>
                                         {loadingStatus && processStatus === 'release' ? `${processTime} S` : '预发部署'}
                                     </div>
                                     <div className={loadingStatus}>
@@ -145,7 +144,7 @@ class Preview extends React.Component {
                                 <Table>
                                     <thead>
                                     <tr>
-                                        <th>应用信息：</th>
+                                        <th>应用信息</th>
                                         <th>详情</th>
                                     </tr>
                                     </thead>
@@ -264,8 +263,8 @@ class Preview extends React.Component {
                                             <ControlLabel title="预发布部署">预发布部署</ControlLabel>
                                             <InputGroup>
                                                 <InputGroup.Addon> </InputGroup.Addon>
-                                                <FormControl title={preReleaseCommand} type="text" value={preReleaseCommand} onChange={(e) => {
-                                                    this._changeHandle(e, 'preReleaseCommand')
+                                                <FormControl title={releaseCommand} type="text" value={releaseCommand} onChange={(e) => {
+                                                    this._changeHandle(e, 'releaseCommand')
                                                 }} placeholder="npm run release" disabled={!canSetting}/>
                                             </InputGroup>
                                         </FormGroup>
@@ -503,11 +502,19 @@ class Preview extends React.Component {
                 webappCommand: webappCommand || 'node'
             }
         }).then(res => {
-
             if (res.data.success) {
                 Dialog.toast.success({
                     content: '运行成功'
                 });
+            } else {
+                Dialog.toast.error({
+                    content: '运行错误'
+                });
+                this.setState({
+                    scriptResult: res.data,
+                    processStatus: ''
+                });
+                clearInterval(countInterval);
             }
             try {
                 let result = JSON.parse(res.data.result);
