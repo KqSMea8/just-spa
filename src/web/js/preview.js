@@ -341,7 +341,7 @@ class Preview extends React.Component {
     }
 
     /**
-     * 添加组件依赖
+     * 查询组件依赖的版本号
      *
      * @memberof packageName
      * @memberof packageVersion

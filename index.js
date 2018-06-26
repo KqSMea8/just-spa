@@ -244,6 +244,8 @@ function _initStart(commandParams = []) {
         logger(`cd "${serverPath}" && ${cdDisk} node "server.js" --devpath "${currentPath}" ${commandParams.join(' ')}`, 'cyan');
         childProcess.exec(`cd "${serverPath}" && ${cdDisk} node "server.js" --devpath "${currentPath}" ${commandParams.join(' ')}`, (error, stdout, stderr) => {
             logger(`${stdout}`, 'cyan');
+            logger(`${error}`, 'red');
+            logger(`${stderr}`, 'red');
         }).on('exit', function (code) {
             logger(`restarting dev server...`, 'magenta');
             logger(`dev server stoped...code:${code} success.`, 'cyan');
@@ -253,8 +255,8 @@ function _initStart(commandParams = []) {
 
         logger(`dev server started.`, 'magenta');
         setTimeout(() => {
-            logger(`Listening at ${devRootUrl}/ 请尝试访问 ${devRootUrl}/component.html?c=[组件名] 进行调试`, 'green');
-            // childProcess.exec(`start ${devRootUrl}`);  // 打开浏览器操作可以使用opn的npm包优化
+            logger(`Listening at ${devRootUrl}/ 请尝试访问 ${devRootUrl}`, 'green');
+            // childProcess.exec(`start ${devRootUrl}`);  // 自动打开浏览器操作可以使用opn的npm包优化
         }, 400);
 
     })

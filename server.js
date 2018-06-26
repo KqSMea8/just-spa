@@ -296,7 +296,7 @@ const webpackDevServer = new WebpackDevServer(webpack(config), {
             let packageJson = fse.readJSONSync(path.resolve(componentDir, 'package.json'));
 
             packageJson.dependencies = packageJson.dependencies || {};
-            packageJson.dependencies[packageName] = packageVersion;
+            packageJson.dependencies[packageName] = `^${packageVersion}`;
 
             fse.outputJson(path.resolve(componentDir, 'package.json'), packageJson, {
                 encoding: 'utf8',
