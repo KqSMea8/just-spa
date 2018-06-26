@@ -378,6 +378,36 @@ const webpackDevServer = new WebpackDevServer(webpack(config), {
                 });
             });
         });
+
+        // 查看包版本号
+        app.get('/package/info', function (req, res) {
+
+            let packageName = req.query.packageName;
+
+            if (!packageName) {
+                res.json({ success: false, result: '查询包名不能为空' });
+                return;
+            }
+
+            let scriptCommand = `${constants.NPM} info ${packageName}  versions --json`;
+
+            childProcess.exec(scriptCommand, (error, stdout, stderr) => {
+                // 目前根据测试结果的标识判断是否测试通过
+                if (stdout.indexOf('Error') > -1) {
+                    res.json({ success: false, result: stdout });
+                } else {
+                    if (error) {
+                        logger(`childProcess.exec error: ${error}`, 'magenta');
+                        res.json({ success: false, result: JSON.stringify(error) });
+                        return;
+                    }
+                    res.json({
+                        success: true,
+                        result: JSON.parse(stdout.match(/\[(?=[^\[]+$)(\t|\n|\s|.)+(?=\])\]/)[0])  // 懒惰匹配包的所有版本号
+                    });
+                }
+            });
+        });
     }
 });
 

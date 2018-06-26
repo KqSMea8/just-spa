@@ -32,6 +32,7 @@
 - 快速生成一个项目：just webapp
 - 组件打包build：just build componentName
 - 主动清除调试服务器缓存：just clear
+- 界面化拉取选择第三方依赖
 - 组件辅助数据实时mock，调试左侧栏注入数据
 - 组件实时文档维护编辑和保存，并且分析组件内文档运行demo代码
 - 组件调试页面实时刷新调试

@@ -40,6 +40,7 @@ class Preview extends React.Component {
             mockDataSet: {},        // mock数据集
             activeKey: 'component', // tab默认选中的key
             mockSwitch: false,       //是否启用mock
+            packageVersionList: [],  // 获取版本号的列表
             component: component     // 组件信息
         }, this._getStateFromLocalstorage(componentName + '_componnet_key'))
     }
@@ -52,7 +53,7 @@ class Preview extends React.Component {
             // 设置编辑器内容
             this.setState({
                 component: Object.assign({}, component, res.data)
-            })
+            });
         }).catch(err => {
             console.log(err);
         });
@@ -75,41 +76,43 @@ class Preview extends React.Component {
 
         let { component, api, apis, storeKey, actionType, mockDataPath, jsonData, unitTestResult, scriptResult, testFile,
             scriptFile, scriptCommand, showReadme, activeKey, debugDomain, debugIp, mockData, mockRule, mockDataSet,
-            mockSwitch, addPackageName, addPackageVersion, mockType } = this.state;
+            mockSwitch, addPackageName, addPackageVersion, mockType, packageVersionList } = this.state;
         apis = apis.join('\n');
 
         let dependencies = [];
         let isRedux = this._isRedux();
 
-        if (component.dependencies) {
-            for (let key in component.dependencies) {
-                dependencies.push(<div className="dependencies-item">{key} : {component.dependencies[key]} 
-                <Button type="button" bsStyle="danger" bsSize="small" onClick={this._removeDependencies.bind(this, key, component.dependencies[key])}>移除</Button></div>)
-            }
-            dependencies.push(<span>
-                <Form componentClass="fieldset" inline>
-                    <FormGroup controlId="formValidationWarning4" validationState="warning" className="debug-domain" >
-                        <InputGroup>
-                            <InputGroup.Addon>包名</InputGroup.Addon>
-                            <FormControl title={addPackageName} type="text" value={addPackageName} onChange={(e) => {
-                                this._changeHandle(e, 'addPackageName')
-                            }} placeholder="例如：react" />
-                        </InputGroup>
-                    </FormGroup>
-
-                    <FormGroup controlId="formValidationError4" validationState="warning" className="debug-ip">
-                        <InputGroup>
-                            <InputGroup.Addon>@</InputGroup.Addon>
-                            <FormControl title={addPackageVersion} type="text" value={addPackageVersion} onChange={(e) => {
-                                this._changeHandle(e, 'addPackageVersion')
-                            }} placeholder="包版本号，例如：1.0.0" />
-                        </InputGroup>
-                    </FormGroup>
-                    <Button className="btn-add-dependencies" type="button" bsStyle="success" onClick={this._addDependencies.bind(this, addPackageName, addPackageVersion)}>添加依赖</Button>
-                </Form>
-            </span>
-            )
+        for (let key in component.dependencies || {}) {
+            dependencies.push(<div className="dependencies-item">{key} : {component.dependencies[key]} 
+            <Button type="button" bsStyle="danger" bsSize="small" onClick={this._removeDependencies.bind(this, key, component.dependencies[key])}>移除</Button></div>)
         }
+        dependencies.push(<span>
+            <Form componentClass="fieldset" inline>
+                <FormGroup controlId="formValidationWarning4" validationState="warning" className="debug-domain" >
+                    <InputGroup>
+                        <InputGroup.Addon>新包名</InputGroup.Addon>
+                        <FormControl title={addPackageName} type="text" value={addPackageName} onChange={(e) => {
+                            this._changeHandle(e, 'addPackageName')
+                        }} placeholder="例如：react" />
+                    </InputGroup>
+                </FormGroup>
+
+                @<FormGroup controlId="formValidationError4" validationState="warning" className="debug-ip">
+                    <FormControl title={addPackageVersion} componentClass="select" value={addPackageVersion} onChange={(e) => {
+                        this._changeHandle(e, 'addPackageVersion')
+                    }} placeholder="版本号">
+                        <option value="latest">latest</option>
+                        {
+                            packageVersionList.map((version) => {
+                                return <option value={version}>{version}</option>
+                            })
+                        }
+                    </FormControl>
+                </FormGroup>
+                <Button type="button" bsStyle="info" bsSize="primary" onClick={this._queryDependencies.bind(this, addPackageName, addPackageVersion)}>查询可用版本</Button>
+                <Button className="btn-add-dependencies" type="button" bsStyle="success" onClick={this._addDependencies.bind(this, addPackageName, addPackageVersion)}>安装依赖</Button>
+            </Form>
+        </span>)
 
         return (
             <div class="preview">
@@ -336,6 +339,43 @@ class Preview extends React.Component {
             </div>
         );
     }
+
+    /**
+     * 添加组件依赖
+     *
+     * @memberof packageName
+     * @memberof packageVersion
+     */
+    _queryDependencies(packageName, packageVersion) {
+
+        if (!packageName) {
+            Dialog.toast.warn('包名不能为空');
+            return;
+        }
+
+        // 读取固定的api
+        axios.get('/package/info', {
+            params: {
+                packageName: packageName,
+                packageVersion: packageVersion,
+                componentName: componentName
+            }
+        }).then(res => {
+            this.setState({
+                scriptResult: res.data,
+                packageVersionList: res.data.result || []
+            });
+            if (res.data.success) {
+                Dialog.toast.success('查询到版本号，选中版本包进行安装');
+            } else {
+                Dialog.toast.error('查询版本号失败');
+            }
+        }).catch(err => {
+            Dialog.toast.error('请求失败，请确认just start服务是否正常');
+            console.log(err);
+        });
+    }
+
     /**
      * 添加组件依赖
      *
@@ -377,7 +417,7 @@ class Preview extends React.Component {
      * @memberof packageVersion
      */
     _removeDependencies(packageName, packageVersion) {
-
+        const self = this;
         if (!packageName || !packageVersion) {
             Dialog.toast.warn('包名称或版本号均不能为空');
             return;
@@ -396,7 +436,7 @@ class Preview extends React.Component {
                         componentName: componentName
                     }
                 }).then(res => {
-                    this.setState({
+                    self.setState({
                         scriptResult: res.data
                     });
                     if (res.data.success) {
