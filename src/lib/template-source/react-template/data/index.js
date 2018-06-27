@@ -4,4 +4,4 @@
 export default {
     text: 'hello',
     name: 'world'
-}
+};

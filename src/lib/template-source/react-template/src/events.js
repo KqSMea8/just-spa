@@ -2,13 +2,12 @@
 
 import axios from 'axios';
 
-
 // 同步change实例
 export const change = function () {
     this.setState ({
         text: 'change'
     });
-}
+};
 
 // 异步change实例
 export const asyncChange = function (actionType) {
@@ -21,7 +20,7 @@ export const asyncChange = function (actionType) {
             text: res.data.text
         });
     });
-}
+};
 
 // 异步change实例
 export const promiseChange = function (actionType) {
@@ -36,4 +35,4 @@ export const promiseChange = function (actionType) {
             });
         });
     });
-}
+};

@@ -1,8 +1,7 @@
 {
     "statics": [
         "data/index.js",
-        "data/asyncData.json",
-        "test/add.js"
+        "data/asyncData.json"
     ],
     "templates": [
         "README.md",

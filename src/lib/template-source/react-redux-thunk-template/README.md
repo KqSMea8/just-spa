@@ -1,8 +1,5 @@
 ﻿```html
-    <link rel="stylesheet" href="//i.gtimg.cn/qzone/biz/gdt/lib/bootstrap-3.3.7/css/bootstrap-base64font.min.css" />
-    <link rel="stylesheet" href='//i.gtimg.cn/qzone/biz/gdt/lib/bootstrap-3.3.7/css/bootstrap-theme.css?max_age=31536000' /> 
-    <div id="test"></div>
-
+<div id="test"></div>
 ```
 
 ```css

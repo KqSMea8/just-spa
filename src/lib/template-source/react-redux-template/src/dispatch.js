@@ -11,7 +11,7 @@ export const dispatchChange = function () {
             text: 'change'
         }
     });
-}
+};
 
 // 异步dispatch实例
 export const dispatchAsyncChange = function () {
@@ -29,7 +29,7 @@ export const dispatchAsyncChange = function () {
             }
         });
     });
-}
+};
 
 // 异步promise实例
 export const dispatchPromiseChange = function () {
@@ -46,5 +46,5 @@ export const dispatchPromiseChange = function () {
             }
         });
     });
+};
 
-}

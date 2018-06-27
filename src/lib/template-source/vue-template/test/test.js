@@ -16,3 +16,4 @@ describe('<${_Component} {...initProps}/>', () => {
         expect([1,2,3]).to.have.length(3);
     });
 });
+

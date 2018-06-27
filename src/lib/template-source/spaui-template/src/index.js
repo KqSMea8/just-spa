@@ -28,3 +28,4 @@ class ${_Component} extends PureComponent {
 }
 
 export default ${_Component};
+

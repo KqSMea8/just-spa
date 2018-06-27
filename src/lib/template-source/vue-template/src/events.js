@@ -1,12 +1,9 @@
-
-
 import axios from 'axios';
-
 
 // 同步change实例
 export const change = function () {
     this.text = 'change world';
-}
+};
 
 // 异步change实例
 export const asyncChange = function (actionType) {
@@ -17,7 +14,7 @@ export const asyncChange = function (actionType) {
     }).then((res) => {
         self.text = res.data.text;
     });
-}
+};
 
 // 异步change实例
 export const promiseChange = function (actionType) {
@@ -30,4 +27,4 @@ export const promiseChange = function (actionType) {
             self.text = res.data.text;
         });
     });
-}
+};

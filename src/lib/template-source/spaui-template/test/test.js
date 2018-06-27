@@ -14,4 +14,4 @@ describe('<${_Component} {...initProps}/>', () => {
         const wrapper = shallow(<${_Component} {...initProps}/>);
         expect([1,2,3]).to.have.length(3);
     });
-})
+});

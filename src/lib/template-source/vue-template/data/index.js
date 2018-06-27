@@ -8,4 +8,5 @@ export default {
         { list: '学习 Vue' },
         { list: '整个牛项目' }
     ]
-}
+};
+

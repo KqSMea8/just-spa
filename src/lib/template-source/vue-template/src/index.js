@@ -1,8 +1,4 @@
-
-
 import { change, asyncChange, promiseChange } from './events';
-
-import './index.less';
 
 const ${_Component} = (props) => {
     return new Vue({
@@ -20,6 +16,7 @@ const ${_Component} = (props) => {
             }
         }
     });
-}
+};
 
 export default ${_Component};
+

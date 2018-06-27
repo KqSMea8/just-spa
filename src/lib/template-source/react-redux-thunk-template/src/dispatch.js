@@ -16,7 +16,7 @@ export const dispatchChange = function () {
         };
     }
     store.dispatch(actionCreator('change'));
-}
+};
 
 // 异步dispatch实例
 export const dispatchAsyncChange = function (actionType) {
@@ -40,7 +40,7 @@ export const dispatchAsyncChange = function (actionType) {
     }
 
     store.dispatch(actionCreator('change'));
-}
+};
 
 // 异步promise实例
 export const dispatchPromiseChange = function (actionType) {
@@ -63,4 +63,5 @@ export const dispatchPromiseChange = function (actionType) {
     }
 
     store.dispatch(actionCreator('change'));
-}
+};
+

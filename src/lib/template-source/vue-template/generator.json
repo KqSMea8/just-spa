@@ -1,9 +1,5 @@
 {
     "statics": [
-        ".editorconfig",
-        ".eslintrc",
-        ".gitignore",
-        ".npmignore",
         "data/index.js",
         "data/asyncData.json",
         "src/loading.gif"
