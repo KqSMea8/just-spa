@@ -17,7 +17,7 @@ class ${_Component} extends PureComponent {
     }
 
     constructor(props) {
-        super();
+        super(props);
         this.state = {};
     }
 

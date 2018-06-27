@@ -12,7 +12,7 @@ class ${_Component} extends PureComponent {
     }
 
     constructor(props) {
-        super();
+        super(props);
         this.state = {
             text: props.text,
             name: props.name
