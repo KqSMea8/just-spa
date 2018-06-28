@@ -47,6 +47,7 @@
 - 支持react、vue、angular、jquery等技术栈物料和组件快速扩展，内置基础物料库
 - just系统md文档实时查看
 - 应用管理：可以用于管理多项目应用和多版本的创建、调试、发布联调等管理。
+- just set可自由设置npm、tnpm、cnpm包管理工具。
 
 #### 3、just体系设计实现
 

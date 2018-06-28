@@ -135,6 +135,33 @@ const webpackDevServer = new WebpackDevServer(webpack(config), {
             });
         });
 
+
+        // ESLint
+        app.get('/eslint', function (req, res) {
+
+            let componentName = req.query.componentName;
+            let lintCommand = '';
+    
+            let componentDir = path.join(argvs.devpath, componentName);
+    
+            if (isWinPlatform()) {
+                lintCommand = `node .\\node_modules\\eslint\\bin\\eslint ${componentDir} --ext .jsx --ext .js --fix --quiet`;
+            } else {
+                lintCommand = `node ./node_modules/eslint/bin/eslint ${componentDir} --ext .jsx --ext .js --fix --quiet`;
+            }
+
+            childProcess.exec(lintCommand, (error, stdout, stderr) => {
+
+                // eslint是否运行通过
+                if (error) {
+                    logger(`childProcess.exec error: ${error}`, 'magenta');
+                    res.json({ success: false, result: JSON.stringify(error) });
+                    return;
+                }
+                res.json({ success: true, result: stdout });
+            });
+        });
+
         // 运行自定义脚本
         app.get('/script', function (req, res) {
 
@@ -392,7 +419,7 @@ const webpackDevServer = new WebpackDevServer(webpack(config), {
             let scriptCommand = `${configs.NPM} info ${packageName}  versions --json`;
 
             childProcess.exec(scriptCommand, (error, stdout, stderr) => {
-                // 目前根据测试结果的标识判断是否测试通过
+                // 根据结果判断运行是否成功
                 if (stdout.indexOf('Error') > -1) {
                     res.json({ success: false, result: stdout });
                 } else {

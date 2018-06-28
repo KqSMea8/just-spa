@@ -40,6 +40,8 @@ if (/(\w:)/ig.test(serverPath)) {
 function _initCommandSet(serverPath, command, commandParams) {
     const commandSets = ['init', 'update', 'help'];
 
+    logger(`当前包管理工具为 ${npm}.`, 'cyan');
+
     // 命令行处理
     switch (command) {
         case 'test':
@@ -126,8 +128,7 @@ function _initCommandSet(serverPath, command, commandParams) {
 function _setNpmCommand(commandParams) {
     // 使用一个子进程进入服务器目录并启动组件服务
     if (!commandParams[0]) {
-        logger('请输入要设置的npm命令，输入例如：just set [npm/tnpm/cnpm]，当前npm命令为：', 'red');
-        logger(configs.NPM, 'cyan');
+        logger('请输入要设置的npm工具，输入例如：just set npm/tnpm/cnpm', 'red');
         return;
     }
 

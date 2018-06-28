@@ -110,7 +110,7 @@ class Preview extends React.Component {
                     </FormControl>
                 </FormGroup>
                 <Button type="button" bsStyle="info" bsSize="primary" onClick={this._queryDependencies.bind(this, addPackageName, addPackageVersion)}>查询可用版本</Button>
-                <Button className="btn-add-dependencies" type="button" bsStyle="success" onClick={this._addDependencies.bind(this, addPackageName, addPackageVersion)}>安装依赖</Button>
+                <Button className="btn-add-dependencies" type="button" bsStyle="success" onClick={this._addDependencies.bind(this, addPackageName, addPackageVersion)}>安装使用版本</Button>
             </Form>
         </span>)
 
@@ -574,6 +574,35 @@ class Preview extends React.Component {
         } else {
             window.showReadme = false;
         }
+    }
+
+    
+    /**
+     * 启动eslint
+     * 
+     * @memberof Preview
+     */
+    _triggerEsLint() {
+        let { testFile } = this.state;
+
+        this.setState({
+            unitTestResult: {
+                success: 'loading'
+            }
+        });
+
+        // 读取固定的api
+        axios.get('/eslint', {
+            params: {
+                componentName: componentName
+            }
+        }).then(res => {
+            this.setState({
+                unitTestResult: res.data
+            });
+        }).catch(err => {
+            console.log(err);
+        });
     }
 
     /**
