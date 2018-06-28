@@ -136,7 +136,7 @@ const webpackDevServer = new WebpackDevServer(webpack(config), {
         });
 
 
-        // ESLint
+        // ESLint某些目录
         app.get('/eslint', function (req, res) {
 
             let componentName = req.query.componentName;

@@ -26,7 +26,7 @@ options.dist = path.join(options.dist ,'lib');
 // 拷贝文件
 gulp.src([
     path.join(options.src, '**/*.*'),
-    '!' + path.join(options.src, '**/*.js'),
+    '!' + path.join(options.src, '**/*.js*'),
     '!' + path.join(options.src, '**/*.less'),
     '!' + path.join(options.src, '**/*.json'),
     '!' + path.join(options.src, '**/*.md'),
@@ -34,7 +34,7 @@ gulp.src([
 ]).pipe(gulp.dest(options.dist));
 
 // 处理js
-gulp.src(path.join(options.src, 'src/**/*.js'))
+gulp.src(path.join(options.src, 'src/**/*.js*'))
     .pipe(babel({
         presets: ['es2015', 'react', 'stage-0']
     }))
