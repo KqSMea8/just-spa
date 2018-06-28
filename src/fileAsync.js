@@ -10,7 +10,7 @@ const logger = require('./lib/logger');
 const chokidar = require('chokidar');
 const jsdoc2md = require('jsdoc-to-markdown');
 
-const constants = require('./constants');
+const configs = require('./configs');
 
 /**
  * 读取组件下的文件。同步到服务调试目录，并进行监听
@@ -34,11 +34,11 @@ function fileAsync(serverPath, componentDir) {
 
     componentName = componentName[componentName.length - 1];
 
-    fse.ensureDirSync(path.join(serverPath, constants.BUILD_PATH));
+    fse.ensureDirSync(path.join(serverPath, configs.BUILD_PATH));
 
-    fse.ensureDirSync(path.join(serverPath, constants.BUILD_PATH, componentName));
+    fse.ensureDirSync(path.join(serverPath, configs.BUILD_PATH, componentName));
 
-    fse.copy(componentDir, path.join(serverPath, constants.BUILD_PATH, componentName), {
+    fse.copy(componentDir, path.join(serverPath, configs.BUILD_PATH, componentName), {
         // 过滤node_modules不拷贝
         filter: function (src, dest) {
             if (src.indexOf('node_modules') >= 0) {
@@ -73,7 +73,7 @@ function fileAsync(serverPath, componentDir) {
         logger(filePath + ' saved.', 'cyan');
 
         // 目前使用全部拷贝的方式，重新拷贝组件。理想情况是只拷贝修改的文件，待优化
-        fse.copy(this.componentDir, path.join(serverPath, constants.BUILD_PATH, this.componentName), {
+        fse.copy(this.componentDir, path.join(serverPath, configs.BUILD_PATH, this.componentName), {
             // 过滤node_modules不拷贝
             filter: function (src, dest) {
                 if (src.indexOf('node_modules') >= 0) {

@@ -9,7 +9,7 @@ const childProcess = require('child_process');
 const logger = require('./src/lib/logger');
 const fileAsync = require('./src/fileAsync');
 
-const constants = require('./src/constants');
+const configs = require('./src/configs');
 const { isWinPlatform, getPortFromParams } = require('./src/utils');
 
 const { createComponent, createWebapp, createTemplate, removeTemplate, listTemplates } = require('./src/componentLine');
@@ -23,8 +23,8 @@ const commandParams = args.slice(2) || [];
 
 const devRootHost = 'http://localhost';
 
-const buildPath = constants.BUILD_PATH; // build输出目录
-const npm = constants.NPM;              // npm的安装命令
+const buildPath = configs.BUILD_PATH; // build输出目录
+const npm = configs.NPM;              // npm的安装命令
 
 let cdDisk = '';
 
@@ -32,6 +32,7 @@ let cdDisk = '';
 if (/(\w:)/ig.test(serverPath)) {
     cdDisk = serverPath.match(/(\w:)/gi)[0] + ' && ';
 }
+
 /**
  * 初始化命令集合
  * 
@@ -101,6 +102,10 @@ function _initCommandSet(serverPath, command, commandParams) {
             // 编译打包组件为单个可输出文件
             _buildEs5Component(commandParams);
             break;
+        case 'set':
+            // 设置npm运行命令，选择npm还是tnpm
+            _setNpmCommand(commandParams);
+            break;
         case '-v':
         case 'version':
             _showVersion();
@@ -111,6 +116,30 @@ function _initCommandSet(serverPath, command, commandParams) {
             _consoleHelp();
             break;
     }
+}
+
+/**
+ * 设置npm运行命令，选择npm、cnpm还是tnpm
+ * 
+ * @param {any} commandParams 
+ */
+function _setNpmCommand(commandParams) {
+    // 使用一个子进程进入服务器目录并启动组件服务
+    if (!commandParams[0]) {
+        logger('请输入要设置的npm命令，输入例如：just set [npm/tnpm/cnpm]，当前npm命令为：', 'red');
+        logger(configs.NPM, 'cyan');
+        return;
+    }
+
+    configs['NPM'] = commandParams[0];
+
+    fse.outputJson(path.join(serverPath, './src', 'configs.json'), configs, {
+        encoding: 'utf8',
+        spaces: 4
+    }, function(err, data) {
+        if (err) throw err;
+        logger(`${commandParams[0]} has been setted successfully.`, 'cyan');
+    });
 }
 
 /**
@@ -291,7 +320,8 @@ function _consoleHelp() {
     just dev/watch: 在当前目录下创建组件调试环境。
     just build: 编译打包组件为单个输出的ES5文件并编译CSS文件。例如：just build ComponentName
     just help: 查看帮助。查看just所有命令。
-    just -v/version: 显示当前安装的just版本。`, 'magenta');
+    just -v/version: 显示当前安装的just版本。
+    just set: 设置npm、tnpm或tnpm，例如：just set tnpm。`, 'magenta');
 }
 
 /**
@@ -313,7 +343,7 @@ function _initFileWatch(serverPath) {
     }
 
     // 通知dev server进行重启等操作
-    socketPub.connect(constants.SOCKET_URL);
+    socketPub.connect(configs.SOCKET_URL);
     socketPub.send('watch');
 }
 

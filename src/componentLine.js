@@ -16,7 +16,7 @@ const webappAction = require('./lib/webapp');
 
 const logger = require('./lib/logger');
 
-const constants = require('./constants');
+const configs = require('./configs');
 
 // 物料模板选项映射表
 const templatesJson = fse.readJsonSync(__dirname + '/lib/template-source/template.json');
@@ -47,11 +47,11 @@ for (let key in webappTemplatesJson) {
     });
 }
 
-for (let key in constants.STACK_MAP) {
+for (let key in configs.STACK_MAP) {
     JavascriptFrameChoice.push({
-        name: `${key}.${constants.STACK_MAP[key]}`,
+        name: `${key}.${configs.STACK_MAP[key]}`,
         value: key,
-        short: `${key}.${constants.STACK_MAP[key]}`
+        short: `${key}.${configs.STACK_MAP[key]}`
     });
 }
 
@@ -268,7 +268,7 @@ function createTemplate(serverPath) {
     ]).then(inputs => {
         // 如果输入的是肯定的
         if (/^(y)(es)?$/ig.test(inputs.end) && inputs.stack) {
-            inputs['stack'] = constants.STACK_MAP[inputs.stack];
+            inputs['stack'] = configs.STACK_MAP[inputs.stack];
             templateAction.createTemplate(inputs, serverPath, templatesJson);
         } else {
             logger('Canceled to Create Template.', 'red');

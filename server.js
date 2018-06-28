@@ -14,7 +14,7 @@ const bodyParser = require('body-parser');
 const getConfig = require('./webpack.config');
 const logger = require('./src/lib/logger');
 const kill = require('./src/kill/thread-kill');
-const constants = require('./src/constants');
+const configs = require('./src/configs');
 
 const { isWinPlatform, getPortFromParams } = require('./src/utils');
 
@@ -27,7 +27,7 @@ const currentPath = process.cwd();
 const app = express();
 const router = express.Router();
 
-const npm = constants.NPM;  // npm的安装命令
+const npm = configs.NPM;  // npm的安装命令
 
 app.use('/api', router);
 app.use('/test', router);
@@ -389,7 +389,7 @@ const webpackDevServer = new WebpackDevServer(webpack(config), {
                 return;
             }
 
-            let scriptCommand = `${constants.NPM} info ${packageName}  versions --json`;
+            let scriptCommand = `${configs.NPM} info ${packageName}  versions --json`;
 
             childProcess.exec(scriptCommand, (error, stdout, stderr) => {
                 // 目前根据测试结果的标识判断是否测试通过
@@ -426,7 +426,7 @@ function _startWebpackDevServer() {
 
 function _bindZmq() {
     // 监听watch服务命令
-    socketSub.bind(constants.SOCKET_URL);
+    socketSub.bind(configs.SOCKET_URL);
 
     socketSub.on('message', function (action) {
         switch (action) {
