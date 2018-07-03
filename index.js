@@ -38,7 +38,6 @@ if (/(\w:)/ig.test(serverPath)) {
  * 
  */
 function _initCommandSet(serverPath, command, commandParams) {
-    const commandSets = ['init', 'update', 'help'];
 
     logger(`当前包管理工具为 ${npm}.`, 'cyan');
 

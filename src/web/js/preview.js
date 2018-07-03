@@ -231,7 +231,7 @@ class Preview extends React.Component {
                                         }} placeholder="要测试的文件脚本，默认为test.js" />
                                     </span>
                                     {unitTestResult.success === true ? <i class="fa fa-check"><span>{testFile || 'test.js'}测试通过</span></i> : null}
-                                    {unitTestResult.success === 'loading' ? <i className="loading"></i> : null}
+                                    {unitTestResult.success === 'loading' ? <i className="loading-icon"></i> : null}
                                     {unitTestResult.success === false ? <i class="fa fa-times-circle"><span>失败</span></i> : null}
                                     <FormControl componentClass="textarea" value={unitTestResult.result} placeholder="单元测试结果" rows="35" disabled />
                                 </div>
@@ -242,7 +242,7 @@ class Preview extends React.Component {
                                     <Button type="button" bsStyle="success" onClick={this._buildEs5Component.bind(this)}>执行打包</Button>
 
                                     {scriptResult.success === true ? <i class="fa fa-check"><span>构建完成</span></i> : null}
-                                    {scriptResult.success === 'loading' ? <i className="loading"></i> : null}
+                                    {scriptResult.success === 'loading' ? <i className="loading-icon"></i> : null}
                                     {scriptResult.success === false ? <i class="fa fa-times-circle"><span>执行失败</span></i> : null}
                                     <FormControl componentClass="textarea" value={scriptResult.result} placeholder="脚本运行结果" rows="35" disabled />
                                 </div>
@@ -354,11 +354,12 @@ class Preview extends React.Component {
         }
 
         // 读取固定的api
-        axios.get('/package/info', {
+        bizAxios({
+            url: '/package/info',
+            method: 'get',
+            cache: true,
             params: {
-                packageName: packageName,
-                packageVersion: packageVersion,
-                componentName: componentName
+                packageName: packageName
             }
         }).then(res => {
             this.setState({
@@ -390,7 +391,9 @@ class Preview extends React.Component {
         }
 
         // 读取固定的api
-        axios.get('/component/dependencies/add', {
+        bizAxios({
+            url: '/component/dependencies/add',
+            method: 'get',
             params: {
                 packageName: packageName,
                 packageVersion: packageVersion,
@@ -429,7 +432,9 @@ class Preview extends React.Component {
             content: `确定移除${packageName}@${packageVersion}，移除后组件可能不能正常运行`,
             onConfirm: function() {
                 // 读取固定的api
-                axios.get('/component/dependencies/remove', {
+                bizAxios({
+                    url: '/component/dependencies/remove',
+                    method: 'get',
                     params: {
                         packageName: packageName,
                         packageVersion: packageVersion,
@@ -592,7 +597,9 @@ class Preview extends React.Component {
         });
 
         // 读取固定的api
-        axios.get('/eslint', {
+        bizAxios({
+            url: '/eslint',
+            method: 'get',
             params: {
                 componentName: componentName
             }
@@ -775,7 +782,9 @@ class Preview extends React.Component {
             return;
         }
         // 读取固定的api
-        axios.get('/api', {
+        bizAxios({
+            url: '/api',
+            method: 'get',
             params: {
                 mockUri: mockDataPath
             }
