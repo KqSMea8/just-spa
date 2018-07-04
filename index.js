@@ -444,6 +444,32 @@ function _readDirSync(rootDir) {
 }
 
 /**
+ * 读取一个目录，返回这个目录下的json数据列表
+ * 
+ * @param {any} rootDir
+ * @returns 
+ */
+function _readDirFileSync(rootDir) {
+    const paths = fs.readdirSync(rootDir);
+
+    let mockDataList = [];
+
+    paths.forEach(function (item, index) {
+        var info = fs.statSync(rootDir + '/' + item);
+        if (info.isDirectory()) {
+            // 如果是目录, 则跳过
+        } else {
+            // 如果是文件，且文件有.json，则返回
+            if (item.indexOf('.json') >= 0) {
+                mockDataList.push(item)
+            }
+        }
+    });
+
+    return mockDataList;
+}
+
+/**
  * 根据目录下的组件生成一份组件信息的配置
  * 
  * @param {any} workDirs 工作目录列表
@@ -476,6 +502,8 @@ function _writeComponentInfo(workDirs, serverPath) {
             packageName = packageName[packageName.length - 1];
             packageInfo = fse.readJsonSync(path.join(componentDir, 'package.json'));
 
+            let mockDataList = _readDirFileSync(path.resolve(componentDir, 'data'));
+
             // 如果是应用，则添加应用信息，否则添加组件信息
             if (packageInfo.template === 'webapp') {
                 webappInfos.webapps.push(Object.assign(packageInfo, {
@@ -484,7 +512,9 @@ function _writeComponentInfo(workDirs, serverPath) {
             } else if (packageInfo.template){
                 componentInfos.components.push(Object.assign({
                     name: packageName
-                }, packageInfo));
+                }, packageInfo, {
+                    mockDataList: mockDataList
+                }));
                 alias[templateJson.name] = path.join(packageName, packageInfo.main || '');
             }
         }

@@ -49,7 +49,7 @@ let loadingHtml = `<div class="loading-mask">
  */
 const bizAxios = (params) => {
 
-    let paramsString = (Object.keys(params.params).map((key) => {
+    let paramsString = (Object.keys(params.params || {}).map((key) => {
             return `${key}=${params.params[key]}`
         })).join('&'),                              // 拼接参数
         wholeUrl = `${params.url}?${paramsString}`, // 完整的请求地址

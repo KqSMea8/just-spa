@@ -221,7 +221,7 @@
 
 .dev-input {
     margin: 0 20px 10px 0;
-    width: 400px;
+    width: 48%;
 }
 
 .dev-input .control-label {
@@ -309,4 +309,13 @@
 
 .dependencies-item {
     margin: 5px 0;
+}
+
+.mock-input-group {
+    display: inline-block;
+    width: 48%;
+}
+
+.mock-input-group.left {
+    margin-right: 4%;
 }

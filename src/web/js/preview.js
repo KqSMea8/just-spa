@@ -41,8 +41,9 @@ class Preview extends React.Component {
             activeKey: 'component', // tab默认选中的key
             mockSwitch: false,       //是否启用mock
             packageVersionList: [],  // 获取版本号的列表
+            mockApi: '',
             component: component     // 组件信息
-        }, this._getStateFromLocalstorage(componentName + '_componnet_key'))
+        }, this._getStateFromLocalstorage(componentName + '_componnet_key'));
     }
 
     componentWillMount() {
@@ -76,7 +77,7 @@ class Preview extends React.Component {
 
         let { component, api, apis, storeKey, actionType, mockDataPath, jsonData, unitTestResult, scriptResult, testFile,
             scriptFile, scriptCommand, showReadme, activeKey, debugDomain, debugIp, mockData, mockRule, mockDataSet,
-            mockSwitch, addPackageName, addPackageVersion, mockType, packageVersionList } = this.state;
+            mockSwitch, addPackageName, addPackageVersion, mockType, packageVersionList, mockApi } = this.state;
         apis = apis.join('\n');
 
         let dependencies = [];
@@ -293,7 +294,7 @@ class Preview extends React.Component {
                                             </FormControl>
                                         </FormGroup>
                                     </div>
-                                    <div>
+                                    <div className="mock-input-group left">
                                         <FormGroup controlId="formControlsSelect" validationState="warning" >
                                             <ControlLabel>请求类型（Get,Post,Put,Delete等）</ControlLabel>
                                             <FormControl componentClass="select" placeholder="select" value={mockType}  onChange={(e) => {
@@ -303,6 +304,19 @@ class Preview extends React.Component {
                                                 <option value="post">Post</option>
                                                 <option value="put">Put</option>
                                                 <option value="delete">Delete</option>
+                                            </FormControl>
+                                        </FormGroup>
+                                    </div>
+                                    <div className="mock-input-group">
+                                        <FormGroup controlId="formControlsSelect" validationState="warning" >
+                                            <ControlLabel>选择mock本地数据</ControlLabel>
+                                            <FormControl componentClass="select" placeholder="select" value={mockApi}  onChange={(e) => {
+                                                this._changeHandle(e, 'mockApi')
+                                            }}>
+                                                <option value="">未选择</option>
+                                                {Object.keys(component.mockDataList).map((key, index) => {
+                                                    return <option value={component.mockDataList[key]}>[{index}] {component.mockDataList[key]}</option>
+                                                })}
                                             </FormControl>
                                         </FormGroup>
                                     </div>
@@ -742,6 +756,29 @@ class Preview extends React.Component {
         this.setState({
             [name]: e.target.value
         });
+
+        // 如果选择的是选择本地的mock文件，则自动填入Mock的数据内容
+        if (name === 'mockApi' && e.target.value) {
+            // 自动读取本地data
+            bizAxios({
+                url: `/.build/${component.name}/data/${e.target.value}`,
+                method: 'get',
+                params: {}
+            }).then(res => {
+                this.setState({
+                    mockData: JSON.stringify(res.data)
+                });
+            }).catch(err => {
+                this.setState({
+                    mockData: '{}'
+                });
+                console.log(err);
+            });
+        } else {
+            this.setState({
+                mockData: '{}'
+            });
+        }
     }
 
     /**
