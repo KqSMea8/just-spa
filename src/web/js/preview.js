@@ -828,7 +828,6 @@ class Preview extends React.Component {
         }).then(res => {
 
             // 如果是redux组件，则使用dispatch的参数，否则使用react组件的参数
-
             previewContainer.window.dispatchData(actionType, res.data, storeKey);
         }).catch(err => {
             console.log(err);

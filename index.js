@@ -4,7 +4,7 @@ const path = require('path');
 const fse = require('fs-extra');
 const axon = require('axon');
 const socketPub = axon.socket('push');
-const downloadGitRepo = require('download-git-repo');
+// const downloadGitRepo = require('download-git-repo');
 const childProcess = require('child_process');
 const logger = require('./src/lib/logger');
 const fileAsync = require('./src/fileAsync');
@@ -44,10 +44,10 @@ function _initCommandSet(serverPath, command, commandParams) {
     // 命令行处理
     switch (command) {
         case 'test':
-            downloadGitRepo('gitlab@git.code.oa.com:ouvenzhang/webapp-compoments-template.git', 'tmp',{ clone: true }, function (err, data) {
-                console.log(err, data);
-                console.log(err ? 'Error' : 'Success')
-            });
+            // downloadGitRepo('gitlab@git.code.oa.com:ouvenzhang/webapp-compoments-template.git', 'tmp',{ clone: true }, function (err, data) {
+            //     console.log(err, data);
+            //     console.log(err ? 'Error' : 'Success')
+            // });
             break;
         case 'i':
         case 'install':
