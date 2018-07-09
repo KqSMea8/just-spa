@@ -12,7 +12,6 @@ body {
 
 import ${_Component} from './index.jsx';
 import initProps from './data/index';
-import './src/index.less';
 
 //注入 mock请求返回数据
 Mock.mock('/.build/${_Component}/data/asyncData.json', {

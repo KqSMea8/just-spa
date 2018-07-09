@@ -18,16 +18,9 @@ import {AppContainer} from 'react-hot-loader';
 // 引入组件
 import Component from '../.build/${componentName}/entry';
 import template from '../.build/${componentName}/template';
-// import reducer from '../.build/${componentName}/src/reducer';
+import reducer from '../.build/${componentName}/src/reducer';
 
 import '../.build/${componentName}/style';
-
-const reducer = (state = {}, action) => {
-    switch (action.type) {
-        default:
-            return Object.assign({}, state, action.data);
-    }
-};
 
 let initStore = require('../.build/${componentName}/data').default || {};
 

@@ -114,7 +114,7 @@ class Preview extends React.Component {
                 <Button className="btn-add-dependencies" type="button" bsStyle="success" onClick={this._addDependencies.bind(this, addPackageName, addPackageVersion)}>安装使用版本</Button>
             </Form>
         </span>)
-
+        
         return (
             <div class="preview">
                 <div>
@@ -310,7 +310,7 @@ class Preview extends React.Component {
                                     <div className="mock-input-group">
                                         <FormGroup controlId="formControlsSelect" validationState="warning" >
                                             <ControlLabel>选择mock本地数据</ControlLabel>
-                                            <FormControl componentClass="select" placeholder="select" value={mockApi}  onChange={(e) => {
+                                            <FormControl componentClass="select" placeholder="select" value={mockApi} onChange={(e) => {
                                                 this._changeHandle(e, 'mockApi')
                                             }}>
                                                 <option value="">未选择</option>
@@ -514,7 +514,7 @@ class Preview extends React.Component {
      * @memberof Preview
      */
     _saveMockRule() {
-        let { mockRule, mockDataSet, mockType } = this.state;
+        let { mockRule, mockDataSet, mockType, mockApi } = this.state;
         let mockData = jsonEditor && jsonEditor.getValue(mockData) || JSON.parse(this.state.mockData || '{}');
 
         // json在textarea中的格式化展示，需要优化
@@ -522,18 +522,41 @@ class Preview extends React.Component {
             mockData: JSON.stringify(mockData)
         })
         // 如果是redux组件则需要判断actionType并进行动态dispatch
-        if (!mockRule || !mockData) {
+        if (!mockRule || !mockData ) {
             Dialog.toast.warn({
                 content: 'mock接口地址或返回数据不能为空。'
             });
             return;
         } else {
+            // 如果有storeKey可以支持jsonData为其它类型
+            mockDataSet[mockRule] = {
+                mockData: mockData,
+                mockType: mockType,
+                mockApi: mockApi
+            };
+
+            let mockApiList = [];
+            for (let key in mockDataSet) {
+                // 如果含有mockApi，请求路径和方式，则将数据注入到readme中永久保存
+                if (mockDataSet[key].mockApi && mockDataSet[key].mockType) {
+                    // 随机mock变量名
+                    let mockDataVar = mockDataSet[key].mockApi.replace('.', '') + (Math.random() + '').slice(-4);
+                    let insertContent = `
+let ${mockDataVar} = require('./data/${mockDataSet[key].mockApi}');
+//Mock${key}请求返回数据
+Mock.mock('${key}', ${mockDataVar});
+`;
+                mockApiList.push(insertContent)
+                }
+            }
+
+            if (mockApiList.length) {
+                window.MdEditor.saveReadme(mockApiList.join(''));
+                return ;
+            }
+
             try {
-                // 如果有storeKey可以支持jsonData为其它类型
-                mockDataSet[mockRule] = {
-                    mockData: mockData,
-                    mockType: mockType
-                };
+
                 this.setState({
                     mockDataSet
                 });

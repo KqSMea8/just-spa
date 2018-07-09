@@ -110,7 +110,7 @@ var initMdEditor = function () {
         }
     }
 
-    function saveReadme() {
+    function saveReadme(content = '') {
         var appName = Utils.getComponentName(Utils.getUrlParams('c') || '') || Utils.getComponentName(Utils.getUrlParams('webapp') || '');
         var value = ace.edit('mdeditor').getValue();
 
@@ -119,6 +119,15 @@ var initMdEditor = function () {
                 content: '文档内容不能为空'
             });
             return;
+        }
+
+        // 如果对应的变量数据没有在readme中
+        if (content) {
+            let insertString =`\`\`\`javascript
+${content}
+import`;
+
+            value = value.replace(/```javascript((\t|\n|\s|.)+?)import/, insertString);
         }
 
         // 获取调试服务器组件目录下的readme
