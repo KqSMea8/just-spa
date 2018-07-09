@@ -110,7 +110,7 @@ var initMdEditor = function () {
         }
     }
 
-    function saveReadme(content = '') {
+    function saveReadme(content = '', callback) {
         var appName = Utils.getComponentName(Utils.getUrlParams('c') || '') || Utils.getComponentName(Utils.getUrlParams('webapp') || '');
         var value = ace.edit('mdeditor').getValue();
 
@@ -137,6 +137,9 @@ import`;
         }).then(res => {
             console.log(res.data.result);
             Dialog.toast.info(res.data.result);
+            setTimeout(() => {
+                callback && callback();
+            }, 10000);
         }).catch(err => {
             Dialog.alert({
                 content: '获取readme文档失败'

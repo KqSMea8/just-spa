@@ -221,7 +221,7 @@ class Preview extends React.Component {
                                 </Table>
                             </Tab>
                             <Tab eventKey={'readme'} title="readme调试">
-                                <MdEditor />
+                                <MdEditor ref="MdEditor"/>
                             </Tab>
                             <Tab eventKey={'test'} title="单元测试">
                                 <div className={'script-wrap ' + (unitTestResult.success === true ? 'success' : '') + (unitTestResult.success === false ? 'fail' : '')}>
@@ -551,7 +551,9 @@ Mock.mock('${key}', ${mockDataVar});
             }
 
             if (mockApiList.length) {
-                window.MdEditor.saveReadme(mockApiList.join(''));
+                window.MdEditor.saveReadme(mockApiList.join(''), () => {
+                    this.refs['MdEditor'].loadReadMe();
+                });
                 return ;
             }
 
@@ -912,21 +914,7 @@ class MdEditor extends React.Component {
     }
 
     componentWillMount() {
-        // 获取调试服务器组件目录下的readme
-        axios.get(`/.build/${componentName}/readme.md`, {
-            params: {}
-        }).then(res => {
-            console.log('获取readme文档成功');
-            // 设置编辑器内容
-            document.getElementById('markdownEditor').style.display = 'block';
-            document.getElementById('preview').innerHTML = marked(res.data);
-            ace.edit('mdeditor').setValue(res.data);
-        }).catch(err => {
-            Dialog.alert({
-                content: '获取readme文档失败'
-            });
-            console.log(err);
-        });
+        this.loadReadMe();
     }
 
     componentDidMount() {
@@ -973,6 +961,24 @@ class MdEditor extends React.Component {
                 </div>
             </div>
         </div>
+    }
+
+    loadReadMe () {
+        // 获取调试服务器组件目录下的readme
+        axios.get(`/.build/${componentName}/readme.md`, {
+            params: {}
+        }).then(res => {
+            console.log('获取readme文档成功');
+            // 设置编辑器内容
+            document.getElementById('markdownEditor').style.display = 'block';
+            document.getElementById('preview').innerHTML = marked(res.data);
+            ace.edit('mdeditor').setValue(res.data);
+        }).catch(err => {
+            Dialog.alert({
+                content: '获取readme文档失败'
+            });
+            console.log(err);
+        });
     }
 }
 
