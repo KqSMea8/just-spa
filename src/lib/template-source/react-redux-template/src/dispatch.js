@@ -3,10 +3,10 @@
 import axios from 'axios';
 
 // 同步dispatch实例
-export const dispatchChange = function () {
+export const dispatchChange = function (actionType) {
     const { store } = this.context;
     store.dispatch({
-        type: 'change',
+        type: actionType || 'change',
         data: {
             text: 'change'
         }
@@ -14,16 +14,16 @@ export const dispatchChange = function () {
 };
 
 // 异步dispatch实例
-export const dispatchAsyncChange = function () {
+export const dispatchAsyncChange = function (actionType) {
 
     const { store } = this.context;
 
-    axios.get('/.build/${_Component}/data/asyncData.json', {
+    axios.get('/.build/${_component}/data/asyncData.json', {
         dataType: 'json',
         contentType: 'application/json'
     }).then((res) => {
         store.dispatch({
-            type: 'change',
+            type: actionType || 'change',
             data: {
                 text: res.data.text
             }
@@ -32,15 +32,15 @@ export const dispatchAsyncChange = function () {
 };
 
 // 异步promise实例
-export const dispatchPromiseChange = function () {
+export const dispatchPromiseChange = function (actionType) {
     const { store } = this.context;
 
-    axios.get('/.build/${_Component}/data/asyncData.json', {
+    axios.get('/.build/${_component}/data/asyncData.json', {
         dataType: 'json',
         contentType: 'application/json'
     }).then((res) => {
         store.dispatch({
-            type: 'change',
+            type: actionType || 'change',
             data: {
                 text: res.data.text
             }
