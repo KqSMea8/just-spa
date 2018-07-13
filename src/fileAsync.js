@@ -90,18 +90,18 @@ function fileAsync(serverPath, componentDir) {
                 });
 
                 // 如果修改了组件js，则需要重新build组件
-                logger(`running: 开始build ${this.componentName} 组件...`, 'cyan');
-                childProcess.exec(`cd "${serverPath}" && ${cdDisk} node "./command/build-es5" --src "${serverPath}" --dist "${this.componentDir}" --name "${this.componentName}"`, (error, stdout, stderr) => {
-                    if (error) {
-                        logger(`childProcess.exec error: ${error}`, 'magenta');
-                        return;
-                    }
-                    if (stderr) {
-                        logger(`warning: ${stderr}`, 'magenta');
-                    }
-                    logger(`stdout: ${stdout}`, 'cyan');
-                    logger(`Es5组件构建任务完成.`, 'green');
-                });
+                // logger(`running: 开始build ${this.componentName} 组件...`, 'cyan');
+                // childProcess.exec(`cd "${serverPath}" && ${cdDisk} node "./command/build-es5" --src "${serverPath}" --dist "${this.componentDir}" --name "${this.componentName}"`, (error, stdout, stderr) => {
+                //     if (error) {
+                //         logger(`childProcess.exec error: ${error}`, 'magenta');
+                //         return;
+                //     }
+                //     if (stderr) {
+                //         logger(`warning: ${stderr}`, 'magenta');
+                //     }
+                //     logger(`stdout: ${stdout}`, 'cyan');
+                //     logger(`Es5组件构建任务完成.`, 'green');
+                // });
             }
 
             // 获取readme中的内容并处理写入到服务器端文件
