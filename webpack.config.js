@@ -94,7 +94,7 @@ module.exports = function getConfig(options) {
             }]
         }, {
             test: /\.(less|css)$/,
-            use: ['style-loader', 'css-loader', 'less-loader']
+            use: ['style-loader', 'css-loader', 'less-loader?javascriptEnabled=true']
         }, {
             test: /\.(png|jpg|gif|md)$/,
             use: ['file-loader?limit=10000']

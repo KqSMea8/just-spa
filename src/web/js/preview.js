@@ -9,7 +9,6 @@ const componentName = Utils.getComponentName(packageName);
 const stack = Utils.getUrlParams('stack') || 'react';
 
 // 根据不同技术栈选择不同模板
-const componentUrl = `./${stack}.html?c=${packageName}`;
 const component = _getComponent(componentInfo.components);
 
 let jsonEditor;
@@ -35,20 +34,21 @@ class Preview extends React.Component {
             debugDomain: '',        // 调试域名
             debugIp: '',            // 调试ip
             mockRule: '',           // mock规则
-            mockType: 'get',           // mock请求类型
+            mockType: 'get',        // mock请求类型
             mockData: '',           // mock数据
             mockDataSet: {},        // mock数据集
             activeKey: 'component', // tab默认选中的key
             mockSwitch: false,       //是否启用mock
             packageVersionList: [],  // 获取版本号的列表
             mockApi: '',
+            isMobile: false,        // 是否是移动端组件
             component: component     // 组件信息
         }, this._getStateFromLocalstorage(componentName + '_componnet_key'));
     }
 
     componentWillMount() {
-         // 获取调试服务器组件目录下的readme
-         axios.get(`/.build/${componentName}/package.json`, {
+        // 获取调试服务器组件目录下的readme
+        axios.get(`/.build/${componentName}/package.json`, {
             params: {}
         }).then(res => {
             // 设置编辑器内容
@@ -77,11 +77,13 @@ class Preview extends React.Component {
 
         let { component, api, apis, storeKey, actionType, mockDataPath, jsonData, unitTestResult, scriptResult, testFile,
             scriptFile, scriptCommand, showReadme, activeKey, debugDomain, debugIp, mockData, mockRule, mockDataSet,
-            mockSwitch, addPackageName, addPackageVersion, mockType, packageVersionList, mockApi } = this.state;
+            mockSwitch, addPackageName, addPackageVersion, mockType, packageVersionList, mockApi, isMobile } = this.state;
         apis = apis.join('\n');
 
         let dependencies = [];
         let isRedux = this._isRedux();
+
+        const componentUrl = isMobile ? `./${stack}.html?c=${packageName}` : `./${stack}-mobile.html?c=${packageName}`;
 
         for (let key in component.dependencies || {}) {
             dependencies.push(<div className="dependencies-item">{key} : {component.dependencies[key]} 
@@ -181,12 +183,18 @@ class Preview extends React.Component {
                                         <a href="javascript: void(0);" onClick={this._reloadIframe} title="打开新页面预览组件">
                                             <i class="fa fa-refresh"><span>刷新</span></i>
                                         </a>
-                                        <a href={componentUrl} title="打开新页面预览组件">
+                                        <a target="_blank" href={componentUrl} title="打开新页面预览组件">
                                             <i class="fa fa-arrows-alt"><span>全屏</span></i>
+                                        </a>
+                                        <a href="javascript: void(0);" onClick={this._setMobileDebug.bind(this)} title="切换移动端或PC端预览组件">
+                                            { isMobile ? <i class="fa fa-mobile"><span>切换到移动端</span></i> :
+                                                <i class="fa fa-tv"><span>切换到PC</span></i>}  
+                                            
                                         </a>
                                     </div>
                                 </div>
-                                <iframe name="previewContainer" id="previewContainer" class="preview-container" src={componentUrl} frameborder="1"></iframe>
+                                <iframe name="previewContainer" id="previewContainer" className={'preview-container ' + (isMobile ? '' : 'mobile')}
+                                    src={componentUrl} frameborder="1"></iframe>
                             </Tab>
                             <Tab eventKey={'detail'} title="组件详情">
                                 <Table>
@@ -354,6 +362,16 @@ class Preview extends React.Component {
         );
     }
 
+    /**
+     * 切换移动端和PC端调试
+     *
+     */
+    _setMobileDebug() {
+        const { isMobile } = this.state;
+        this.setState({
+            isMobile: !isMobile
+        });
+    }
     /**
      * 查询组件依赖的版本号
      *

@@ -111,6 +111,11 @@
     min-height: 768px;
 }
 
+.section-main .preview-container.mobile{
+    max-width: 540px;
+    max-height: 640px;
+}
+
 .section-main .preview-container {
     border: 1px solid #ccc;
     padding: 20px;
