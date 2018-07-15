@@ -93,9 +93,6 @@ function _initCommandSet(serverPath, command, commandParams) {
             break;
         case 'watch':
         case 'dev':
-            // _clearCacheBuildDir([
-            //     serverPath + buildPath
-            // ]);
             // watch、dev均可开启调试模式
             _initFileWatch(serverPath);
             break;
@@ -450,9 +447,12 @@ function _readDirSync(rootDir) {
  * @returns 
  */
 function _readDirFileSync(rootDir) {
-    const paths = fs.readdirSync(rootDir);
-
+    let paths = [];
     let mockDataList = [];
+
+    if (fse.pathExistsSync(rootDir)) {
+        paths = fs.readdirSync(rootDir);
+    }
 
     paths.forEach(function (item, index) {
         var info = fs.statSync(rootDir + '/' + item);
@@ -502,6 +502,7 @@ function _writeComponentInfo(workDirs, serverPath) {
             packageName = packageName[packageName.length - 1];
             packageInfo = fse.readJsonSync(path.join(componentDir, 'package.json'));
 
+            // 默认读取data目录下的mock数据列表
             let mockDataList = _readDirFileSync(path.resolve(componentDir, 'data'));
 
             // 如果是应用，则添加应用信息，否则添加组件信息

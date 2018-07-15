@@ -45,12 +45,8 @@ module.exports = {
         filename: '[name].js'
     },
     externals: {
-        'jquery': 'jQuery',
         'react': 'React',
-        'moment': 'moment',
-        'react-dom': 'ReactDOM',
-        'lodash': '_',
-        'bootstrap': 'bootstrap'
+        'react-dom': 'ReactDOM'
     },
     resolve: {
         extensions: ['*', '.js', '.jsx', '.less', '.scss', '.css'],
@@ -95,7 +91,7 @@ module.exports = {
     },
     plugins: [
         new webpack.optimize.CommonsChunkPlugin({
-            names: ['flows', 'common'],
+            names: ['common'],
             minChunks: Infinity
         }),
         new webpack.LoaderOptionsPlugin({

@@ -126,28 +126,17 @@ gulp.task('watch', function (done) {
 });
 
 // 启动调试静态server
-gulp.task('connect', function() {
+gulp.task('connect', function () {
     connect.server({
         root: [host.path],
         port: host.port,
         livereload: true,
-        middleware: function(connect, opt) {
+        middleware: function (connect, opt) {
             return [
-                proxy('/www/assets',  {
-                    target: `http://${proxyDevServer}/assets/`,
-                    pathRewrite: {
-                        '^/www/assets/': '/',     // rewrite path
-                    },
-                    changeOrigin: true
-                }),
-                proxy('/contract/',  {
-                    target: `http://${proxyDevServer}`,
-                    changeOrigin: true
-                }),
-                proxy('/www/contract/',  {
+                proxy('/www/api/', {
                     target: `http://${proxyDevServer}`,
                     pathRewrite: {
-                        '^/www/contract/': '/contract/',     // rewrite path
+                        '^/www/api/': '/api/',     // 代理重写路径
                     },
                     changeOrigin: true
                 })
@@ -163,15 +152,14 @@ gulp.task('open', function (done) {
             app: browser,
             // uri为启动静态服务器的登录目录
             uri: 'http://localhost:3000/www/index.html#welcome'
-        }))
-        .on('end', done);
+        })).on('end', done);
 });
 
 var buildCompiler = webpack(Object.create(webpackConfig));
 
 //引用webpack对js进行dist操作
-gulp.task('build-js', ['fileinclude-build'], function(callback) {
-    buildCompiler.run(function(err, stats) {
+gulp.task('build-js', ['fileinclude-build'], function (callback) {
+    buildCompiler.run(function (err, stats) {
         if (err) throw new gutil.PluginError('webpack:build-js', err);
         gutil.log('[webpack:build-js]', stats.toString({
             colors: true
@@ -195,7 +183,7 @@ function copyStatics() {
     gulp.src([BUILD_CONFIG.dev_dir + 'fonts/**'])
         .pipe(gulp.dest(BUILD_CONFIG.build_dir + 'www/fonts/'))
         .on('end', pkg);
-    
+
     // 拷贝图片资源
     gulp.src([BUILD_CONFIG.dev_dir + 'img/**'])
         .pipe(gulp.dest(BUILD_CONFIG.build_dir + 'www/img/'))
@@ -208,7 +196,7 @@ function copyStatics() {
         // 标识是否完成资源拷贝
         if (taskFinished >= 1) {
             gulp.src(BUILD_CONFIG.pkg_src_dir + '**')
-                .pipe(tar('gdt_contract_ad-fe.tar', {mode: null}))
+                .pipe(tar('gdt_contract_ad-fe.tar', { mode: null }))
                 .pipe(gzip())
                 .pipe(gulp.dest(BUILD_CONFIG.pkg_build_dir));
         } else {
@@ -220,7 +208,7 @@ function copyStatics() {
 //发布
 gulp.task('dist', ['fileinclude', 'md5:css', 'md5:js']);
 
-gulp.task('release', ['copy:images', 'fileinclude',  'lessmin', 'build-js', 'fileinclude-build', 'md5:css', 'md5:js']);
+gulp.task('release', ['copy:images', 'fileinclude', 'lessmin', 'build-js', 'fileinclude-build', 'md5:css', 'md5:js']);
 
 gulp.task('pkg', [], copyStatics);  // 打包静态文件成发布包
 
