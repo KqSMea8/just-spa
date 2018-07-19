@@ -1,6 +1,3 @@
-import * as ActionTypes from '../actions';
-
-
 const index = (state = {}, action) => {
     switch (action.type) {
         default:

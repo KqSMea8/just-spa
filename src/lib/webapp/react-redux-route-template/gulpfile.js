@@ -43,7 +43,7 @@ gulp.task('copy:images', function (done) {
 
 //压缩合并css, css中既有自己写的.less, 也有引入第三方库的.css
 gulp.task('lessmin', function (done) {
-    gulp.src([BUILD_CONFIG.src_dir + '/**.less'])
+    gulp.src([BUILD_CONFIG.src_dir + '/less/**.less'])
         .pipe(less())
         //这里可以加css sprite 让每一个css合并为一个雪碧图
         .pipe(spriter({

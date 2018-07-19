@@ -13,9 +13,6 @@ import {AppContainer} from 'react-hot-loader';
 import IndexPage from '../containers/IndexPage';
 import reducers from '../reducers';
 
-// 引入组件
-import '../style.less';
-
 let initStore = {},
     middlewares = [reduxThunk, reduxPromise];
 

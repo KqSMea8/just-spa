@@ -5,8 +5,6 @@ import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import { getUrlParams } from '../utils/utils';
 import Pages from './pages';
 
-import '../style';
-
 // 声明container中的路由
 const containerRoute = {
     'welcome': Pages.Welcome,
