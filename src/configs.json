@@ -1,5 +1,5 @@
 {
-    "NPM": "npm",
+    "NPM": "tnpm",
     "SOCKET_URL": "tcp://127.0.0.1:6677",
     "BUILD_PATH": "/.build",
     "STACK_MAP": {

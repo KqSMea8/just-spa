@@ -187,13 +187,13 @@ class Preview extends React.Component {
                                             <i class="fa fa-arrows-alt"><span>全屏</span></i>
                                         </a>
                                         <a href="javascript: void(0);" onClick={this._setMobileDebug.bind(this)} title="切换移动端或PC端预览组件">
-                                            { isMobile ? <i class="fa fa-mobile"><span>切换到移动端</span></i> :
+                                            { !isMobile ? <i class="fa fa-mobile"><span>切换到移动端</span></i> :
                                                 <i class="fa fa-tv"><span>切换到PC</span></i>}  
                                             
                                         </a>
                                     </div>
                                 </div>
-                                <iframe name="previewContainer" id="previewContainer" className={'preview-container ' + (isMobile ? '' : 'mobile')}
+                                <iframe name="previewContainer" id="previewContainer" className={'preview-container ' + (isMobile ? 'mobile' : '')}
                                     src={componentUrl} frameborder="1"></iframe>
                             </Tab>
                             <Tab eventKey={'detail'} title="组件详情">
