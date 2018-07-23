@@ -83,7 +83,7 @@ class Preview extends React.Component {
         let dependencies = [];
         let isRedux = this._isRedux();
 
-        const componentUrl = isMobile ? `./${stack}.html?c=${packageName}` : `./${stack}-mobile.html?c=${packageName}`;
+        const componentUrl = isMobile ? `./${stack}-mobile.html?c=${packageName}` : `./${stack}.html?c=${packageName}`;
 
         for (let key in component.dependencies || {}) {
             dependencies.push(<div className="dependencies-item">{key} : {component.dependencies[key]} 
@@ -564,7 +564,7 @@ let ${mockDataVar} = require('./data/${mockDataSet[key].mockApi}');
 //Mock${key}请求返回数据
 Mock.mock('${key}', ${mockDataVar});
 `;
-                mockApiList.push(insertContent)
+                mockApiList.push(insertContent);
                 }
             }
 

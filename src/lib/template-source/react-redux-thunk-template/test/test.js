@@ -1,6 +1,6 @@
 import React from 'react';
-import {assert, expect} from 'chai';
-import Enzyme, {shallow, render, mount} from 'enzyme';
+import { assert, expect } from 'chai';
+import Enzyme, { shallow, render, mount } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-15';
 
 import ${_Component} from '../src/index.jsx';
@@ -13,6 +13,6 @@ describe('<${_Component} {...initProps}/>', () => {
         const wrapper = shallow(<${_Component} {...initProps}/>,  { context: { store: {
             text: 'hello'
         } } });
-        expect([1,2,3]).to.have.length(3);
+        expect([1, 2, 3]).to.have.length(3);
     });
 });
