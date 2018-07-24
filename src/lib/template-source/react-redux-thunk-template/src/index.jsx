@@ -31,9 +31,15 @@ class ${_Component} extends PureComponent {
         return <div className={className}>
             <h2>react-redux-thunk模板组件：${_Component}</h2>
             {this.props.text} {this.props.name}!
-                <button onClick={dispatchChange.bind(this)}>Sync change</button>
-            <button onClick={dispatchAsyncChange.bind(this)}>Async change</button>
-            <button onClick={dispatchPromiseChange.bind(this)}>Promise change</button>
+            <button onClick={() => {
+                dispatchChange.bind(this)('change');
+            }}>同步dispatch</button>
+            <button onClick={() => {
+                dispatchAsyncChange.bind(this)('change');
+            }}>异步dispatch</button>
+            <button onClick={() => {
+                dispatchPromiseChange.bind(this)('change');
+            }}>Promise dispatch</button>
         </div>
     }
 }

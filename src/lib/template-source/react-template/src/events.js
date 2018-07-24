@@ -10,7 +10,7 @@ export const change = function () {
 };
 
 // 异步change实例
-export const asyncChange = function (actionType) {
+export const asyncChange = function () {
     const self = this;
     axios.get('/.build/${_component}/data/asyncData.json', {
         dataType: 'json',
@@ -25,7 +25,7 @@ export const asyncChange = function (actionType) {
 };
 
 // 异步change实例
-export const promiseChange = function (actionType) {
+export const promiseChange = function () {
     const self = this;
     new Promise(function (resolve, reject) {
         return axios.get('/.build/${_component}/data/asyncData.json', {

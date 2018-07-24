@@ -29,7 +29,7 @@ class ${_Component} extends PureComponent {
         return <div className={className}>
             <h2>纯react模板组件: ${_Component}</h2>
             {this.state.text} {this.state.name}!
-                <button onClick={change.bind(this)}>Sync change</button>
+            <button onClick={change.bind(this)}>Sync change</button>
             <button onClick={asyncChange.bind(this)}>Async change</button>
             <button onClick={promiseChange.bind(this)}>Promise change</button>
         </div>
