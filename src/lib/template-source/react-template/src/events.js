@@ -19,6 +19,8 @@ export const asyncChange = function (actionType) {
         self.setState({
             text: res.data.text
         });
+    }, (err) => {
+        console.log(err);
     });
 };
 
@@ -33,6 +35,8 @@ export const promiseChange = function (actionType) {
             self.setState({
                 text: res.data.text
             });
+        }, (err) => {
+            console.log(err);
         });
     });
 };

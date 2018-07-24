@@ -16,6 +16,8 @@ export const asyncChange = function (actionType) {
         contentType: 'application/json'
     }).then((res) => {
         $('.text').html(res.data.text);
+    }, (err) => {
+        console.log(err);
     });
 }
 
@@ -28,6 +30,8 @@ export const promiseChange = function (actionType) {
             contentType: 'application/json'
         }).then((res) => {
             $('.text').html(res.data.text);
+        }, (err) => {
+            console.log(err);
         });
     });
 }

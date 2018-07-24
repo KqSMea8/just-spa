@@ -28,6 +28,8 @@ export const dispatchAsyncChange = function (actionType) {
                 text: res.data.text
             }
         });
+    }, (err) => {
+        console.log(err);
     });
 };
 
@@ -45,6 +47,8 @@ export const dispatchPromiseChange = function (actionType) {
                 text: res.data.text
             }
         });
+    }, (err) => {
+        console.log(err);
     });
 };
 
