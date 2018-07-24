@@ -60,7 +60,7 @@
         "react-load-script": "^0.0.6",
         "react-redux": "^5.0.7",
         "redux-thunk": "^2.2.0",
-        "redux-context": "0.2.0,
+        "redux-context": "0.2.0",
         "redux-promise": "^0.5.3"
     },
     "main": "gulpfile.js",
