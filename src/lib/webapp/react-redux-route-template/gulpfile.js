@@ -206,12 +206,12 @@ function copyStatics() {
 }
 
 //发布
-gulp.task('dist', ['fileinclude', 'md5:css', 'md5:js']);
+gulp.task('dist', ['fileinclude-build', 'md5:css', 'md5:js']);
 
-gulp.task('release', ['copy:images', 'fileinclude', 'lessmin', 'build-js', 'fileinclude-build', 'md5:css', 'md5:js']);
+gulp.task('release', ['copy:images', 'lessmin', 'build-js', 'fileinclude-build', 'md5:css', 'md5:js']);
 
 gulp.task('pkg', [], copyStatics);  // 打包静态文件成发布包
 
 //开发，不默认打开open浏览器
-gulp.task('dev', ['connect', 'copy:images', 'fileinclude', 'lessmin', 'build-js', 'mock', 'open', 'watch']);
-gulp.task('default', ['connect', 'copy:images', 'fileinclude', 'lessmin', 'build-js', 'mock', 'open', 'watch']);
+gulp.task('dev', ['connect', 'copy:images', 'fileinclude', 'lessmin', 'build-js', 'mock', 'watch', 'open']);
+gulp.task('default', ['connect', 'copy:images', 'fileinclude', 'lessmin', 'build-js', 'mock', 'watch', 'open']);

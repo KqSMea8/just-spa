@@ -5,6 +5,8 @@ import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import { getUrlParams } from '../utils/utils';
 import Pages from './pages';
 
+import '../less/font-awesome-4.7.0/less/font-awesome';
+
 // 声明container中的路由
 const containerRoute = {
     'welcome': Pages.Welcome,
