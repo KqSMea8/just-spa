@@ -29,7 +29,7 @@ import initProps from './data/index';
 import './src/index.less';
 
 //注入 mock请求返回数据
-Mock.mock('/.build/${_component}/data/asyncData.json', {
+Mock.mock(new RegExp('/.build/${_component}/data/asyncData.json'), {
     "text": "hello first and hi Mock Data "
 });
 

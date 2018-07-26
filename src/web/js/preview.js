@@ -335,7 +335,7 @@ class Preview extends React.Component {
                                                 <InputGroup.Addon>api</InputGroup.Addon>
                                                 <FormControl title={mockRule} type="text" value={mockRule} onChange={(e) => {
                                                     this._changeHandle(e, 'mockRule')
-                                                }} placeholder="例如：/api/v2/list" />
+                                                }} placeholder="例如：/api/v2/list。支持匹配" />
                                             </InputGroup>
                                         </FormGroup>
 
@@ -562,7 +562,7 @@ class Preview extends React.Component {
                     let insertContent = `
 let ${mockDataVar} = require('./data/${mockDataSet[key].mockApi}');
 //Mock${key}请求返回数据
-Mock.mock('${key}', ${mockDataVar});
+Mock.mock(new RegExp('${key}', 'ig'), ${mockDataVar});
 `;
                 mockApiList.push(insertContent);
                 }
