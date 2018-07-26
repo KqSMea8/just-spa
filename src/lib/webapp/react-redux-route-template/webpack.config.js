@@ -14,7 +14,7 @@ const BUILD_CONFIG = {
     pkg_build_dir: './pkg',   // 打包输出目录
     src_dir: './src',             // 构建源目录,不要带目录'/'符号
     html_dir: 'www/',         // html目录名称，src和page相同
-    entry_js_dir: 'src/entry',           // 构建js目录,不要带目录'/'符号
+    entry_js_dir: 'src/entry',  // 页面的入口文件
     html_domain: '',
     css_domain: '',
     js_domian: ''
