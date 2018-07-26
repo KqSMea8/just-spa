@@ -10,8 +10,6 @@ $ npm i  # 使用npm（不要使用tnpm）安装所需要的npm包， 如果部�
 
 $ npm run dev # 启动开发调试，并访问 http://localhost:3000/www/index.html
 
-$ npm run build # 编译项目
-
 $ npm run release # 编译项目并打包生成tar.gz包
 
 ```
