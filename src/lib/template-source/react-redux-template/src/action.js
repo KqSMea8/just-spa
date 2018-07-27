@@ -1,11 +1,10 @@
 
-
 import axios from 'axios';
 
 // 同步dispatch实例
 export const dispatchChange = function (actionType) {
     const { store } = this.context;
-    store.dispatch({
+    return store.dispatch({
         type: actionType || 'change',
         data: {
             text: 'change'
@@ -18,7 +17,7 @@ export const dispatchAsyncChange = function (actionType) {
 
     const { store } = this.context;
 
-    axios.get('/.build/${_component}/data/asyncData.json', {
+    return axios.get('/.build/${_component}/data/asyncData.json', {
         dataType: 'json',
         contentType: 'application/json'
     }).then((res) => {
@@ -29,7 +28,13 @@ export const dispatchAsyncChange = function (actionType) {
             }
         });
     }, (err) => {
-        console.log(err);
+        store.dispatch({
+            type: actionType || 'change',
+            data: {
+                text: 'error text'
+            }
+        });
+        // console.log(err);
     });
 };
 
@@ -37,7 +42,7 @@ export const dispatchAsyncChange = function (actionType) {
 export const dispatchPromiseChange = function (actionType) {
     const { store } = this.context;
 
-    axios.get('/.build/${_component}/data/asyncData.json', {
+    return axios.get('/.build/${_component}/data/asyncData.json', {
         dataType: 'json',
         contentType: 'application/json'
     }).then((res) => {
@@ -48,7 +53,13 @@ export const dispatchPromiseChange = function (actionType) {
             }
         });
     }, (err) => {
-        console.log(err);
+        store.dispatch({
+            type: actionType || 'change',
+            data: {
+                text: 'error text'
+            }
+        });
+        // console.log(err);
     });
 };
 

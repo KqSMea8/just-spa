@@ -1,5 +1,3 @@
-
-
 import axios from 'axios';
 
 // 同步dispatch实例
@@ -15,7 +13,7 @@ export const dispatchChange = function (actionType) {
             });
         };
     }
-    store.dispatch(actionCreator(actionType));
+    return store.dispatch(actionCreator(actionType));
 };
 
 // 异步dispatch实例
@@ -36,12 +34,18 @@ export const dispatchAsyncChange = function (actionType) {
                     }
                 });
             }, (err) => {
-                console.log(err);
+                store.dispatch({
+                    type: actionType || 'change',
+                    data: {
+                        text: 'error text'
+                    }
+                });
+                // console.log(err);
             });
         };
     }
 
-    store.dispatch(actionCreator(actionType));
+    return store.dispatch(actionCreator(actionType));
 };
 
 // 异步promise实例
@@ -61,11 +65,17 @@ export const dispatchPromiseChange = function (actionType) {
                     }
                 });
             }, (err) => {
-                console.log(err);
+                store.dispatch({
+                    type: actionType || 'change',
+                    data: {
+                        text: 'error text'
+                    }
+                });
+                // console.log(err);
             });
         });
     }
 
-    store.dispatch(actionCreator(actionType));
+    return store.dispatch(actionCreator(actionType));
 };
 

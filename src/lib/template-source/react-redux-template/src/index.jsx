@@ -2,7 +2,7 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 
-import { dispatchChange, dispatchAsyncChange, dispatchPromiseChange } from './dispatch';
+import { dispatchChange, dispatchAsyncChange, dispatchPromiseChange } from './action';
 
 class ${_Component} extends PureComponent {
 
