@@ -49,7 +49,9 @@ window.removeMockData = function(callback, key) {
     callback && callback();
 }
 
-document.getElementById('template').outerHTML = template;
+if (document.getElementById('template')) {
+    document.getElementById('template').outerHTML = template;
+}
 
 render(Component);
 

@@ -5,7 +5,9 @@ import Component from '../.build/${componentName}/entry';
 import template from '../.build/${componentName}/template';
 import '../.build/${componentName}/style';
 
-document.getElementById('template').outerHTML = template;
+if (document.getElementById('template')) {
+    document.getElementById('template').outerHTML = template;
+}
 
 render(Component);
 
