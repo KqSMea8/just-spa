@@ -63,7 +63,7 @@ module.exports = {
             }]
         }, {
             test: /\.(less|css)$/,
-            use: ['style-loader', 'css-loader', 'less-loader']
+            use: ['style-loader', 'css-loader?javascriptEnabled=true', 'less-loader?javascriptEnabled=true']
         }, {
             test: /\.(png|jpg|gif|md)$/,
             use: [{
