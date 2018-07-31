@@ -4,6 +4,6 @@
  * @param {any} name 名称
  * @returns 格式化修饰的名称
  */
-const formatName = (name) => {
+export const formatName = (name) => {
     return `[${name}]`;
 };
