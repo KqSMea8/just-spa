@@ -8,6 +8,7 @@
         "test/test.js",
         "src/reducer.js",
         "src/action.js",
+        "src/dataAdapter.js",
         "index.jsx",
         "src/index.jsx",
         "src/index.less"

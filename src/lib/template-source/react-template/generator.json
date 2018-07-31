@@ -8,6 +8,7 @@
         "test/test.js",
         "src/events.js",
         "src/index.jsx",
+        "src/dataAdapter.js",
         "index.jsx",
         "src/index.less"
     ],

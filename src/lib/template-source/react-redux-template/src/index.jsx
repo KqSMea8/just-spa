@@ -3,6 +3,7 @@ import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 
 import { dispatchChange, dispatchAsyncChange, dispatchPromiseChange } from './action';
+import { formatName } from './dataAdapter';
 
 class ${_Component} extends PureComponent {
 
@@ -28,9 +29,11 @@ class ${_Component} extends PureComponent {
     render() {
         const className = '${_component}';
 
+        const formatNameData = formatName(this.props.name);
+
         return <div className={className}>
             <h2>react-redux模板组件：${_Component}</h2>
-            {this.props.text} {this.props.name}!
+            {this.props.text} {formatNameData}!
             <button onClick={() => {
                 dispatchChange.bind(this)('change');
             }}>同步dispatch</button>
