@@ -25,13 +25,14 @@ import '../.build/${componentName}/style';
 let initStore = require('../.build/${componentName}/data').default || {};
 
 let middlewares = [reduxThunk, reduxPromise];
+let initReducers = reducer;
 
-// // 考虑如何使用combineReducer
-// const store = createStore(combineReducers({
-//     componentName: reducer
-//   }), composeWithDevTools(applyMiddleware(...middlewares)));
+// 如果有多个则使用combineReducers
+if (typeof(reducer) === 'object') {
+    initReducers = combineReducers(reducer);
+}
 
-const store = createStore(reducer, initStore, composeWithDevTools(applyMiddleware(...middlewares)));
+const store = createStore(initReducers, initStore, composeWithDevTools(applyMiddleware(...middlewares)));
 
 // 直接引用组件的用法
 const render = (Component) => {

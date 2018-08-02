@@ -22,7 +22,15 @@ import '../.build/${componentName}/style';
 
 let initStore = require('../.build/${componentName}/data').default || {};
 
-const store = createStore(reducer, initStore);
+let initReducers = reducer;
+
+// 如果有多个则使用combineReducers
+if (typeof(reducer) === 'object') {
+    initReducers = combineReducers(reducer);
+}
+
+
+const store = createStore(initReducers, initStore);
 
 // 直接引用组件的用法
 const render = (Component) => {
