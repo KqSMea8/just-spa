@@ -8,9 +8,10 @@ export const change = function () {
 // 异步change实例
 export const asyncChange = function (actionType) {
     const self = this;
-    axios.get('/.build/${_component}/data/asyncData.json', {
-        dataType: 'json',
-        contentType: 'application/json'
+    axios({
+        url: '/.build/${_component}/data/asyncData.json',
+        method: 'get',
+        params: {}
     }).then((res) => {
         self.text = res.data.text;
     }, (err) => {
@@ -22,9 +23,10 @@ export const asyncChange = function (actionType) {
 export const promiseChange = function (actionType) {
     const self = this;
     new Promise(function (resolve, reject) {
-        return axios.get('/.build/${_component}/data/asyncData.json', {
-            dataType: 'json',
-            contentType: 'application/json'
+        return axios({
+            url: '/.build/${_component}/data/asyncData.json',
+            method: 'get',
+            params: {}
         }).then((res) => {
             self.text = res.data.text;
         }, (err) => {

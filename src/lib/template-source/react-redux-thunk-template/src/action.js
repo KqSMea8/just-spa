@@ -23,9 +23,10 @@ export const dispatchAsyncChange = function (actionType) {
 
     const actionCreator = function (actionType) {
         return (dispatch, getState) => {
-            return axios.get('/.build/${_component}/data/asyncData.json', {
-                dataType: 'json',
-                contentType: 'application/json'
+            return axios({
+                url: '/.build/${_component}/data/asyncData.json',
+                method: 'get',
+                params: {}
             }).then((res) => {
                 dispatch({
                     type: actionType || 'change',
@@ -54,9 +55,10 @@ export const dispatchPromiseChange = function (actionType) {
     const actionCreator = function (actionType) {
 
         return (dispatch, getState) => new Promise(function (resolve, reject) {
-            return axios.get('/.build/${_component}/data/asyncData.json', {
-                dataType: 'json',
-                contentType: 'application/json'
+            return axios({
+                url: '/.build/${_component}/data/asyncData.json',
+                method: 'get',
+                params: {}
             }).then((res) => {
                 dispatch({
                     type: actionType || 'change',

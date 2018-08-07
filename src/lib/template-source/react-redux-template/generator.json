@@ -1,6 +1,5 @@
 {
     "statics": [
-        "data/index.js",
         "data/asyncData.json"
     ],
     "templates": [
@@ -11,6 +10,7 @@
         "src/dataAdapter.js",
         "index.jsx",
         "src/index.jsx",
+        "data/index.js",
         "src/index.less"
     ],
     "templateData": {

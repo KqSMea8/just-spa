@@ -17,9 +17,10 @@ export const dispatchAsyncChange = function (actionType) {
 
     const { store } = this.context;
 
-    return axios.get('/.build/${_component}/data/asyncData.json', {
-        dataType: 'json',
-        contentType: 'application/json'
+    return axios({
+        url: '/.build/${_component}/data/asyncData.json',
+        method: 'get',
+        params: {}
     }).then((res) => {
         store.dispatch({
             type: actionType || 'change',
@@ -42,9 +43,10 @@ export const dispatchAsyncChange = function (actionType) {
 export const dispatchPromiseChange = function (actionType) {
     const { store } = this.context;
 
-    return axios.get('/.build/${_component}/data/asyncData.json', {
-        dataType: 'json',
-        contentType: 'application/json'
+    return axios({
+        url: '/.build/${_component}/data/asyncData.json',
+        method: 'get',
+        params: {}
     }).then((res) => {
         store.dispatch({
             type: actionType || 'change',

@@ -3,7 +3,7 @@ module.exports = function reactReduxTemplate(componentName) {
     return `import React from 'react';
 import ReactDOM from 'react-dom';
 
-import { createStore } from 'redux';
+import { createStore, combineReducers} from 'redux';
 import { Provider } from 'react-redux';
 
 // 支持redux调试
@@ -29,8 +29,7 @@ if (typeof(reducer) === 'object') {
     initReducers = combineReducers(reducer);
 }
 
-
-const store = createStore(initReducers, initStore);
+const store = createStore(initReducers, initStore, composeWithDevTools());
 
 // 直接引用组件的用法
 const render = (Component) => {

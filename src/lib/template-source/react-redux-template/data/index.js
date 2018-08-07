@@ -2,5 +2,7 @@
 // init Store for dev & debug
 
 export default {
-    text: 'hello'
+    ${_Component}: {
+        text: 'hello'
+    }
 };

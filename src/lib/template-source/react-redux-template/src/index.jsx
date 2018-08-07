@@ -33,15 +33,15 @@ class ${_Component} extends PureComponent {
 
         return <div className={className}>
             <h2>react-redux模板组件：${_Component}</h2>
-            {this.props.text} {formatNameData}!
+            {this.props.${_Component}.text} {formatNameData}!
             <button onClick={() => {
-                dispatchChange.bind(this)('change');
+                dispatchChange.bind(this)('${_Component}');
             }}>同步dispatch</button>
             <button onClick={() => {
-                dispatchAsyncChange.bind(this)('change');
+                dispatchAsyncChange.bind(this)('${_Component}');
             }}>异步dispatch</button>
             <button onClick={() => {
-                dispatchPromiseChange.bind(this)('change');
+                dispatchPromiseChange.bind(this)('${_Component}');
             }}>Promise dispatch</button>
         </div>
     }
