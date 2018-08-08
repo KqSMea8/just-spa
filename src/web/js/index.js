@@ -238,7 +238,7 @@ class Index extends React.Component {
                                     <Col xs={10}>
                                         <FormControl type="text" value={searchWord} onChange={(e) => {
                                             this._changeHandle(e, 'searchWord')
-                                        }} placeholder="输入组件名称或开发者名称进行过滤"/>
+                                        }} placeholder="输入项目名称或开发者名称进行过滤"/>
                                         <i className="fa fa-search"></i>
                                     </Col>
                                 </FormGroup>
