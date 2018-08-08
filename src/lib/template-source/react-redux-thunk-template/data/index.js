@@ -5,4 +5,4 @@ export default {
     ${_Component}: {
         text: 'hello'
     }
-}
+};
