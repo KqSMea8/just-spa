@@ -13,6 +13,9 @@ import {AppContainer} from 'react-hot-loader';
 import IndexPage from '../containers/IndexPage';
 import reducers from '../reducers';
 
+// 去掉注释开启数据联调模式
+// import Mock from '../mock/index.js';
+
 let initStore = {},
     middlewares = [reduxThunk, reduxPromise];
 

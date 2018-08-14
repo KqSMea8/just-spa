@@ -46,6 +46,7 @@
     },
     "dependencies": {
         "axios": "^0.18.0",
+        "mockjs": "^1.0.1-beta3",
         "babel-eslint": "^8.2.2",
         "classnames": "^2.2.5",
         "eslint": "^4.19.1",
