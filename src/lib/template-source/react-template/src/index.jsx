@@ -3,7 +3,7 @@ import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 
 import { change, asyncChange, promiseChange } from './events';
-import { formatName } from './dataAdapter';
+import { formatName } from './data-adapter';
 
 class ${_Component} extends PureComponent {
 
