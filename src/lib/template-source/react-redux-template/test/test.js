@@ -11,10 +11,8 @@ import { dispatchChange, dispatchAsyncChange, dispatchPromiseChange } from '../s
 
 import { applyMiddleware, createStore } from 'redux';
 import { Provider } from 'react-redux';
-import reduxThunk from 'redux-thunk';
-import reduxPromise from 'redux-promise';
 
-const store = createStore(reducer, {}, applyMiddleware(...[reduxThunk, reduxPromise]));
+const store = createStore(reducer, {}, applyMiddleware());
 
 Enzyme.configure({ adapter: new Adapter() });
 
