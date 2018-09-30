@@ -16,7 +16,7 @@ const { createComponent, createWebapp, createTemplate, removeTemplate, listTempl
 
 const args = process.argv.splice(1);
 const currentPath = process.cwd();
-const serverPath = path.dirname(path.resolve(args[0], '../'));
+const serverPath = __dirname;   //path.dirname(path.resolve(args[0], '../'));
 
 const command = args[1] || '';
 const commandParams = args.slice(2) || [];
