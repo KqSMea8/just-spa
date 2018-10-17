@@ -14,13 +14,13 @@ import { Route, Switch, Link } from 'react-router-dom';
 import {AppContainer} from 'react-hot-loader';
 
 // 引入组件
-import Component from '../.build/${componentName}/entry';
-import template from '../.build/${componentName}/template';
-import reducer from '../.build/${componentName}/src/reducer';
+import Component from './${componentName}/entry';
+import template from './${componentName}/template';
+import reducer from './${componentName}/src/reducer';
 
-import '../.build/${componentName}/style';
+import './${componentName}/style';
 
-let initStore = require('../.build/${componentName}/data').default || {};
+let initStore = require('./${componentName}/data').default || {};
 
 let initReducers = reducer;
 
@@ -103,13 +103,13 @@ render(Component);
 if (module.hot && process.env.NODE_ENV !== 'production') {
 
     module.hot.accept([
-        '../.build/${componentName}/index',
-        '../.build/${componentName}/entry'
+        './${componentName}/index',
+        './${componentName}/entry'
     ], (err) => {
         if (err) {
             console.log(err);
         }
-        const NextComponent = require('../.build/${componentName}/entry').default;
+        const NextComponent = require('./${componentName}/entry').default;
 
         render(NextComponent);
     });

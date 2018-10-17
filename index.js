@@ -331,12 +331,12 @@ function _initFileWatch(serverPath) {
     const componentDirs = _readDirSync(currentPath);
 
     for (let componentDir of componentDirs) {
-        fileAsync(serverPath, componentDir);
+        fileAsync(serverPath, componentDir, currentPath);
     }
 
     // 如果组件不为空，则需要写入组件信息
     if (componentDirs.length) {
-        _writeComponentInfo(componentDirs, serverPath);
+        _writeComponentInfo(componentDirs, serverPath, currentPath);
     }
 
     // 通知dev server进行重启等操作
@@ -426,7 +426,13 @@ function _readDirSync(rootDir) {
         var info = fs.statSync(rootDir + '/' + item);
         if (info.isDirectory()) {
             // 如果是目录
-            componentDirs.push(path.resolve(rootDir, item));
+            let existPackageJSON = fse.pathExistsSync(path.join(rootDir + '/' + item, 'package.json'));
+            if (existPackageJSON) {
+                componentDirs.push(path.resolve(rootDir, item));
+            } else {
+                componentDirs.push(path.resolve(rootDir, item));
+                componentDirs = componentDirs.concat(_readDirSync(path.resolve(rootDir, item)));
+            }
         } else {
             // 如果是文件，且文件有package.json，则不使用该目录，组件目录中不能含有package.json
             if (excludeFiles.indexOf(item) > -1) {
@@ -475,7 +481,7 @@ function _readDirFileSync(rootDir) {
  * @param {any} workDirs 工作目录列表
  * @param {any} serverPath 服务器根目录
  */
-function _writeComponentInfo(workDirs, serverPath) {
+function _writeComponentInfo(workDirs, serverPath, currentPath) {
 
     let componentInfos = { components: [], templates: {} };
     let webappInfos = { webapps: [], templates: {} };
@@ -489,17 +495,18 @@ function _writeComponentInfo(workDirs, serverPath) {
         packageInfo; // 读取组件的package.json，获取组件信息，如果没有则放入组件名称
         
         // 处理mac和windows系统差异性
-        if (isWinPlatform()) {
-            packageName = componentDir.split("\\");
-        } else {
-            packageName = componentDir.split('/');
-        }
+        // if (isWinPlatform()) {
+        //     packageName = componentDir.split("\\");
+        // } else {
+        //     packageName = componentDir.split('/');
+        // }
+
+        packageName = componentDir.replace(currentPath, '').slice(1).replace('\\', '/').toLowerCase();
         
         // 如果存在package.json则获取组件名
         let existPackageJSON = fse.pathExistsSync(path.join(componentDir, 'package.json'));
         if (existPackageJSON) {
             let templateJson = fse.readJsonSync(path.resolve(componentDir, 'package.json'));
-            packageName = packageName[packageName.length - 1];
             packageInfo = fse.readJsonSync(path.join(componentDir, 'package.json'));
 
             // 默认读取data目录下的mock数据列表
@@ -511,12 +518,12 @@ function _writeComponentInfo(workDirs, serverPath) {
                     name: packageName
                 }));
             } else if (packageInfo.template){
-                componentInfos.components.push(Object.assign({
-                    name: packageName
-                }, packageInfo, {
+                componentInfos.components.push(Object.assign({}, packageInfo, {
                     mockDataList: mockDataList
+                }, {
+                    name: packageName
                 }));
-                alias[templateJson.name] = path.join(packageName, packageInfo.main || '');
+                alias[packageName] = packageName + '.js';
             }
         }
     }

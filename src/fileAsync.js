@@ -17,7 +17,7 @@ const configs = require('./configs');
  * 
  * @param {any} componentDir 组件所在的路径
  */
-function fileAsync(serverPath, componentDir) {
+function fileAsync(serverPath, componentDir, currentPath) {
     let componentName;
     let cdDisk = '';
     
@@ -26,13 +26,14 @@ function fileAsync(serverPath, componentDir) {
         cdDisk = serverPath.match(/(\w:)/gi)[0] + ' && ';
     }
     // 处理mac和windows系统差异性
-    if (componentDir.indexOf('/') > -1) {
-        componentName = componentDir.split('/');
-    } else {
-        componentName = componentDir.split('\\');
-    }
+    // if (componentDir.indexOf('/') > -1) {
+    //     componentName = componentDir.split('/');
+    // } else {
+    //     componentName = componentDir.split('\\');
+    // }
 
-    componentName = componentName[componentName.length - 1];
+    componentName = componentDir.replace(currentPath, '').slice(1).replace('\\', '/').toLowerCase();
+
 
     fse.ensureDirSync(path.join(serverPath, configs.BUILD_PATH));
 
@@ -133,7 +134,9 @@ function _createTemlateFile(serverPath, componentDir, componentName) {
             return ;
         }
         
-        const codeTemplate = (require(`./lib/template/${packageInfo.template}`))(componentName);
+        // 生成文件
+        const componentNameArray = componentName.split('/');
+        const codeTemplate = (require(`./lib/template/${packageInfo.template}`))(componentNameArray[componentNameArray.length - 1]);
     
         // 获取readme中的内容并处理写入到服务器端文件
         _processReadmeContent(_parseReadmeContent(componentDir, componentName), serverPath, componentName, componentDir);

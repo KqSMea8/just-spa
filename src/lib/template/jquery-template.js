@@ -3,8 +3,8 @@
 
 module.exports = function reactTemplate(componentName) {
     return `// 引入组件
-import Component from '../.build/${componentName}/entry';
-import template from '../.build/${componentName}/template';
+import Component from './${componentName}/entry';
+import template from './${componentName}/template';
 
 /**
  * 用于从调试页面中注入mock规则
@@ -49,13 +49,13 @@ function render(Component) {
 // 进行热替换调试组件内容
 if (module.hot && process.env.NODE_ENV !== 'production') {
     module.hot.accept([
-        '../.build/${componentName}/index',
-        '../.build/${componentName}/entry'
+        './${componentName}/index',
+        './${componentName}/entry'
     ], (err) => {
         if (err) {
             console.log(err);
         }
-        const NextComponent = require('../.build/${componentName}/entry').default;
+        const NextComponent = require('./${componentName}/entry').default;
 
         render(NextComponent);
     });

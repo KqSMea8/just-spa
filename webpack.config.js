@@ -44,6 +44,9 @@ function getEntry(options) {
             // 为热替换(HMR)打包好代码, only- 意味着只有成功更新运行代码才会执行热替换(HMR)
           ]
     };   // 先解析加载imports解析到的map文件
+    for (let key in alias) {
+        files[key] = alias[key];
+    }
     dirs.forEach(function (item) {
         matchs = item.match(/(.+)\.jsx?$/);
         // 如果_getImportsScriptList获取到的文件已经含有，则跳过不覆盖解析

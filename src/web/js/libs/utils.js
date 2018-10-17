@@ -9,7 +9,7 @@ const Utils = {
         var componentName = packageName;
         var packageNameSpaces = packageName.split('/');
 
-        if(packageNameSpaces.length > 1) {
+        if(packageNameSpaces.length > 1 && packageName.indexOf('@') > -1) {
             componentName = packageNameSpaces[packageNameSpaces.length - 1];
         }
         return componentName;

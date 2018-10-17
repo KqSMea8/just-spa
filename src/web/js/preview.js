@@ -921,7 +921,7 @@ Mock.mock(new RegExp('${key}', 'ig'), ${mockDataVar});
      * @memberof Preview
      */
     _isRedux() {
-        return component.template.indexOf('redux') > -1;
+        return component && component.template && component.template.indexOf('redux') > -1;
     }
 };
 

@@ -6,9 +6,9 @@ import ReactDOM from 'react-dom';
 import {AppContainer} from 'react-hot-loader';
 
 // 引入组件
-import Component from '../.build/${componentName}/entry';
-import template from '../.build/${componentName}/template';
-import '../.build/${componentName}/style';
+import Component from './${componentName}/entry';
+import template from './${componentName}/template';
+import './${componentName}/style';
 
 // 直接引用组件的用法
 const render = (Component) => {
@@ -59,13 +59,13 @@ render(Component);
 if (module.hot && process.env.NODE_ENV !== 'production') {
 
     module.hot.accept([
-        '../.build/${componentName}/index',
-        '../.build/${componentName}/entry'
+        './${componentName}/index',
+        './${componentName}/entry'
     ], (err) => {
         if (err) {
             console.log(err);
         }
-        const NextComponent = require('../.build/${componentName}/entry').default;
+        const NextComponent = require('./${componentName}/entry').default;
 
         render(NextComponent);
     });
