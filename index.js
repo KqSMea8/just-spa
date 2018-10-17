@@ -430,7 +430,7 @@ function _readDirSync(rootDir) {
             if (existPackageJSON) {
                 componentDirs.push(path.resolve(rootDir, item));
             } else {
-                componentDirs.push(path.resolve(rootDir, item));
+                // componentDirs.push(path.resolve(rootDir, item));
                 componentDirs = componentDirs.concat(_readDirSync(path.resolve(rootDir, item)));
             }
         } else {

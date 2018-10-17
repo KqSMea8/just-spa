@@ -170,9 +170,9 @@ function _UpdateReadmeContent(componentDir, componentName, jsdoc) {
         css: ''
     };
 
-    if (componentName) {
+    if (componentName && fse.pathExistsSync(path.join(componentDir + '/', 'README.md'))) {
 
-        let data = fs.readFileSync(path.join(componentDir + '/', 'readme.md'), 'utf-8');
+        let data = fs.readFileSync(path.join(componentDir + '/', 'README.md'), 'utf-8');
         // 分别匹配readme中的html、js、css，如果匹配到则添加到返回列表中
         let htmlContentArr = data.match(htmlReg);
         let cssContentArr = data.match(cssReg);
@@ -226,9 +226,9 @@ function _parseReadmeContent(componentDir, componentName) {
         css: ''
     };
 
-    if (componentName) {
-
-        let data = fs.readFileSync(path.join(componentDir + '/', 'readme.md'), 'utf-8');
+    if (componentName && fse.pathExistsSync(path.join(componentDir + '/', 'README.md'))) {
+        
+        let data = fs.readFileSync(path.join(componentDir + '/', 'README.md'), 'utf-8');
 
         // 分别匹配readme中的html、js、css，如果匹配到则添加到返回列表中
         let htmlContentArr = data.match(htmlReg);
