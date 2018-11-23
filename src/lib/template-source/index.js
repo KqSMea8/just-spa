@@ -176,8 +176,6 @@ function createComponent(componentInfo, currentPath, callback) {
     componentInfo.lineThroughName = componentInfo.name.replace(/([A-Z])/g, '-$1').toLowerCase().replace(/^-/, '');
 
     let componentPath = currentPath + '/' + componentInfo.lineThroughName;
-    
-
 
     fse.pathExists(componentPath, function(exists) {
         // 如果目录存在则开始写文件， 否则提示不存在
