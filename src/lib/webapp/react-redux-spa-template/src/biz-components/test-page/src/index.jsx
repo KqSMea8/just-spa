@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import { dispatchChange, dispatchAsyncChange, dispatchPromiseChange } from './action';
 import { formatName } from './data-adapter';
 
-class ${_Component} extends PureComponent {
+class TestPage extends PureComponent {
 
     static propTypes = {
         text: PropTypes.string,
@@ -27,25 +27,24 @@ class ${_Component} extends PureComponent {
     }
 
     render() {
-        const className = '${_component}';
+        const className = 'test-page';
 
         const formatNameData = formatName(this.props.name);
 
         return <div className={className}>
-            <h2>react-redux-thunk模板组件：${_Component}</h2>
+            <h2>react-redux模板组件：TestPage</h2>
             {this.props.text} {formatNameData}!
             <button onClick={() => {
-                dispatchChange.bind(this)('${_Component}');
+                dispatchChange.bind(this)('TestPage');
             }}>同步dispatch</button>
             <button onClick={() => {
-                dispatchAsyncChange.bind(this)('${_Component}');
+                dispatchAsyncChange.bind(this)('TestPage');
             }}>异步dispatch</button>
             <button onClick={() => {
-                dispatchPromiseChange.bind(this)('${_Component}');
+                dispatchPromiseChange.bind(this)('TestPage');
             }}>Promise dispatch</button>
         </div>
     }
 }
 
-export default ${_Component};
-
+export default TestPage;

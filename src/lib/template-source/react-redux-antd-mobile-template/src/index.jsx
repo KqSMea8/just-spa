@@ -36,8 +36,8 @@ class ${_Component} extends PureComponent {
         return <div className={className}>
             <h2>react-redux模板组件：${_Component}</h2>
             <WhiteSpace />
-            Win
-            {this.props.${_Component}.text} {formatNameData}!
+            模板
+            {this.props.text} {formatNameData}!
             <button onClick={() => {
                 dispatchChange.bind(this)('${_Component}');
             }}>同步dispatch</button>
