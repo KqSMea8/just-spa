@@ -1,49 +1,60 @@
 ﻿
-## 开发指南
+&emsp;&emsp;Just-spa是一套前端组件工程化工具，可以帮助开发者对物料库进行处理，快速进行组件的创建、开发、调试、打包构建。从而提高组件管理和开发效率，统一组件规范，分离组件功能并减少人员变动给项目维护带来的额外成本。
 
-#### 一、安装使用调试
-
-&emsp;&emsp;进入项目根目录，执行
+#### 1、安装just-spa
 
 ```
-$ npm i  # 使用npm（不要使用tnpm）安装所需要的npm包， 如果部分包安装失败，则单独安装
-
-$ npm run dev # 启动开发调试，并访问 http://localhost:3000/www/index.html
-
-$ npm run release # 编译项目并打包生成tar.gz包
-
+npm i just-spa -g
 ```
 
-#### 二、项目结构
+#### 2、快速创建和调试一个组件
 
-- 目录介绍
+&emsp;&emsp;选择一个本地目录，打开终端执行：
 
 ```
-root/
-    |-src/
-        |-mock/             # 应用mock数据目录
-        |-components/       # 业务组件目录
-        |-containers/       # 路由对应的container组件
-        |-entry/            # 业务对应的入口编译文件，在webpack.config中自动读取，无需读取
-        |-html/             # 前端html文件模板
-        |-less/             # 页面引入的less
-        |-reducers/         # reducers文件
-        |-utils/            # 工具文件目录
-    |-dev                   # 调试文件编译目录
-    |-build                 # build发布前编译目录
-    |-pkg                   # 生成的编译压缩包tar.gz目录
-    |-GulpFile.js           # gulp 任务配置
-    |-webpack.config.js     # webpack 配置文件
+just init
 ```
 
-#### 三、项目架构分层
+&emsp;&emsp;输入生成组件的相关信息，填写名称、物料库等，即可快速生成组件。创建组件完成后执行
 
-&emsp;&emsp;页面组件分层逻辑和图如下：html-> entry -> container -> components -> common(公用组件) -> atom components(react-bootstrap)
+```
+just watch
+```
 
-#### 四、开发完成后发布测试
+&emsp;&emsp;just watch会开启组件实时watch同步调试, 然后在相同目录中开启另一个终端执行
 
-&emsp;&emsp;使用run run release打包完成后，生成的包在项目 /pkg目录下，打开下面织云发布地址（如果没权限请先发布权限）
+```
+just start
+```
 
-/\/www\/js\/(\S+?)\_\S+?\.js/  E:/BizRd-trunk-base/www-base-fe/root/dev/www/js/$1.js
+&emsp;&emsp;just start会启动调试服务器，此时just会自动拉起浏览器打开http://localhost:8000 ，就可以看到调试组件的列表并查看just系统的详细文档。
 
+#### 3、just帮助命令
 
+&emsp;&emsp;此外你可以执行`just help`来查看just的其它命令和功能
+
+```
+just init: 创建一个组件或项目。根据物料库快速生成一个组件或项目。
+
+just template: 根据自定义物料库目录创建一个新的物料库。
+
+just rmtemplate: 删除一个自定义物料库。
+
+just list: 查看存在的所有物料库列表。
+
+just i/install: 安装组件的第三方依赖，同 npm/tnpm install。
+
+just start/run -port: 启动调试服务器。一般只需要运行一次。-p或-port表示指定端口开启服务。
+
+just clear/clean: 清除缓存。清除build构建的缓存目录。
+
+just dev/watch: 在当前目录下创建组件调试环境。
+
+just build: 编译打包组件为单个输出的ES5文件并编译CSS文件。例如：just build ComponentName
+
+just help: 查看帮助。查看just所有命令。
+
+just -v/version: 显示当前安装的just版本。
+```
+
+&emsp;&emsp;具体功能用法可以查看 [详细文档](https://github.com/ouvens/just-spa/blob/master/src/docs/docs.md)。
