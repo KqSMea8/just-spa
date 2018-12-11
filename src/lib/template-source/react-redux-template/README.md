@@ -39,5 +39,9 @@ export default <Component {...props}/>;
 
 ```
 
+```externals
+{}
+```
+
 #### 详细文档
 ---

@@ -4,6 +4,7 @@ const fse = require('fs-extra');
 var webpack = require('webpack');
 
 const dependencies = require('./package.json').alias;
+const externals = require('./.build/externals.json');
 
 
 const configs = {
@@ -68,7 +69,7 @@ module.exports = function getConfig(options) {
         chunkFilename: '[name].js',
         libraryTarget: 'umd'
     },
-
+    externals: externals,
     devServer: {
         hot: true, // 4
         // 开启服务器的模块热替换(HMR)

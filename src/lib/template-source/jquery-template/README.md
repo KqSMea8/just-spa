@@ -25,5 +25,10 @@ export default () => {
 
 ```
 
+```externals
+{}
+```
+
+
 #### 详细文档
 ---

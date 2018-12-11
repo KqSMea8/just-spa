@@ -22,5 +22,9 @@ export default <${_Component} {...initProps}/>
 
 ```
 
+```externals
+{}
+```
+
 #### 详细文档
 ---

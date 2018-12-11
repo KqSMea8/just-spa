@@ -486,6 +486,7 @@ function _writeComponentInfo(workDirs, serverPath, currentPath) {
     let componentInfos = { components: [], templates: {} };
     let webappInfos = { webapps: [], templates: {} };
     let alias = {};
+    let externals = {};
     // 物料模板选项映射表
     const templatesJson = fse.readJsonSync(__dirname + '/src/lib/template-source/template.json') || {};
     
@@ -526,6 +527,35 @@ function _writeComponentInfo(workDirs, serverPath, currentPath) {
                 alias[packageName] = packageName + '.js';
             }
         }
+
+        // 如果存在readme则读取externals配置
+        let existReadme = fse.pathExistsSync(path.join(componentDir, 'readme.md'));
+        if (existReadme) {
+
+            let externalText = fs.readFileSync(path.resolve(componentDir, 'readme.md'), 'utf-8');
+
+            const externalReg = /```externals((\t|\n|\s|.)+?)```/;
+
+            let externalInfo = {};
+            
+            let externalArr = externalText.match(externalReg) || [];
+
+            try {
+                if (externalArr && externalArr.length) {
+                    externalInfo = JSON.parse(externalArr && externalArr[1] ||'{}');
+                }
+            } catch(e) {
+
+            }
+
+            for ( let packageName in externalInfo) {
+                if (packageInfo.template === 'webapp') {
+                    // 如果是项目则跳过
+                } else if (packageInfo.template){
+                    externals[packageName] = externalInfo[packageName];
+                }
+            }
+        }
     }
 
     componentInfos.templates = templatesJson;
@@ -551,6 +581,14 @@ function _writeComponentInfo(workDirs, serverPath, currentPath) {
     }, function(err, data) {
         if (err) throw err;
         logger(`alias info has been created successfully.`, 'cyan');
+    });
+
+    fse.outputJson(path.join(serverPath + buildPath, 'externals.json'), externals, {
+        encoding: 'utf8',
+        spaces: 4
+    }, function(err, data) {
+        if (err) throw err;
+        logger(`external info has been created successfully.`, 'cyan');
     });
 }
 
