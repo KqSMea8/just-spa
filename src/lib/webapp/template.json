@@ -4,16 +4,23 @@
         "label": "react-redux-spa项目",
         "owner": "system",
         "stack": "react",
-        "description": "react单页应用项目模板。(推荐)"
+        "description": "react复杂单页应用项目模板。(推荐)"
     },
     "2": {
+        "name": "react-spa-template",
+        "label": "react-spa项目",
+        "owner": "system",
+        "stack": "react",
+        "description": "react简单单页应用项目模板。(推荐)"
+    },
+    "3": {
         "name": "react-redux-route-template",
         "label": "react-redux-route项目",
         "owner": "system",
         "stack": "react",
         "description": "react项目模板。(集成redux、route等)"
     },
-    "3": {
+    "4": {
         "name": "react-redux-thunk-route-template",
         "label": "react-redux-thunk-route项目",
         "owner": "system",

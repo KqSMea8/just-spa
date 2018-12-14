@@ -41,78 +41,118 @@ function _initCommandSet(serverPath, command, commandParams) {
 
     logger(`当前包管理工具为 ${npm}.`, 'cyan');
 
-    // 命令行处理
-    switch (command) {
-        case 'test':
-            // downloadGitRepo('gitlab@git.code.oa.com:ouvenzhang/webapp-compoments-template.git', 'tmp',{ clone: true }, function (err, data) {
-            //     console.log(err, data);
-            //     console.log(err ? 'Error' : 'Success')
-            // });
-            break;
-        case 'i':
-        case 'install':
-            _installOrUpdateAllDependencies(commandParams, 'install');
-            break;
-        case 'update':
-            _installOrUpdateAllDependencies(commandParams, 'update');
-            break;
-        case 'init':
-            createComponent(() => {
-                logger('auto install dependencies', 'cyan');
-            });         // 根据物料创建组件
-            break;
-        case 'template':
-            createTemplate(serverPath); // 创建物料模板
-            break;
-        case 'webapp':
-            createWebapp((webappName) => {
-                logger(`项目初始化完成，执行：cd ${webappName} & ${npm} i 安装项目依赖`, 'cyan');
-                // _installDependencies(commandParams, componentName, 'install');
-            }); // 根据项目组件物料库创建项目
-            break;
-        case 'rmtemplate':
-            removeTemplate(serverPath); // 删除物料模板
-            break;
-        case 'list':
-            listTemplates();            // 删除物料模板
-            break;
-        case 'clear':
-        case 'clean':
-            _clearCacheBuildDir([       // 如果命令为空，则输出help
-                serverPath + buildPath
-            ]);
-            break;
-        case 'run':
-        case 'start':
-            _initStart(commandParams);
-            break;
-        case '':
-        case 'help':
-            // 如果命令为help，则输出help
-            _consoleHelp();
-            break;
-        case 'watch':
-        case 'dev':
-            // watch、dev均可开启调试模式
-            _initFileWatch(serverPath);
-            break;
-        case 'build':
-            // 编译打包组件为单个可输出文件
-            _buildEs5Component(commandParams);
-            break;
-        case 'set':
-            // 设置npm运行命令，选择npm还是tnpm
-            _setNpmCommand(commandParams);
-            break;
-        case '-v':
-        case 'version':
-            _showVersion();
-            break;
-        default:
-            // 如果命令为空，且没有该命令，则提示没有该命令
-            logger(`抱歉，没有找到"${command}"命令。您可以尝试just help来查看所有命令.`, 'red');
-            _consoleHelp();
-            break;
+    let scriptCommand = `${npm} info just-spa version --json`;
+
+    // 如果是set则不需要拉取版本号对比
+    if (command === 'set') {
+        commandExcute();
+        return;
+    }
+
+    // 对于其它的命令需要拉取远程版本号，实时提示更新升级
+    childProcess.exec(scriptCommand, (error, stdout, stderr) => {
+        // 根据结果判断运行是否成功
+        if (stdout.indexOf('Error') > -1) {
+            logger(`获取远程版本号失败...`, 'cyan');
+            commandExcute();
+        } else {
+            if (error) {
+                logger(`获取远程版本号失败...`, 'cyan');
+                commandExcute();
+                return;
+            }
+            const latestVersionInfo = stdout.match(/[\t|\n|\r]((.?)+)[\t|\n|\r]$/) || '';
+            const latestVersion = latestVersionInfo[1].replace(/\"/ig, '');
+            fse.readJson(`${serverPath}/package.json`).then(packageObj => {
+                if (packageObj.version < latestVersion) {
+                    logger(`远程最新稳定just-spa版本为${latestVersion}，本地为${packageObj.version}，请尽快升级使用系统新的特性.`, 'magenta');
+                    logger(`运行 "${npm} update just-spa -g" 升级.`, 'red');
+                    logger('', 'red');
+                } else {
+                    logger(`本地just-spa已是最新版本.`, 'cyan');
+                }
+                commandExcute();
+            }, () => {
+                logger(`获取远程版本号失败...`, 'cyan');
+                commandExcute();
+            });
+        }
+    });
+
+    function commandExcute() {
+        // 命令行处理
+        switch (command) {
+            case 'test':
+                // downloadGitRepo('gitlab@git.code.oa.com:ouvenzhang/webapp-compoments-template.git', 'tmp',{ clone: true }, function (err, data) {
+                //     console.log(err, data);
+                //     console.log(err ? 'Error' : 'Success')
+                // });
+                break;
+            case 'i':
+            case 'install':
+                _installOrUpdateAllDependencies(commandParams, 'install');
+                break;
+            case 'update':
+                _installOrUpdateAllDependencies(commandParams, 'update');
+                break;
+            case 'init':
+                createComponent(() => {
+                    logger('auto install dependencies', 'cyan');
+                });         // 根据物料创建组件
+                break;
+            case 'template':
+                createTemplate(serverPath); // 创建物料模板
+                break;
+            case 'webapp':
+                createWebapp((webappName) => {
+                    logger(`项目初始化完成，执行：cd ${webappName} & ${npm} i 安装项目依赖`, 'cyan');
+                    // _installDependencies(commandParams, componentName, 'install');
+                }); // 根据项目组件物料库创建项目
+                break;
+            case 'rmtemplate':
+                removeTemplate(serverPath); // 删除物料模板
+                break;
+            case 'list':
+                listTemplates();            // 删除物料模板
+                break;
+            case 'clear':
+            case 'clean':
+                _clearCacheBuildDir([       // 如果命令为空，则输出help
+                    serverPath + buildPath
+                ]);
+                break;
+            case 'run':
+            case 'start':
+                _initStart(commandParams);
+                break;
+            case '':
+            case 'help':
+                // 如果命令为help，则输出help
+                _consoleHelp();
+                break;
+            case 'watch':
+            case 'dev':
+                // watch、dev均可开启调试模式
+                _initFileWatch(serverPath);
+                break;
+            case 'build':
+                // 编译打包组件为单个可输出文件
+                _buildEs5Component(commandParams);
+                break;
+            case 'set':
+                // 设置npm运行命令，选择npm还是tnpm
+                _setNpmCommand(commandParams);
+                break;
+            case '-v':
+            case 'version':
+                _showVersion();
+                break;
+            default:
+                // 如果命令为空，且没有该命令，则提示没有该命令
+                logger(`抱歉，没有找到"${command}"命令。您可以尝试just help来查看所有命令.`, 'red');
+                _consoleHelp();
+                break;
+        }
     }
 }
 
@@ -318,7 +358,7 @@ function _consoleHelp() {
     just build: 编译打包组件为单个输出的ES5文件并编译CSS文件。例如：just build ComponentName
     just help: 查看帮助。查看just所有命令。
     just -v/version: 显示当前安装的just版本。
-    just set: 设置npm、tnpm或tnpm，例如：just set tnpm。`, 'magenta');
+    just set: 设置npm、tnpm或cnpm，例如：just set tnpm。`, 'magenta');
 }
 
 /**

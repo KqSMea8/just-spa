@@ -1,6 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
 
 import TestPage from '../biz-components/test-page';
 import MainPage from '../biz-components/main-page';
@@ -60,21 +59,10 @@ class IndexPage extends React.Component {
      * @memberof IndexPage
      */
     _renderComponent = (hash, containerRoute) => {
-        let Component = containerRoute[hash] || null;
+        let Component = containerRoute[hash] || MainPage;
         return Component ? <Component {...this.props} /> : null;
     }
 };
 
-const mapStateToProps = (state, ownProps) => {
-    return state;
-};
-
-const mapDispatchToProps = (state, ownProps) => {
-    return {};
-};
-
-export default connect(
-    mapStateToProps,
-    mapDispatchToProps
-)(IndexPage);
+export default IndexPage;
 
